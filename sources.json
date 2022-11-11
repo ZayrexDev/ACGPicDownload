@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Lolicon",
+    "description": "Picture from Lolicon API (api.lolicon.app)",
+    "url": "https://api.lolicon.app/setu/v2",
+    "picUrl": "url/original",
+    "sourceKey": "data",
+    "asArray": true,
+    "information": {
+      "extension": "extension",
+      "title": "title",
+      "author": "author",
+      "pid": "pid"
+    },
+    "nameRule": ""
+  },
+  {
+    "name": "Dmoe",
+    "description": "Picture from Dmoe API (dmoe.cc)",
+    "url": "https://www.dmoe.cc/random.php?return=json",
+    "picUrl": "url/original",
+    "sourceKey": "data",
+    "asArray": true,
+    "information": {
+      "extension": "extension",
+      "title": "title",
+      "author": "author",
+      "pid": "pid"
+    },
+    "nameRule": ""
+  }
+]
