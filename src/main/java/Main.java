@@ -19,7 +19,7 @@ public class Main {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]){
                 case "-s","--source":{
-                    if(args.length - 1 > i + 1 && !args[i + 1].startsWith("-")){
+                    if(args.length > i + 1 && !args[i + 1].startsWith("-")){
                         cfg.setSourceName(args[i + 1]);
                     }else{
                         System.err.println("Please provide a source name.");
@@ -27,7 +27,7 @@ public class Main {
                     break;
                 }
                 case "-o","--output":{
-                    if(args.length - 1 > i + 1 && !args[i + 1].startsWith("-")){
+                    if(args.length > i + 1 && !args[i + 1].startsWith("-")){
                         cfg.setOutDir(args[i + 1]);
                     }else{
                         System.err.println("Please provide a output path.");
