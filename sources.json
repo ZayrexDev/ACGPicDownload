@@ -3,16 +3,10 @@
     "name": "Lolicon",
     "description": "Picture from Lolicon API (api.lolicon.app)",
     "url": "https://api.lolicon.app/setu/v2",
-    "picUrl": "url/original",
+    "picUrl": "urls/original",
     "sourceKey": "data",
     "asArray": true,
-    "information": {
-      "extension": "extension",
-      "title": "title",
-      "author": "author",
-      "pid": "pid"
-    },
-    "nameRule": ""
+    "nameRule": "PID：${pid} ${title} by ${author}.${ext}"
   },
   {
     "name": "Dmoe",

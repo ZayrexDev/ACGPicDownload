@@ -1,4 +1,4 @@
-package SourceUtil;
+package Util.SourceUtil;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
@@ -20,8 +20,6 @@ public class Source {
     private String sourceKey;
     @JSONField(name = "asArray")
     private boolean asArray;
-    @JSONField(name = "information")
-    private JSONObject information;
 
     @Override
     public String toString() {
@@ -33,7 +31,6 @@ public class Source {
                 ", picUrl='" + picUrl + '\'' +
                 ", sourceKey='" + sourceKey + '\'' +
                 ", asArray=" + asArray +
-                ", information=" + information +
                 '}';
     }
 
@@ -93,15 +90,8 @@ public class Source {
         this.asArray = asArray;
     }
 
-    public JSONObject getInformation() {
-        return information;
-    }
-
-    public void setInformation(JSONObject information) {
-        this.information = information;
-    }
-
-    public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey, boolean asArray, JSONObject information) {
+    public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey,
+            boolean asArray, JSONObject information) {
         this.name = name;
         this.description = description;
         this.url = url;
@@ -109,6 +99,5 @@ public class Source {
         this.picUrl = picUrl;
         this.sourceKey = sourceKey;
         this.asArray = asArray;
-        this.information = information;
     }
 }

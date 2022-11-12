@@ -1,4 +1,4 @@
-package SourceUtil;
+package Util.SourceUtil;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSON;
