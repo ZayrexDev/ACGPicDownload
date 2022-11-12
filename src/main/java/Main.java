@@ -58,7 +58,7 @@ public class Main {
         Result[] r = SourceFetcher.fetch(s);
         File outDir = new File(cfg.getOutDir());
         for (int index = 0; index < r.length; index++) {
-            DownloadUtil.download(r[index], null);
+            DownloadUtil.download(r[index], outDir);
         }
     }
 
