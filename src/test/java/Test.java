@@ -5,6 +5,6 @@ public class Test {
         //     "-s","Lolicon",
         //     "--arg",""
         // });
-        Main.main(new String[]{"--list-sources"});
+        Main.main(new String[]{});
     }
 }
