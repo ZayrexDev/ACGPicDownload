@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class SourceManager {
     public static String readConfig() throws IOException {
@@ -37,5 +38,15 @@ public class SourceManager {
 
     public static List<Source> parseFromConfig() throws IOException{
         return parse(readConfig());
+    }
+
+    public static Source getSourceByName(String name) throws IOException{
+        List<Source> sources = parseFromConfig();
+        for (int index = 0; index < sources.size(); index++) {
+            if(sources.get(index).getName().equals(name)){
+                return sources.get(index);
+            }
+        }
+        return null;
     }
 }
