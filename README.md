@@ -20,7 +20,7 @@ This project is still **Work In Progress**, so it may not work well for now...
   
 ### Add custom sources
 
-A avaliable source should contain the following values:
+An available source should contain the following values:
 |     Key     |  Type   |                  Description                   |                                         Detail                                         |
 | :---------: | :-----: | :--------------------------------------------: | :------------------------------------------------------------------------------------: |
 |    name     | String  |               Name of the source               |          **Required**. Please make sure that each source has different names           |
