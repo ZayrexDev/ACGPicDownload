@@ -2,7 +2,11 @@
   {
     "name": "Lolicon",
     "description": "Picture from Lolicon API (api.lolicon.app)",
-    "url": "https://api.lolicon.app/setu/v2",
+    "url": "https://api.lolicon.app/setu/v2?$r18={r18}&num=${num}",
+    "defaultArgs":{
+      "r18":"0",
+      "num":"1"
+    },
     "picUrl": "urls/original",
     "sourceKey": "data",
     "asArray": true,

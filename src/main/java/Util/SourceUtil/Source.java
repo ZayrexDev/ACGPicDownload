@@ -18,19 +18,8 @@ public class Source {
     private String sourceKey;
     @JSONField(name = "asArray")
     private boolean asArray;
-
-    @Override
-    public String toString() {
-        return "Source{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", url='" + url + '\'' +
-                ", nameRule='" + nameRule + '\'' +
-                ", picUrl='" + picUrl + '\'' +
-                ", sourceKey='" + sourceKey + '\'' +
-                ", asArray=" + asArray +
-                '}';
-    }
+    @JSONField(name = "defaultArgs")
+    private JSONObject defaultArgs;
 
     public String getName() {
         return name;
@@ -88,8 +77,23 @@ public class Source {
         this.asArray = asArray;
     }
 
+    public JSONObject getDefaultArgs() {
+        return defaultArgs;
+    }
+
+    public void setDefaultArgs(JSONObject defaultArgs) {
+        this.defaultArgs = defaultArgs;
+    }
+
+    @Override
+    public String toString() {
+        return "Source [name=" + name + ", description=" + description + ", url=" + url + ", nameRule=" + nameRule
+                + ", picUrl=" + picUrl + ", sourceKey=" + sourceKey + ", asArray=" + asArray + ", defaultArgs="
+                + defaultArgs + "]";
+    }
+
     public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey,
-            boolean asArray, JSONObject information) {
+            boolean asArray, JSONObject defaultArgs) {
         this.name = name;
         this.description = description;
         this.url = url;
@@ -97,5 +101,7 @@ public class Source {
         this.picUrl = picUrl;
         this.sourceKey = sourceKey;
         this.asArray = asArray;
+        this.defaultArgs = defaultArgs;
     }
+
 }
