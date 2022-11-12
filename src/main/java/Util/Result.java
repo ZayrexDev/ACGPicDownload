@@ -1,4 +1,5 @@
 package Util;
+
 public class Result {
     private String fileName;
     private String url;

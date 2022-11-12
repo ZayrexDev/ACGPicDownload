@@ -21,6 +21,18 @@ public class Source {
     @JSONField(name = "defaultArgs")
     private JSONObject defaultArgs;
 
+    public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey,
+                  boolean asArray, JSONObject defaultArgs) {
+        this.name = name;
+        this.description = description;
+        this.url = url;
+        this.nameRule = nameRule;
+        this.picUrl = picUrl;
+        this.sourceKey = sourceKey;
+        this.asArray = asArray;
+        this.defaultArgs = defaultArgs;
+    }
+
     public String getName() {
         return name;
     }
@@ -90,18 +102,6 @@ public class Source {
         return "Source [name=" + name + ", description=" + description + ", url=" + url + ", nameRule=" + nameRule
                 + ", picUrl=" + picUrl + ", sourceKey=" + sourceKey + ", asArray=" + asArray + ", defaultArgs="
                 + defaultArgs + "]";
-    }
-
-    public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey,
-            boolean asArray, JSONObject defaultArgs) {
-        this.name = name;
-        this.description = description;
-        this.url = url;
-        this.nameRule = nameRule;
-        this.picUrl = picUrl;
-        this.sourceKey = sourceKey;
-        this.asArray = asArray;
-        this.defaultArgs = defaultArgs;
     }
 
 }

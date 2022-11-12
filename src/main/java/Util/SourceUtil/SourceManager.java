@@ -28,7 +28,9 @@ public class SourceManager {
 
             return sb.toString();
         } else {
-            f.createNewFile();
+            if(!f.createNewFile()){
+                throw new IOException("Can not create new file");
+            }
             return "";
         }
     }
@@ -48,9 +50,9 @@ public class SourceManager {
     }
 
     public static Source getSourceByName(List<Source> sources, String name) throws IOException {
-        for (int index = 0; index < sources.size(); index++) {
-            if (sources.get(index).getName().equals(name)) {
-                return sources.get(index);
+        for (Source source : sources) {
+            if (source.getName().equals(name)) {
+                return source;
             }
         }
         return null;

@@ -1,16 +1,12 @@
 package Util.SourceUtil;
 
+import Util.Result;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-
-import Util.Result;
-
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class SourceFetcher {
     public static Result[] fetch(Source source) throws IOException {
@@ -31,12 +27,7 @@ public class SourceFetcher {
         ArrayList<JSONObject> pics = new ArrayList<>();
         if (source.isAsArray()) {
             JSONArray array = (JSONArray) data;
-            array.forEach(new Consumer<Object>() {
-                @Override
-                public void accept(Object o) {
-                    pics.add((JSONObject) o);
-                }
-            });
+            array.forEach(o -> pics.add((JSONObject) o));
         } else {
             pics.add((JSONObject) data);
         }
@@ -44,27 +35,19 @@ public class SourceFetcher {
         ArrayList<Result> results = new ArrayList<>();
 
         // For each of the json objects to parse
-        pics.forEach(new Consumer<JSONObject>() {
-            @Override
-            public void accept(JSONObject jsonObject) {
-                Result r = new Result();
-                r.setUrl(String.valueOf(followPath(jsonObject, source.getPicUrl())));
+        pics.forEach(jsonObject -> {
+            Result r = new Result();
+            r.setUrl(String.valueOf(followPath(jsonObject, source.getPicUrl())));
 
-                if (source.getNameRule() != null && source.getNameRule().trim() != "") {
-                    r.setFileName(source.getNameRule());
-                    jsonObject.forEach(new BiConsumer<String, Object>() {
-                        @Override
-                        public void accept(String t, Object u) {
-                            r.setFileName(r.getFileName().replaceAll(
-                                    "\\$\\{" + t + "}",
-                                    String.valueOf(u)));
-                        }
-                    });
-                } else {
-                    r.setFileName(r.getUrl().substring(r.getUrl().lastIndexOf("/") + 1));
-                }
-                results.add(r);
+            if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
+                r.setFileName(source.getNameRule());
+                jsonObject.forEach((t, u) -> r.setFileName(r.getFileName().replaceAll(
+                        "\\$\\{" + t + "}",
+                        String.valueOf(u))));
+            } else {
+                r.setFileName(r.getUrl().substring(r.getUrl().lastIndexOf("/") + 1));
             }
+            results.add(r);
         });
 
         return results.toArray(new Result[] {});

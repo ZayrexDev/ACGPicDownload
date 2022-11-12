@@ -8,8 +8,10 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class DownloadUtil {
-    public static void download(Result r, File toDic) throws IOException{
-        toDic.mkdirs();
+    public static void download(Result r, File toDic) throws IOException {
+        if(!toDic.mkdirs()){
+            throw new IOException("Can't create directory");
+        }
 
         URL url = new URL(r.getUrl());
         URLConnection c = url.openConnection();
@@ -19,7 +21,7 @@ public class DownloadUtil {
 
         byte[] buffer = new byte[c.getContentLength()];
         int byteRead;
-        while((byteRead = is.read(buffer)) != -1){
+        while ((byteRead = is.read(buffer)) != -1) {
             fos.write(buffer, 0, byteRead);
         }
 
