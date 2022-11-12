@@ -3,8 +3,6 @@ package Util.SourceUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
 
-import java.util.HashMap;
-
 public class Source {
     @JSONField(name = "name")
     private String name;

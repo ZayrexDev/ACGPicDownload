@@ -9,7 +9,6 @@ import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -52,7 +51,6 @@ public class SourceFetcher {
                 r.setUrl(String.valueOf(followPath(jsonObject, source.getPicUrl())));
 
                 if (source.getNameRule() != null && source.getNameRule().trim() != "") {
-                    HashMap<String, String> info = new HashMap<>();
                     r.setFileName(source.getNameRule());
                     jsonObject.forEach(new BiConsumer<String, Object>() {
                         @Override
