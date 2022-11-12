@@ -59,7 +59,7 @@ public class Main {
                         sources.forEach(new Consumer<Source>() {
                             @Override
                             public void accept(Source t) {
-                                System.out.println(t.getName() + " | " + t.getDescription() + " | " + t.getPicUrl());
+                                System.out.println(t.getName() + " | " + t.getDescription() + " | " + t.getUrl());
                             }
                         });
                     } catch (IOException e) {
@@ -67,16 +67,18 @@ public class Main {
                     }catch(JSONException e){
                         System.err.println("ERROR:Could not prase source config as JSON file. Please check if your sources.json is correctly configued. Error detail:" + e);
                     }
-                    break;
+                    return;
                 }
             }
         }
 
         if(cfg.getSourceName() == null){
             System.err.println("Missing required value : Please enter a source name with \"-s\". To get all sources, use \"--list-sources\"");
+            return;
         }
         if(cfg.getOutDir() == null){
             System.err.println("Missing required value : Please enter a output path with \"-o\".");
+            return;
         }
         execute(cfg);
     }
@@ -117,5 +119,15 @@ public class Main {
     }
 
     private static void usage() {
+        System.out.println(
+            "Avaliable arguments: \n"+
+            "   --list-sources : List all the sources\n"+
+            " Fetching:\n"+
+            "   -s, --source <source name> : Set the source to use. Required.\n"+
+            "   -o, --output <output dictionary> : Set the output dictionary. Required.\n"+
+            "   --arg key1=value1,key2=value2,... : custom the argument in the url.\n"+
+            "           Example:If the url is \"https://www.someurl.com/pic?num=${num}\", then with\n"+
+            "                    \"--arg num=1\", the exact url will be \"https://www.someurl.com/pic?num=1\""
+        );
     }
 }
