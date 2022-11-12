@@ -18,8 +18,9 @@ public class DownloadUtil {
         FileOutputStream fos = new FileOutputStream(new File(toDic, r.getFileName()));
 
         byte[] buffer = new byte[c.getContentLength()];
-        while((is.read(buffer)) != -1){
-            fos.write(buffer, 0, buffer.length);
+        int byteRead;
+        while((byteRead = is.read(buffer)) != -1){
+            fos.write(buffer, 0, byteRead);
         }
 
         is.close();
