@@ -34,4 +34,8 @@ public class SourceManager {
         });
         return sources;
     }
+
+    public static List<Source> parseFromConfig() throws IOException{
+        return parse(readConfig());
+    }
 }
