@@ -16,10 +16,10 @@ This project is still **Not stable**, so it may not work well for now...
 ### Command line arguments
 
 |             Argument              |                                                                                          Description                                                                                           |
-| :-------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|:---------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 |          --list-sources           |                                                                                      List all the sources                                                                                      |
-|    - -s, --source source_name     |                                                                                Set the source to use. Required.                                                                                |
-|  -o, --output output_dictionary   |                                                                              Set the output dictionary. Required.                                                                              |
+|    - -s, --source source_name     |                                               Set the source to use. If it's not set, then the program will use the first source in the config.                                                |
+|  -o, --output output_dictionary   |                                                Set the output dictionary. If it's not set, the program will use the dictionary of the program.                                                 |
 | --arg key1=value1,key2=value2,... | custom the argument in the url. For example, If the url is `https://www.someurl.com/pic?num=${num}`, then with `-- arg num=1`, The actual address would be `https://www.someurl.com/pic?num=1` |
 
 ### Add custom sources
@@ -41,7 +41,7 @@ An available source should contain the following values in `sources.json`:
 
 #### url
 
-You can add custom vars in the url with `${varname}`. But You need to give a default value for the them
+You can add custom vars in the url with `${varname}`. But You need to give a default value for them
 using `defaultArgs`
 For example, if the `url` is `https://someurl/pic?num=${num}` , then with the `--arg num=1` argument, the actual url
 will be `https://someurl/pic?num=1`
