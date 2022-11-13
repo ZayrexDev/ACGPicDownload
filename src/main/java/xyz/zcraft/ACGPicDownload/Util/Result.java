@@ -1,4 +1,4 @@
-package Util;
+package xyz.zcraft.ACGPicDownload.Util;
 
 public class Result {
     private String fileName;

@@ -1,57 +1,52 @@
 # ACGPicDownload
 
-A convenient tool to download ACG pictures from various sources.
+一个从不同下载源下载图片的工具
 
-## Attention
+## 注意
 
-This project is still **Work In Progress**, so it may not work well for now...
+这个项目仍然处于**不稳定**状态，所以可能会出现一些蜜汁小bug qwq
 
-## Features
+## 特性
 
-- Supports custom sources
-- Highly customizable naming rules and fetching urls
+- 支持自定义下载源
+- 高度可自定义的下载连接与文件名
 
-## Usage
+## 如何使用
 
-### Command line arguments
+### 命令行参数
 
-|             Argument              |                                                                                          Description                                                                                           |
-| :-------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|          --list-sources           |                                                                                      List all the sources                                                                                      |
-|    - -s, --source source_name     |                                                                                Set the source to use. Required.                                                                                |
-|  -o, --output output_dictionary   |                                                                              Set the output dictionary. Required.                                                                              |
-| --arg key1=value1,key2=value2,... | custom the argument in the url. For example, If the url is `https://www.someurl.com/pic?num=${num}`, then with `-- arg num=1`, The actual address would be `https://www.someurl.com/pic?num=1` |
+|              参数名               |                                                                                   描述                                                                                    |
+| :-------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|          --list-sources           |                                                                          列出所有已配置的下载源                                                                           |
+|    - -s, --source source_name     |                                                                             设置需要使用的源                                                                              |
+|  -o, --output output_dictionary   |                                                                               设置下载目录                                                                                |
+| --arg key1=value1,key2=value2,... | 自定义URL里的某些参数. 例如, 如果URL是 `https://www.someurl.com/pic?num=${num}`, 那么在传入 `-- arg num=1` 后, 实际上访问的地址将会是 `https://www.someurl.com/pic?num=1` |
 
-### Add custom sources
+### 添加自定义下载源
 
-There are already some sources in the default `sources.json`. You can see them to add your own source.
+在默认的 `sources.json` 中已有几个配置好的下载源. 你可以参照他们来创建你的自定义下载源.
 
-An available source should contain the following values in `sources.json`:
+一个正常的 `sources.json` 应当包含以下的参数:
 
-|     Key     |  Type   |                  Description                   |                               Detail                                |
-| :---------: | :-----: | :--------------------------------------------: | :-----------------------------------------------------------------: |
-|    name     | String  |               Name of the source               | **Required**. Please make sure that each source has different names |
-| description | String  |           Description of the source            |                              Optional                               |
-|     url     | String  |             The url used to fetch              |                            **Required**                             |
-| defaultArgs |  JSON   | The default values of the variables in the url |                 **Required** when using var in url                  |
-|  sourceKey  | String  |     The path to image data(s) in the JSON      |                            **Required**                             |
-|   picUrl    | String  |    The path to image url in each image data    |                            **Required**                             |
-|   asArray   | boolean |    Whether the return value is as an array     |                            **Required**                             |
-|  nameRule   | String  |                The naming rules                |       It tells the program how to name the downloaded images        |
+|   参数名    | 参数类型 |                描述                |                  补充说明                  |
+| :---------: | :------: | :--------------------------------: | :----------------------------------------: |
+|    name     |  字符串  |            下载源的名称            | **需要**. 请确保不同的下载源具有不同的名字 |
+| description |  字符串  |            下载源的描述            |                    可选                    |
+|     url     |  字符串  |              下载URL               |                  **需要**                  |
+| defaultArgs |   JSON   |         URL中参数的默认值          |     **需要**(仅当在`url`中设置参数时)      |
+|  sourceKey  |  字符串  |   返回值中指向每张图片数据的路径   |                  **需要**                  |
+|   picUrl    |  字符串  | 每张图片数据中指向每下载链接的路径 |                  **需要**                  |
+|   asArray   |  布尔值  |          返回值是否是数组          |                  **需要**                  |
+|  nameRule   |  字符串  |           下载的命名规则           |                    可选                    |
 
-#### Notes
+#### url
 
-##### url
+你可以通过 `${varname}` 在url中自定义参数，但是你需要使用 `defaultArgs` 为每个参数设定一个默认值，
+举个栗子，如果 `url` 是 `https://someurl/pic?num=${num}` ，那么在命令行传入 `--arg num=1` 时，实际上程序访问的url会是 `https://someurl/pic?num=1`
 
-You can add custom vars in the url with `${varname}`. But You need to give a default value for the them
-using `defaultArgs`
-For example, if the `url` is `https://someurl/pic?num=${num}` , then with the `--arg num=1` argument, the actual url
-will be `https://someurl/pic?num=1`
-When using var in `url`, you have to give a default value in `defaultArgs`
+#### defaultArgs
 
-##### defaultArgs
-
-It is required when using vars in the url. In the example in `url`, the `defaultArgs` can be:
+当在使用 `url` 中的参数时需要指定。在 `url` 的例子中，`defaultArgs` 可以是:
 
 ```json
 {
@@ -61,11 +56,11 @@ It is required when using vars in the url. In the example in `url`, the `default
 }
 ```
 
-##### nameRule
+#### nameRule
 
-You can use `${varname}` to use values from the return JSON as a part of the file name.
+你可以使用形如 `${变量名}` 来使用返回值的json里的值来为每个文件命名
 
-For example, if a JSON return result is :
+例如，如果一个json返回值是 :
 
 ```json
 {
@@ -79,14 +74,13 @@ For example, if a JSON return result is :
 }
 ```
 
-Then if the `nameRule` is `ID:${id} ${title} by ${author}.${ext}`, the name of this result will
-be `ID:6969 sometitle by someauthor.png`
+那么如果 `nameRule` 是 `ID:${id} ${title} by ${author}.${ext}`, 下载下来的文件名就会是 `ID:6969 sometitle by someauthor.png`。
 
-If the `nameRule` is empty, the program will try to get the file name from the download link.
+如果 `nameRule` 是空的, 程序将会尝试从返回的下载链接自动获取文件名。
 
-##### sourceKey
+#### sourceKey
 
-Because of some source does not return the JSON directly of the image datas, for example:
+因为某些返回值是由某些值嵌套图片数据的，所以需要指定图片数据的位置。例如:
 
 ```json
 {
@@ -115,19 +109,19 @@ Because of some source does not return the JSON directly of the image datas, for
 }
 ```
 
-The `sourceKey` of the JSON above should be `images/data`
+对于以上的返回值 `sourceKey` 应是 `images/data`
 
-##### asArray
+#### asArray
 
-if the return value is an array, then you should set it to `true`.
+如果返回值是数组，那么应该将其设置为 `true`.
 
-For example the json in the `sourceKey` is returned as an array. So its `asArray` should be `true`.
+例如在 `sourceKey` 的例子中，返回值是一个数组，因此它的 `asArray` 应该为 `true`。
 
-##### picUrl
+#### picUrl
 
-Just like the `sourceKey`, the url of each return value should be told.
+就如 `sourceKey`, 在返回值中指向下载连接的路径也应该在此被提前告知。
 
-For example, the following json's `sourceKey` should be `urls/original`
+例如，以下返回值的 `sourceKey` 应该为 `urls/original`。
 
 ```json
 {
@@ -138,4 +132,3 @@ For example, the following json's `sourceKey` should be `urls/original`
   "title": "sometitle"
 }
 ```
-

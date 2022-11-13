@@ -1,9 +1,11 @@
-import Util.Config;
-import Util.DownloadUtil;
-import Util.Result;
-import Util.SourceUtil.Source;
-import Util.SourceUtil.SourceFetcher;
-import Util.SourceUtil.SourceManager;
+package xyz.zcraft.ACGPicDownload;
+
+import xyz.zcraft.ACGPicDownload.Util.Config;
+import xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
+import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
+import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager;
+import xyz.zcraft.ACGPicDownload.Util.Result;
+import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceFetcher;
 import com.alibaba.fastjson.JSONException;
 
 import java.io.File;
@@ -12,11 +14,6 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        if (args.length == 0) {
-            usage();
-            return;
-        }
-
         Config cfg = new Config();
 
         for (int i = 0; i < args.length; i++) {
@@ -47,35 +44,58 @@ public class Main {
                         System.err.println("Please provide arguments.");
                     }
                 }
-                case "--list-sources" -> {
-                    try {
-                        List<Source> sources = SourceManager.parseFromConfig();
-                        System.out.println("Name | Description | URL");
-                        sources.forEach(t -> System.out.println(t.getName() + " | " + t.getDescription() + " | " + t.getUrl()));
-                    } catch (IOException e) {
-                        System.err.println("ERROR:Could not read source config. Please check your source config file. Error detail:" + e);
-                    } catch (JSONException e) {
-                        System.err.println("ERROR:Could not parse source config as JSON file. Please check if your sources.json is correctly configured. Error detail:" + e);
-                    }
-                    return;
-                }
+                case "--list-sources" -> listSources();
+                case "-h","--help" -> usage();
             }
         }
 
         if (cfg.getSourceName() == null) {
-            System.err.println("Missing required value : Please enter a source name with \"-s\". To get all sources, use \"--list-sources\"");
-            return;
+            List<Source> sources = getSourcesConfig();
+           if(sources == null || sources.size() == 0) {
+               System.err.println("No available sources");
+               return;
+           }else{
+               cfg.setSourceName(sources.get(0).getName());
+           }
         }
         if (cfg.getOutDir() == null) {
-            System.err.println("Missing required value : Please enter a output path with \"-o\".");
-            return;
+            cfg.setOutDir("");
         }
         execute(cfg);
     }
 
+    private static List<Source> getSourcesConfig(){
+        try {
+            if(SourceManager.getSources() == null){
+                SourceManager.readConfig();
+            }
+            return SourceManager.getSources();
+        } catch (IOException e) {
+            System.err.println("ERROR:Could not read source config. Please check your source config file. Error detail:" + e);
+        } catch (JSONException e) {
+            System.err.println("ERROR:Could not parse source config as JSON file. Please check if your sources.json is correctly configured. Error detail:" + e);
+        }
+
+        return null;
+    }
+
+    private static void listSources(){
+        List<Source> sources = getSourcesConfig();
+        if(sources == null){
+            System.out.println("No sources found");
+        }else{
+            System.out.println("Name | Description | URL");
+            sources.forEach(t -> System.out.println(t.getName() + " | " + t.getDescription() + " | " + t.getUrl()));
+        }
+    }
+
     private static void execute(Config cfg) {
         try {
-            List<Source> sources = SourceManager.parseFromConfig();
+            List<Source> sources = getSourcesConfig();
+            if(sources == null){
+                System.err.println("can't find source to use");
+                return;
+            }
             Source s = SourceManager.getSourceByName(sources, cfg.getSourceName());
 
             if (s != null) {

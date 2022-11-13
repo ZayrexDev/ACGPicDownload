@@ -1,4 +1,4 @@
-package Util;
+package xyz.zcraft.ACGPicDownload.Util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,7 +9,7 @@ import java.net.URLConnection;
 
 public class DownloadUtil {
     public static void download(Result r, File toDic) throws IOException {
-        if(!toDic.mkdirs()){
+        if(!toDic.exists() && !toDic.mkdirs()) {
             throw new IOException("Can't create directory");
         }
 
@@ -19,7 +19,7 @@ public class DownloadUtil {
 
         FileOutputStream fos = new FileOutputStream(new File(toDic, r.getFileName()));
 
-        byte[] buffer = new byte[c.getContentLength()];
+        byte[] buffer = new byte[10240];
         int byteRead;
         while ((byteRead = is.read(buffer)) != -1) {
             fos.write(buffer, 0, byteRead);

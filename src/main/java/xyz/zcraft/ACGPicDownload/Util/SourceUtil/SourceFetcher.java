@@ -1,6 +1,6 @@
-package Util.SourceUtil;
+package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
 
-import Util.Result;
+import xyz.zcraft.ACGPicDownload.Util.Result;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Jsoup;
@@ -55,6 +55,10 @@ public class SourceFetcher {
 
     // Follow the given path.
     private static Object followPath(JSONObject obj, String path) {
+        if (path == null || path.trim().equals("")){
+            return obj;
+        }
+
         JSONObject result = obj.clone();
 
         String[] pathToSource = path.split("/");

@@ -1,6 +1,8 @@
-package Util;
+package xyz.zcraft.ACGPicDownload.Util;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Config {
     private final HashMap<String, String> arg = new HashMap<>();
@@ -16,7 +18,7 @@ public class Config {
     }
 
     public String getOutDir() {
-        return outDir;
+        return Objects.requireNonNullElseGet(outDir, () -> new File("").getAbsolutePath());
     }
 
     public void setOutDir(String outDir) {

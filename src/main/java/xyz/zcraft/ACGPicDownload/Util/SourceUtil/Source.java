@@ -1,7 +1,9 @@
-package Util.SourceUtil;
+package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
+
+import java.util.Objects;
 
 public class Source {
     @JSONField(name = "name")
@@ -90,7 +92,7 @@ public class Source {
     }
 
     public JSONObject getDefaultArgs() {
-        return defaultArgs;
+        return Objects.requireNonNullElseGet(defaultArgs, JSONObject::new);
     }
 
     public void setDefaultArgs(JSONObject defaultArgs) {
