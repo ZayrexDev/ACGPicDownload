@@ -1,6 +1,5 @@
 package xyz.zcraft.ACGPicDownload;
 
-import xyz.zcraft.ACGPicDownload.Util.Config;
 import xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
 import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
 import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager;
@@ -10,24 +9,28 @@ import com.alibaba.fastjson.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
-        Config cfg = new Config();
+    private static String sourceName;
+    private static String outputDir = new File("").getAbsolutePath();
 
+    private static final HashMap<String,String> arguments = new HashMap<>();
+
+    public static void main(String[] args) {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-s", "--source" -> {
                     if (args.length > i + 1 && !args[i + 1].startsWith("-")) {
-                        cfg.setSourceName(args[i + 1]);
+                        sourceName = args[i + 1];
                     } else {
                         System.err.println("Please provide a source name.");
                     }
                 }
                 case "-o", "--output" -> {
                     if (args.length > i + 1 && !args[i + 1].startsWith("-")) {
-                        cfg.setOutDir(args[i + 1]);
+                        outputDir = args[i + 1];
                     } else {
                         System.err.println("Please provide a output path.");
                     }
@@ -38,7 +41,7 @@ public class Main {
                         for (String s : t) {
                             String key = s.substring(0, s.indexOf("="));
                             String value = s.substring(s.indexOf("=") + 1);
-                            cfg.getArg().put(key, value);
+                            arguments.put(key, value);
                         }
                     } else {
                         System.err.println("Please provide arguments.");
@@ -49,19 +52,19 @@ public class Main {
             }
         }
 
-        if (cfg.getSourceName() == null) {
+        if (sourceName == null || sourceName.trim().equals("")) {
             List<Source> sources = getSourcesConfig();
            if(sources == null || sources.size() == 0) {
                System.err.println("No available sources");
                return;
            }else{
-               cfg.setSourceName(sources.get(0).getName());
+               sourceName = sources.get(0).getName();
            }
         }
-        if (cfg.getOutDir() == null) {
-            cfg.setOutDir("");
+        if (outputDir == null ||  outputDir.trim().equals("")) {
+            outputDir = "";
         }
-        execute(cfg);
+        execute();
     }
 
     private static List<Source> getSourcesConfig(){
@@ -89,21 +92,21 @@ public class Main {
         }
     }
 
-    private static void execute(Config cfg) {
+    private static void execute() {
         try {
             List<Source> sources = getSourcesConfig();
             if(sources == null){
                 System.err.println("can't find source to use");
                 return;
             }
-            Source s = SourceManager.getSourceByName(sources, cfg.getSourceName());
+            Source s = SourceManager.getSourceByName(sources, sourceName);
 
             if (s != null) {
                 s.getDefaultArgs().forEach((t, o) -> {
                     String value;
 
-                    if (cfg.getArg().containsKey(t)) {
-                        value = cfg.getArg().get(t);
+                    if (arguments.containsKey(t)) {
+                        value = arguments.get(t);
                     } else {
                         value = String.valueOf(s.getDefaultArgs().get(t));
                     }
@@ -111,12 +114,12 @@ public class Main {
                     s.setUrl(s.getUrl().replaceAll("\\$\\{" + t + "}", value));
                 });
                 Result[] r = SourceFetcher.fetch(s);
-                File outDir = new File(cfg.getOutDir());
+                File outDir = new File(outputDir);
                 for (Result result : r) {
                     DownloadUtil.download(result, outDir);
                 }
             } else {
-                System.err.println("Could not find source named " + cfg.getSourceName() + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
+                System.err.println("Could not find source named " + sourceName + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
             }
         } catch (IOException e) {
             System.err.println("ERROR:Could not read source config. Please check your source config file. Error detail:" + e);

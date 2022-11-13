@@ -9,15 +9,12 @@
     },
     "picUrl": "urls/original",
     "sourceKey": "data",
-    "asArray": true,
     "nameRule": "PID-${pid} ${title} by ${author}.${ext}"
   },
   {
     "name": "Dmoe",
     "description": "Picture from Dmoe API (dmoe.cc)",
     "url": "https://www.dmoe.cc/random.php?return=json",
-    "picUrl": "imgurl",
-    "sourceKey": "",
-    "asArray": false
+    "picUrl": "imgurl"
   }
 ]

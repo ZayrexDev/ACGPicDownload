@@ -1,5 +1,6 @@
 package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
 
+import com.alibaba.fastjson2.JSONException;
 import xyz.zcraft.ACGPicDownload.Util.Result;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
@@ -21,12 +22,17 @@ public class SourceFetcher {
         JSONObject obj = JSONObject.parseObject(s);
 
         // Follow the pathToSource
-        Object data = followPath(obj, source.getSourceKey());
+        Object data;
+        if(source.getSourceKey() != null && !source.getSourceKey().trim().equals("")) {
+            data = followPath(obj, source.getSourceKey());
+        }else{
+            data = obj;
+        }
+
 
         // Judge if to parse as array
         ArrayList<JSONObject> pics = new ArrayList<>();
-        if (source.isAsArray()) {
-            JSONArray array = (JSONArray) data;
+        if (data instanceof JSONArray array) {
             array.forEach(o -> pics.add((JSONObject) o));
         } else {
             pics.add((JSONObject) data);
@@ -59,13 +65,27 @@ public class SourceFetcher {
             return obj;
         }
 
-        JSONObject result = obj.clone();
+        Object result = obj.clone();
 
         String[] pathToSource = path.split("/");
-        for (int i = 0; i < pathToSource.length - 1; i++) {
-            result = (JSONObject) obj.get(pathToSource[i]);
+        for (int i = 0; i < pathToSource.length; i++) {
+            if (result instanceof JSONObject){
+                result = ((JSONObject) result).get(pathToSource[i]);
+            }else if(result instanceof JSONArray){
+                if(pathToSource[i].endsWith("]") && pathToSource[i].lastIndexOf("[") != -1){
+                    String prob = pathToSource[i].substring(pathToSource[i].lastIndexOf("[") + 1,pathToSource[i].length() - 1);
+                    try{
+                        int index = Integer.parseInt(prob);
+                        result = ((JSONArray) result).get(index);
+                    }catch (NumberFormatException e){
+                        result = ((JSONArray) result).get(0);
+                    }
+                }
+            }else{
+                throw new JSONException("Could not parse path " + path);
+            }
         }
 
-        return result.get(pathToSource[pathToSource.length - 1]);
+        return result;
     }
 }
