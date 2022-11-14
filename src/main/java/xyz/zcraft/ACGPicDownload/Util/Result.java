@@ -24,4 +24,12 @@ public class Result {
     public String toString() {
         return "Result{fileName=" + fileName + ", url=" + url + "}";
     }
+
+    public Result(String fileName, String url) {
+        this.fileName = fileName;
+        this.url = url;
+    }
+
+    public Result() {
+    }
 }

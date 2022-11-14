@@ -1,31 +1,52 @@
 package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
 
-import com.alibaba.fastjson2.JSONException;
-import xyz.zcraft.ACGPicDownload.Util.Result;
 import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import xyz.zcraft.ACGPicDownload.Util.Result;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager.isEmpty;
 
 public class SourceFetcher {
-    public static Result[] fetch(Source source) throws IOException {
-        // Get the json from source
-        String s = Jsoup.connect(source.getUrl())
+    public static List<Result> fetch(Source source) throws Exception {
+        Connection.Response response = Jsoup.connect(source.getUrl())
                 .followRedirects(true)
                 .ignoreContentType(true)
-                .get()
-                .body()
-                .ownText();
+                .execute();
 
-        JSONObject obj = JSONObject.parseObject(s);
+        if (isEmpty(source.getReturnType())) {
+            if (response.body().startsWith("{") && response.body().endsWith("}")) {
+                source.setReturnType("json");
+            } else if (Objects.equals(response.url().toString(), source.getUrl())) {
+                source.setReturnType("redirect");
+            } else {
+                throw new Exception("Can't judge return type");
+            }
+        }
+        if (Objects.equals("json", source.getReturnType().toLowerCase())) {
+            return parseJson(response.body(), source);
+        } else if (Objects.equals("redirect", source.getReturnType().toLowerCase())) {
+            String s = response.url().toString();
+            return List.of(new Result(s.substring(s.lastIndexOf("/") + 1), s));
+        } else {
+            return List.of();
+        }
+    }
+
+    private static List<Result> parseJson(String jsonString, Source source) {
+        JSONObject obj = JSONObject.parseObject(jsonString);
 
         // Follow the pathToSource
         Object data;
-        if(source.getSourceKey() != null && !source.getSourceKey().trim().equals("")) {
+        if (source.getSourceKey() != null && !source.getSourceKey().trim().equals("")) {
             data = followPath(obj, source.getSourceKey());
-        }else{
+        } else {
             data = obj;
         }
 
@@ -56,32 +77,32 @@ public class SourceFetcher {
             results.add(r);
         });
 
-        return results.toArray(new Result[] {});
+        return results;
     }
 
     // Follow the given path.
     private static Object followPath(JSONObject obj, String path) {
-        if (path == null || path.trim().equals("")){
+        if (path == null || path.trim().equals("")) {
             return obj;
         }
 
         Object result = obj.clone();
 
         String[] pathToSource = path.split("/");
-        for (int i = 0; i < pathToSource.length; i++) {
-            if (result instanceof JSONObject){
-                result = ((JSONObject) result).get(pathToSource[i]);
-            }else if(result instanceof JSONArray){
-                if(pathToSource[i].endsWith("]") && pathToSource[i].lastIndexOf("[") != -1){
-                    String prob = pathToSource[i].substring(pathToSource[i].lastIndexOf("[") + 1,pathToSource[i].length() - 1);
-                    try{
+        for (String s : pathToSource) {
+            if (result instanceof JSONObject) {
+                result = ((JSONObject) result).get(s);
+            } else if (result instanceof JSONArray) {
+                if (s.endsWith("]") && s.lastIndexOf("[") != -1) {
+                    String prob = s.substring(s.lastIndexOf("[") + 1, s.length() - 1);
+                    try {
                         int index = Integer.parseInt(prob);
                         result = ((JSONArray) result).get(index);
-                    }catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         result = ((JSONArray) result).get(0);
                     }
                 }
-            }else{
+            } else {
                 throw new JSONException("Could not parse path " + path);
             }
         }
