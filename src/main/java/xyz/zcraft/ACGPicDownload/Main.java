@@ -144,6 +144,9 @@ public class Main {
                 System.err.println("ERROR:Could not fetch. Error detail:" + e);
                 return;
             }
+
+            System.out.println("Got " + r.length + " pictures!");
+
             File outDir = new File(outputDir);
             for (Result result : r) {
                 try {

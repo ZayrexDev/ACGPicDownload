@@ -19,7 +19,9 @@ public class DownloadUtil {
 
         FileOutputStream fos = new FileOutputStream(new File(toDic, r.getFileName()));
 
-        byte[] buffer = new byte[10240];
+        System.out.print("Downloading " + r.getFileName() + " to " + toDic + " from " + r.getUrl() + "...");
+
+        byte[] buffer = new byte[20480];
         int byteRead;
         while ((byteRead = is.read(buffer)) != -1) {
             fos.write(buffer, 0, byteRead);
@@ -27,5 +29,7 @@ public class DownloadUtil {
 
         is.close();
         fos.close();
+
+        System.out.println("Done");
     }
 }
