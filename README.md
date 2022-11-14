@@ -26,6 +26,7 @@
 |    - -s, --source source_name     |                                                         设置需要使用的源，若为空，使用配置下的第一个下载源                                                          |
 |  -o, --output output_dictionary   |                                                            设置下载目录，若为空，则默认为当前目录                                                             |
 | --arg key1=value1,key2=value2,... | 自定义URL里的某些参数。 例如, 如果URL是 `https://www.someurl.com/pic?num=${num}`, 那么在传入 `-- arg num=1` 后, 实际上访问的地址将会是 `https://www.someurl.com/pic?num=1` |
+|--multi-thread|**实验性功能** 启用多线程下载 <font color=grey>（可能会提升下载速度？）</font>|
 
 ### ...说得再具体些？
 

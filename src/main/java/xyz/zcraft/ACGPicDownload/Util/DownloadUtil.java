@@ -8,7 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class DownloadUtil {
-    public static void download(Result r, File toDic) throws IOException {
+    public void download(Result r, File toDic) throws IOException {
         if(!toDic.exists() && !toDic.mkdirs()) {
             throw new IOException("Can't create directory");
         }
@@ -19,7 +19,7 @@ public class DownloadUtil {
 
         FileOutputStream fos = new FileOutputStream(new File(toDic, r.getFileName()));
 
-        System.out.print("Downloading " + r.getFileName() + " to " + toDic + " from " + r.getUrl() + "...");
+        System.out.println("Downloading " + r.getFileName() + " to " + toDic + " from " + r.getUrl() + "...");
 
         byte[] buffer = new byte[20480];
         int byteRead;
@@ -29,7 +29,5 @@ public class DownloadUtil {
 
         is.close();
         fos.close();
-
-        System.out.println("Done");
     }
 }

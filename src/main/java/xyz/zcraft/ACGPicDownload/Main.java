@@ -16,6 +16,7 @@ public class Main {
     private static final HashMap<String, String> arguments = new HashMap<>();
     private static String sourceName;
     private static String outputDir = new File("").getAbsolutePath();
+    private static boolean multiThread = false;
 
     public static void main(String[] args) {
         for (int i = 0; i < args.length; i++) {
@@ -23,6 +24,7 @@ public class Main {
                 case "-s", "--source" -> {
                     if (args.length > i + 1 && !args[i + 1].startsWith("-")) {
                         sourceName = args[i + 1];
+                        i += 1;
                     } else {
                         System.err.println("Please provide a source name.");
                     }
@@ -30,6 +32,7 @@ public class Main {
                 case "-o", "--output" -> {
                     if (args.length > i + 1 && !args[i + 1].startsWith("-")) {
                         outputDir = args[i + 1];
+                        i += 1;
                     } else {
                         System.err.println("Please provide a output path.");
                     }
@@ -42,9 +45,13 @@ public class Main {
                             String value = s.substring(s.indexOf("=") + 1);
                             arguments.put(key, value);
                         }
+                        i += 1;
                     } else {
                         System.err.println("Please provide arguments.");
                     }
+                }
+                case "--multi-thread" -> {
+                    multiThread = true;
                 }
                 case "--list-sources" ->{
                     listSources();
@@ -52,6 +59,10 @@ public class Main {
                 }
                 case "-h", "--help" -> {
                     usage();
+                    System.exit(0);
+                }
+                default ->{
+                    System.err.println("Unknow argument " + args[i] + " . Please use -h to see usage.");
                     System.exit(0);
                 }
             }
@@ -148,11 +159,28 @@ public class Main {
             System.out.println("Got " + r.length + " pictures!");
 
             File outDir = new File(outputDir);
+            if(!outDir.exists() && !outDir.mkdirs()) {
+                System.err.println("Can't create directory");
+                return;
+            }
             for (Result result : r) {
-                try {
-                    DownloadUtil.download(result, outDir);
-                } catch (IOException e) {
-                    System.err.println("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
+                if(multiThread){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                new DownloadUtil().download(result, outDir);
+                            } catch (IOException e) {
+                                System.err.println("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
+                            }
+                        }
+                    }).start();
+                }else{
+                    try {
+                        new DownloadUtil().download(result, outDir);
+                    } catch (IOException e) {
+                        System.err.println("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
+                    }
                 }
             }
         } else {
