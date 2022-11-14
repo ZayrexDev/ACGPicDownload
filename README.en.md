@@ -1,3 +1,7 @@
+[<- 中文版](https://github.com/zxzxy/ACGPicDownload/blob/master/README.md)
+
+------------------
+
 # ACGPicDownload
 
 A convenient tool to download ACG pictures from various sources.
@@ -8,6 +12,7 @@ This project is still **Not stable**, so it may not work well for now...
 
 ## Features
 
+- Easy to use
 - Supports custom sources
 - Highly customizable naming rules and fetching urls
 
@@ -37,6 +42,8 @@ You can run ACGPicDownload.jar directly, in this case, program will use default 
 When the program is done, you should be able to find the picture under the program's floder.
 
 #### Add arguments
+
+If you want to add some customize argument, then you can follow these steps...
 
 1. First, use `--list-sources` to see all the sources...
 
