@@ -7,6 +7,7 @@ import com.alibaba.fastjson2.JSONObject;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,14 +50,40 @@ public class SourceManager {
         return sb.toString();
     }
 
-    private static List<Source> parse(String configString) throws JSONException{
+    private static final List<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
+
+    private static List<Source> parse(String configString) throws JSONException {
         JSONArray config = JSON.parseArray(configString);
         List<Source> sources = new ArrayList<>();
         config.forEach(o -> {
             Source s = JSONObject.parseObject(String.valueOf(o), Source.class);
-            sources.add(s);
+            try {
+                verifySource(s);
+                sources.add(s);
+            } catch (Exception e) {
+                System.err.println("Failed to parse source " + s.getName() + " : " + e);
+            }
         });
         return sources;
+    }
+
+    private static void verifySource(Source source) throws Exception {
+        if (isEmpty(source.getName())) {
+            throw new Exception("Source name must not be empty");
+        }
+        if (isEmpty(source.getUrl())) {
+            throw new Exception("Source url must not be empty");
+        }
+        if (isEmpty(source.getPicUrl())) {
+            throw new Exception("Source's picUrl must not be empty");
+        }
+        if (!isEmpty(source.getReturnType()) && !returnTypes.contains(source.getReturnType())) {
+            throw new Exception("Unknown return type:" + source.getReturnType());
+        }
+    }
+
+    public static boolean isEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 
     public static List<Source> getSources() throws IOException {

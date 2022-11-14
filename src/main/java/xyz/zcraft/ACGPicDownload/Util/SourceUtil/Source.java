@@ -3,26 +3,30 @@ package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
 
-import java.util.Objects;
-
 public class Source {
     @JSONField(name = "name")
     private String name;
     @JSONField(name = "description")
-    private String description;
+    private String description = "";
     @JSONField(name = "url")
     private String url;
     @JSONField(name = "nameRule")
-    private String nameRule;
+    private String nameRule = "";
     @JSONField(name = "picUrl")
     private String picUrl;
     @JSONField(name = "sourceKey")
-    private String sourceKey;
+    private String sourceKey = "";
 
     @JSONField(name = "defaultArgs")
-    private JSONObject defaultArgs;
+    private JSONObject defaultArgs = new JSONObject();
 
-    public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey, JSONObject defaultArgs) {
+    @JSONField(name = "returnType")
+    private String returnType;
+
+    public Source() {
+    }
+
+    public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey, JSONObject defaultArgs, String returnType) {
         this.name = name;
         this.description = description;
         this.url = url;
@@ -30,6 +34,7 @@ public class Source {
         this.picUrl = picUrl;
         this.sourceKey = sourceKey;
         this.defaultArgs = defaultArgs;
+        this.returnType = returnType;
     }
 
     public String getName() {
@@ -81,23 +86,18 @@ public class Source {
     }
 
     public JSONObject getDefaultArgs() {
-        return Objects.requireNonNullElseGet(defaultArgs, JSONObject::new);
+        return defaultArgs;
     }
 
     public void setDefaultArgs(JSONObject defaultArgs) {
         this.defaultArgs = defaultArgs;
     }
 
-    @Override
-    public String toString() {
-        return "Source{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", url='" + url + '\'' +
-                ", nameRule='" + nameRule + '\'' +
-                ", picUrl='" + picUrl + '\'' +
-                ", sourceKey='" + sourceKey + '\'' +
-                ", defaultArgs=" + defaultArgs +
-                '}';
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
     }
 }

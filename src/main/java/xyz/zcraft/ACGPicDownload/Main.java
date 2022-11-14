@@ -50,10 +50,8 @@ public class Main {
                         System.err.println("Please provide arguments.");
                     }
                 }
-                case "--multi-thread" -> {
-                    multiThread = true;
-                }
-                case "--list-sources" ->{
+                case "--multi-thread" -> multiThread = true;
+                case "--list-sources" -> {
                     listSources();
                     System.exit(0);
                 }
@@ -61,8 +59,8 @@ public class Main {
                     usage();
                     System.exit(0);
                 }
-                default ->{
-                    System.err.println("Unknow argument " + args[i] + " . Please use -h to see usage.");
+                default -> {
+                    System.err.println("Unknown argument " + args[i] + " . Please use -h to see usage.");
                     System.exit(0);
                 }
             }
@@ -146,17 +144,17 @@ public class Main {
                 s.setUrl(s.getUrl().replaceAll("\\$\\{" + t + "}", value));
             });
 
-            System.out.println("Fetching pictures from " + s.getUrl() + "...");
+            System.out.println("Fetching pictures from " + s.getUrl() + " ...");
 
-            Result[] r;
+            List<Result> r;
             try {
                 r = SourceFetcher.fetch(s);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.println("ERROR:Could not fetch. Error detail:" + e);
                 return;
             }
 
-            System.out.println("Got " + r.length + " pictures!");
+            System.out.println("Got " + r.size() + " pictures!");
 
             File outDir = new File(outputDir);
             if(!outDir.exists() && !outDir.mkdirs()) {
@@ -164,18 +162,15 @@ public class Main {
                 return;
             }
             for (Result result : r) {
-                if(multiThread){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                new DownloadUtil().download(result, outDir);
-                            } catch (IOException e) {
-                                System.err.println("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
-                            }
+                if (multiThread) {
+                    new Thread(() -> {
+                        try {
+                            new DownloadUtil().download(result, outDir);
+                        } catch (IOException e) {
+                            System.err.println("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
                         }
                     }).start();
-                }else{
+                } else {
                     try {
                         new DownloadUtil().download(result, outDir);
                     } catch (IOException e) {
@@ -191,15 +186,15 @@ public class Main {
     private static void usage() {
         System.out.println(
                 """
-                        Available arguments:
-                           --list-sources : List all the sources
-                           -s, --source <source name> : Set the source to use. Required.
-                           -o, --output <output dictionary> : Set the output dictionary. Required.
-                           --arg key1=value1,key2=value2,... : custom the argument in the url.
-                                   Example:If the url is "https://www.someurl.com/pic?num=${num}", then with
-                                            "--arg num=1", the exact url will be "https://www.someurl.com/pic?num=1\"
-                           --multi-thread : (Experimental) Enable multi thread download. May improve download speed.           
-                """
+                                Available arguments:
+                                   --list-sources : List all the sources
+                                   -s, --source <source name> : Set the source to use. Required.
+                                   -o, --output <output dictionary> : Set the output dictionary. Required.
+                                   --arg key1=value1,key2=value2,... : custom the argument in the url.
+                                           Example:If the url is "https://www.someurl.com/pic?num=${num}", then with
+                                                    "--arg num=1", the exact url will be "https://www.someurl.com/pic?num=1"
+                                   --multi-thread : (Experimental) Enable multi thread download. May improve download speed.
+                        """
         );
     }
 }

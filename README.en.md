@@ -23,10 +23,10 @@ This project is still **Not stable**, so it may not work well for now...
 |             Argument              |                                                                                          Description                                                                                           |
 |:---------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 |          --list-sources           |                                                                                      List all the sources                                                                                      |
-|      -s, --source source_name     |                                               Set the source to use. If it's not set, then the program will use the first source in the config.                                                |
+|     -s, --source source_name      |                                               Set the source to use. If it's not set, then the program will use the first source in the config.                                                |
 |  -o, --output output_dictionary   |                                                Set the output dictionary. If it's not set, the program will use the dictionary of the program.                                                 |
 | --arg key1=value1,key2=value2,... | custom the argument in the url. For example, If the url is `https://www.someurl.com/pic?num=${num}`, then with `--arg num=1`, The actual address would be `https://www.someurl.com/pic?num=1`  |
-|           --multi-thread          |                                      **Experimental**. Enable multi thread download. <font color=grey>(May improve download speed?)</font>                                                     |
+|          --multi-thread           |                                             **Experimental**. Enable multi thread download. <font color=grey>(May improve download speed?)</font>                                              |
 
 ### ...to be more specific?
 
@@ -40,7 +40,7 @@ You can run ACGPicDownload.jar directly, in this case, program will use default 
 >
 ```
 
-When the program is done, you should be able to find the picture under the program's floder.
+When the program is done, you should be able to find the picture under the program's folder.
 
 #### Add arguments
 
@@ -88,20 +88,21 @@ There are already some sources in the default `sources.json`. You can see them t
 
 An available source should contain the following values in `sources.json`:
 
-|     Key     |  Type  |                  Description                   |                                  Detail                                   |
-|:-----------:|:------:|:----------------------------------------------:|:-------------------------------------------------------------------------:|
-|    name     | String |               Name of the source               |   **Required**. Please make sure that each source has different names.    |
-| description | String |           Description of the source            |                                 Optional                                  |
-|     url     | String |             The url used to fetch              |                               **Required**                                |
-| defaultArgs |  JSON  | The default values of the variables in the url |                    **Required** when using var in url                     |
-|  sourceKey  | String |     The path to image data(s) in the JSON      | Optional, if it's empty, the program will try to parse the json directly. |
-|   picUrl    | String |    The path to image url in each image data    |                               **Required**                                |
-|  nameRule   | String |                The naming rules                |          It tells the program how to name the downloaded images           |
+|     Key     |  Type  |                  Description                   |                                       Detail                                       |
+|:-----------:|:------:|:----------------------------------------------:|:----------------------------------------------------------------------------------:|
+|    name     | String |               Name of the source               |        **Required**. Please make sure that each source has different names.        |
+| description | String |           Description of the source            |                                      Optional                                      |
+| returnType  | String |           The return type of the url           | `json` or `redirect`, if it's empty, then the program will choose it automatically |
+|     url     | String |             The url used to fetch              |                                    **Required**                                    |
+| defaultArgs |  JSON  | The default values of the variables in the url |                         **Required** when using var in url                         |
+|  sourceKey  | String |     The path to image data(s) in the JSON      |     Optional, if it's empty, the program will try to parse the json directly.      |
+|   picUrl    | String |    The path to image url in each image data    |                                    **Required**                                    |
+|  nameRule   | String |                The naming rules                |               It tells the program how to name the downloaded images               |
 
 #### url
 
 You can add custom vars in the url with `${varname}`. But You need to give a default value for them
-using `defaultArgs`
+using `defaultArgs`, otherwise they will be ignored.
 For example, if the `url` is `https://someurl/pic?num=${num}` , then with the `--arg num=1` argument, the actual url
 will be `https://someurl/pic?num=1`
 When using var in `url`, you have to give a default value in `defaultArgs`
@@ -130,20 +131,20 @@ For example, if a JSON return result is :
   "urls": {
     "original": "....."
   },
-  "author": "someauthor",
+  "author": "some_author",
   "id": 6969,
-  "title": "sometitle"
+  "title": "some_title"
 }
 ```
 
 Then if the `nameRule` is `ID:${id} ${title} by ${author}.${ext}`, the name of this result will
-be `ID:6969 sometitle by someauthor.png`
+be `ID:6969 some_title by some_author.png`
 
 If the `nameRule` is empty, the program will try to get the file name from the download link.
 
 #### sourceKey
 
-Because of some source does not return the JSON directly of the image datas, for example:
+Because of some source does not return the JSON directly of the image data, for example:
 
 ```json
 {
@@ -154,18 +155,18 @@ Because of some source does not return the JSON directly of the image datas, for
         "urls": {
           "original": "....."
         },
-        "author": "someauthor",
+        "author": "some_author",
         "id": 6969,
-        "title": "sometitle"
+        "title": "some_title"
       },
       {
         "ext": "png",
         "urls": {
           "original": "....."
         },
-        "author": "someauthor",
+        "author": "more_author",
         "id": 1145,
-        "title": "sometitle"
+        "title": "more_title"
       }
     ]
   }
@@ -178,7 +179,7 @@ The `sourceKey` of the JSON above should be `images/data`
 
 Just like the `sourceKey`, the url of each return value should be told.
 
-For example, the following json's `sourceKey` should be `urls/original`
+For example, the `sourceKey` of the following json should be `urls/original`
 
 ```json
 {
@@ -186,7 +187,14 @@ For example, the following json's `sourceKey` should be `urls/original`
     "original": "....."
   },
   "id": 6969,
-  "title": "sometitle"
+  "title": "some_title"
 }
 ```
 
+#### returnType
+
+Different sources may have different return type, we only supports json and redirect for now.
+
+> If you open the `url` in your source directly and gets some texts, then the `returnType` should be `json`
+>
+> If you get the image directly, then it should be `redirect`
