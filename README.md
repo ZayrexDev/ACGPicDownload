@@ -32,12 +32,14 @@
 
 #### 直接运行
 
-你可以直接使用命令行运行 ACGPicDownload.jar ，这会使用默认的`Lolicon`源...
+你可以直接使用命令行运行 ACGPicDownload.jar ，这会使用默认的 `lolicon` 源...
 
-```shell
->java -jar ACGPicDownload.jar --list-sources
+```
+>java -jar ACGPicDownload.jar
 
->
+Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=1 ...
+Got 1 pictures!
+Downloading (文件名) to (保存目录) from (下载连接) ...
 ```
 
 当运行完成后，你就可以在程序目录下找到下载完成的图片。
@@ -46,12 +48,12 @@
 
 1. 首先，使用 `--list-sources` 查看可用的下载源...
 
-    ```shell
+    ```
     >java -jar ACGPicDownload.jar --list-sources
-    Name | Description | URL
-    Lolicon | Picture from Lolicon API (api.lolicon.app) | https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
-    Dmoe | Picture from Dmoe API (dmoe.cc) | https://www.dmoe.cc/random.php?return=json
-    >
+   
+    Name     |  Description                                 |  URL                                                  
+    lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
+    dmoe     |  Picture from Dmoe API (dmoe.cc)             |  https://www.dmoe.cc/random.php
     ```
 
    ...可以看到，目前默认有两个下载源可用。
@@ -63,21 +65,29 @@
 
     1. 首先，确定下载源
 
-       我们将会在这个例子中使用 `Lolicon` 下载源。
+       我们将会在这个例子中使用 `lolicon` 下载源。
 
     2. 自定义参数
 
-       在 `Lolicon` 下载源中，url里面包含的 `${num}` 等即为参数。具体配置可见图源的地址。 我们暂且决定将 `num` 设置为 5。
+       在 `lolicon` 下载源中，url里面包含的 `${num}` 等即为参数。具体配置可见图源的地址。 我们暂且决定将 `num` 设置为 5。
        并且，我们希望程序下载到程序目录下的 `pic` 文件夹...
 
     3. 运行
 
-       根据我们的选择，图源使用 `Lolicon`，将 `num` 设置为 5，下载到程序目录下的 `pic`
-       文件夹，则应该分别加上如下的参数:`-s Lolicon`,`-o pic`,`--arg num=5`
+       根据我们的选择，图源使用 `lolicon`，将 `num` 设置为 5，下载到程序目录下的 `pic`
+       文件夹，则应该分别加上如下的参数:`-s lolicon`,`-o pic`,`--arg num=5`
        那么我们应该这样运行：
 
-         ```shell
-         >java -jar ACGPicDownload.jar -s Lolicon -o pic --arg num=5
+         ```
+         >java -jar ACGPicDownload.jar -s lolicon -o pic --arg num=5
+       
+         Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
+         Got 5 pictures!
+         Downloading (文件名1) to (保存目录) from (下载连接1) ...
+         Downloading (文件名2) to (保存目录) from (下载连接2) ...
+         Downloading (文件名3) to (保存目录) from (下载连接3) ...
+         Downloading (文件名4) to (保存目录) from (下载连接4) ...
+         Downloading (文件名5) to (保存目录) from (下载连接5) ...
          ```
 
        当程序运行完成后，你将会看到在程序目录下新增了5张新下载的图片~
@@ -88,26 +98,26 @@
 
 一个正常的 `sources.json` 应当包含以下的参数:
 
-|     参数名     | 参数类型  |        描述         |              补充说明               |
-|:-----------:|:-----:|:-----------------:|:-------------------------------:|
-|    name     |  字符串  |      下载源的名称       |    **需要**. 请确保不同的下载源具有不同的名字     |
-| description |  字符串  |      下载源的描述       |               可选                |
-| returnType  |  字符串  |     下载源的返回类型      | `json`或`redirect`,当为空时，将会尝试自动判断 |
-|     url     |  字符串  |       下载URL       |             **需要**              |
-| defaultArgs | JSON  |    URL中参数的默认值     |     **需要**(仅当在`url`中设置参数时)      |
-|  sourceKey  |  字符串  |  返回值中指向每张图片数据的路径  |       可选，当为空时，将会直接尝试解析返回值       |
-|   picUrl    |  字符串  | 每张图片数据中指向每下载链接的路径 |             **需要**              |
-|  nameRule   |  字符串  |      下载的命名规则      |               可选                |
+|             参数名             | 参数类型 |        描述         |              补充说明               |
+|:---------------------------:|:----:|:-----------------:|:-------------------------------:|
+|            name             | 字符串  |      下载源的名称       |    **需要**. 请确保不同的下载源具有不同的名字     |
+|         description         | 字符串  |      下载源的描述       |               可选                |
+|  [returnType](#returnType)  | 字符串  |     下载源的返回类型      | `json`或`redirect`,当为空时，将会尝试自动判断 |
+|         [url](#url)         | 字符串  |       下载URL       |             **需要**              |
+| [defaultArgs](#defaultArgs) | JSON |    URL中参数的默认值     |     **需要**(仅当在`url`中设置参数时)      |
+|   [sourceKey](#sourceKey)   | 字符串  |  返回值中指向每张图片数据的路径  |       可选，当为空时，将会直接尝试解析返回值       |
+|      [picUrl](#picUrl)      | 字符串  | 每张图片数据中指向每下载链接的路径 |             **需要**              |
+|    [nameRule](#nameRule)    | 字符串  |      下载的命名规则      |               可选                |
 
-#### url
+#### <span id="url">url</a>
 
 你可以通过 `${varname}` 在url中自定义参数，但是你需要使用 `defaultArgs` 为每个参数设定一个默认值，否则它将不会被识别为变量。
 举个栗子，如果 `url` 是 `https://someurl/pic?num=${num}` ，那么在命令行传入 `--arg num=1`
 时，实际上程序访问的url会是 `https://someurl/pic?num=1`
 
-#### defaultArgs
+#### <span id="defaultArgs">defaultArgs</a>
 
-当在使用 `url` 中的参数时需要指定。在 `url` 的例子中，`defaultArgs` 可以是:
+当在使用 `url` 中的参数时需要指定。在 [`url`](#url) 的例子中，`defaultArgs` 可以是:
 
 ```json
 {
@@ -117,7 +127,7 @@
 }
 ```
 
-#### nameRule
+#### <span id="nameRule">nameRule</a>
 
 你可以使用形如 `${变量名}` 来使用返回值的json里的值来为每个文件命名
 
@@ -140,7 +150,7 @@
 
 如果 `nameRule` 是空的, 程序将会尝试从返回的下载链接自动获取文件名。
 
-#### sourceKey
+#### <span id="sourceKey">sourceKey</a>
 
 因为某些返回值是由某些值嵌套图片数据的，所以需要指定图片数据的位置。例如:
 
@@ -173,7 +183,7 @@
 
 对于以上的返回值 `sourceKey` 应是 `images/data`
 
-#### picUrl
+#### <span id="picUrl">picUrl</a>
 
 就如 `sourceKey`, 在返回值中指向下载连接的路径也应该在此被提前告知。
 
@@ -189,7 +199,7 @@
 }
 ```
 
-#### returnType
+#### <span id="returnType">returnType</a>
 
 不同的下载源可能会有不同的返回值类型，目前仅支持 json 返回和重定向。
 

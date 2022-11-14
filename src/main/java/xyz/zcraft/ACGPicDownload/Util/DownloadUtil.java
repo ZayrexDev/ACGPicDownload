@@ -19,7 +19,7 @@ public class DownloadUtil {
 
         FileOutputStream fos = new FileOutputStream(new File(toDic, r.getFileName()));
 
-        System.out.println("Downloading " + r.getFileName() + " to " + toDic + " from " + r.getUrl() + "...");
+        System.out.println("Downloading " + r.getFileName() + " to " + toDic + " from " + r.getUrl() + " ...");
 
         byte[] buffer = new byte[20480];
         int byteRead;

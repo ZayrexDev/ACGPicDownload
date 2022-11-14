@@ -34,10 +34,12 @@ This project is still **Not stable**, so it may not work well for now...
 
 You can run ACGPicDownload.jar directly, in this case, program will use default `Lolicon` source...
 
-```shell
->java -jar ACGPicDownload.jar --list-sources
+```
+>java -jar ACGPicDownload.jar
 
->
+Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=1 ...
+Got 1 pictures!
+Downloading (FileName) to (OutputDir) from (Link) ...
 ```
 
 When the program is done, you should be able to find the picture under the program's folder.
@@ -48,12 +50,12 @@ If you want to add some customize argument, then you can follow these steps...
 
 1. First, use `--list-sources` to see all the sources...
 
-    ```shell
+    ```
     >java -jar ACGPicDownload.jar --list-sources
-    Name | Description | URL
-    Lolicon | Picture from Lolicon API (api.lolicon.app) | https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
-    Dmoe | Picture from Dmoe API (dmoe.cc) | https://www.dmoe.cc/random.php?return=json
-    >
+   
+    Name     |  Description                                 |  URL                                                  
+    lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
+    dmoe     |  Picture from Dmoe API (dmoe.cc)             |  https://www.dmoe.cc/random.php
     ```
 
    ...As you can see, there's two sources available.
@@ -64,20 +66,30 @@ If you want to add some customize argument, then you can follow these steps...
 
     1. First, choose a source
 
-       We'll use `Lolicon` source in this case.
+       We'll use `lolicon` source in this case.
 
     2. Custom arguments
 
-       In the `Lolicon` source, the `${num}` and other variable is arguments. As for them, you can see the source's page to know more. We are setting `num` to 5 in this case.
+       In the `lolicon` source, the `${num}` and other variable is arguments. As for them, you can see the source's page
+       to know more. We are setting `num` to 5 in this case.
        What's more, we want the program to download to `pic` folder ...
 
     3. Run
 
-       According to our choices, the source is `Lolicon`, `num` is 5, download to `pic` folder, the arguments should be like:`-s Lolicon`,`-o pic`,`--arg num=5`
+       According to our choices, the source is `lolicon`, `num` is 5, download to `pic` folder, the arguments should be
+       like:`-s lolicon`,`-o pic`,`--arg num=5`
        So, we need to run like this:
 
-         ```shell
-         >java -jar ACGPicDownload.jar -s Lolicon -o pic --arg num=5
+         ```
+         >java -jar ACGPicDownload.jar -s lolicon -o pic --arg num=5
+       
+         Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
+         Got 5 pictures!
+         Downloading (FileName1) to (OutputDir) from (Link1) ...
+         Downloading (FileName2) to (OutputDir) from (Link2) ...
+         Downloading (FileName3) to (OutputDir) from (Link3) ...
+         Downloading (FileName4) to (OutputDir) from (Link4) ...
+         Downloading (FileName5) to (OutputDir) from (Link5) ...
          ```
 
        When it's done, you should be able to see 5 images under the `pic` folder.
@@ -88,18 +100,18 @@ There are already some sources in the default `sources.json`. You can see them t
 
 An available source should contain the following values in `sources.json`:
 
-|     Key     |  Type  |                  Description                   |                                       Detail                                       |
-|:-----------:|:------:|:----------------------------------------------:|:----------------------------------------------------------------------------------:|
-|    name     | String |               Name of the source               |        **Required**. Please make sure that each source has different names.        |
-| description | String |           Description of the source            |                                      Optional                                      |
-| returnType  | String |           The return type of the url           | `json` or `redirect`, if it's empty, then the program will choose it automatically |
-|     url     | String |             The url used to fetch              |                                    **Required**                                    |
-| defaultArgs |  JSON  | The default values of the variables in the url |                         **Required** when using var in url                         |
-|  sourceKey  | String |     The path to image data(s) in the JSON      |     Optional, if it's empty, the program will try to parse the json directly.      |
-|   picUrl    | String |    The path to image url in each image data    |                                    **Required**                                    |
-|  nameRule   | String |                The naming rules                |               It tells the program how to name the downloaded images               |
+|             Key             |  Type  |                  Description                   |                                       Detail                                       |
+|:---------------------------:|:------:|:----------------------------------------------:|:----------------------------------------------------------------------------------:|
+|            name             | String |               Name of the source               |        **Required**. Please make sure that each source has different names.        |
+|         description         | String |           Description of the source            |                                      Optional                                      |
+|  [returnType](#returnType)  | String |           The return type of the url           | `json` or `redirect`, if it's empty, then the program will choose it automatically |
+|         [url](#url)         | String |             The url used to fetch              |                                    **Required**                                    |
+| [defaultArgs](#defaultArgs) |  JSON  | The default values of the variables in the url |                         **Required** when using var in url                         |
+|   [sourceKey](#sourceKey)   | String |     The path to image data(s) in the JSON      |     Optional, if it's empty, the program will try to parse the json directly.      |
+|      [picUrl](#picUrl)      | String |    The path to image url in each image data    |                                    **Required**                                    |
+|    [nameRule](#nameRule)    | String |                The naming rules                |               It tells the program how to name the downloaded images               |
 
-#### url
+#### <span id="url">url</a>
 
 You can add custom vars in the url with `${varname}`. But You need to give a default value for them
 using `defaultArgs`, otherwise they will be ignored.
@@ -107,9 +119,9 @@ For example, if the `url` is `https://someurl/pic?num=${num}` , then with the `-
 will be `https://someurl/pic?num=1`
 When using var in `url`, you have to give a default value in `defaultArgs`
 
-#### defaultArgs
+#### <span id="defaultArgs">defaultArgs</a>
 
-It is required when using vars in the url. In the example in `url`, the `defaultArgs` can be:
+It is required when using vars in the url. In the example in [`url`](#url), the `defaultArgs` can be:
 
 ```json
 {
@@ -119,7 +131,7 @@ It is required when using vars in the url. In the example in `url`, the `default
 }
 ```
 
-#### nameRule
+#### <span id="nameRule">nameRule</a>
 
 You can use `${varname}` to use values from the return JSON as a part of the file name.
 
@@ -142,7 +154,7 @@ be `ID:6969 some_title by some_author.png`
 
 If the `nameRule` is empty, the program will try to get the file name from the download link.
 
-#### sourceKey
+#### <span id="sourceKey">sourceKey</a>
 
 Because of some source does not return the JSON directly of the image data, for example:
 
@@ -175,7 +187,7 @@ Because of some source does not return the JSON directly of the image data, for 
 
 The `sourceKey` of the JSON above should be `images/data`
 
-#### picUrl
+#### <span id="picUrl">picUrl</a>
 
 Just like the `sourceKey`, the url of each return value should be told.
 
@@ -191,7 +203,7 @@ For example, the `sourceKey` of the following json should be `urls/original`
 }
 ```
 
-#### returnType
+#### <span id="returnType">returnType</a>
 
 Different sources may have different return type, we only supports json and redirect for now.
 
