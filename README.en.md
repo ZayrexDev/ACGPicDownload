@@ -23,9 +23,9 @@ This project is still **Not stable**, so it may not work well for now...
 |             Argument              |                                                                                          Description                                                                                           |
 |:---------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 |          --list-sources           |                                                                                      List all the sources                                                                                      |
-|    - -s, --source source_name     |                                               Set the source to use. If it's not set, then the program will use the first source in the config.                                                |
+|      -s, --source source_name     |                                               Set the source to use. If it's not set, then the program will use the first source in the config.                                                |
 |  -o, --output output_dictionary   |                                                Set the output dictionary. If it's not set, the program will use the dictionary of the program.                                                 |
-| --arg key1=value1,key2=value2,... | custom the argument in the url. For example, If the url is `https://www.someurl.com/pic?num=${num}`, then with `-- arg num=1`, The actual address would be `https://www.someurl.com/pic?num=1` |
+| --arg key1=value1,key2=value2,... | custom the argument in the url. For example, If the url is `https://www.someurl.com/pic?num=${num}`, then with `--arg num=1`, The actual address would be `https://www.someurl.com/pic?num=1`  |
 |           --multi-thread          |                                      **Experimental**. Enable multi thread download. <font color=grey>(May improve download speed?)</font>                                                     |
 
 ### ...to be more specific?
