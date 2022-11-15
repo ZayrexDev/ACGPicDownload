@@ -20,13 +20,43 @@
 
 ### 命令行参数
 
-|                参数名                |                                                                     描述                                                                     |
-|:---------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------:|
-|          --list-sources           |                                                                列出所有已配置的下载源                                                                 |
-|    - -s, --source source_name     |                                                         设置需要使用的源，若为空，使用配置下的第一个下载源                                                          |
-|  -o, --output output_dictionary   |                                                            设置下载目录，若为空，则默认为当前目录                                                             |
-| --arg key1=value1,key2=value2,... | 自定义URL里的某些参数。 例如, 如果URL是 `https://www.someurl.com/pic?num=${num}`, 那么在传入 `-- arg num=1` 后, 实际上访问的地址将会是 `https://www.someurl.com/pic?num=1` |
-|          --multi-thread           |                                           **实验性功能** 启用多线程下载 <font color=grey>（可能会提升下载速度？）</font>                                           |
+#### 子指令
+
+- fetch
+
+  从指定的下载源下载图片。
+
+    - 用法:
+
+      ```shell
+      java -jar ACGPicDownload.jar fetch [参数]
+      ```
+
+    - 参数列表:
+
+      |                参数名                |                                                                    描述                                                                     |
+          |:---------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------:|
+      |          --list-sources           |                                                                列出所有已配置的下载源                                                                |
+      |     -s, --source source_name      |                                                         设置需要使用的源，若为空，使用配置下的第一个下载源                                                         |
+      |  -o, --output output_dictionary   |                                                            设置下载目录，若为空，则默认为当前目录                                                            |
+      | --arg key1=value1,key2=value2,... | 自定义URL里的某些参数。 例如, 如果URL是 `https://www.someurl.com/pic?num=${num}`, 那么在传入 `--arg num=1` 后, 实际上访问的地址将会是 `https://www.someurl.com/pic?num=1` |
+      |          --multi-thread           |                                          **实验性功能** 启用多线程下载 可能会提升下载速度？）                                        |
+
+- schedule
+
+  定时执行指令
+
+    - 用法
+
+      ```shell
+      java -jar ACGPicDownload.jar schedule [参数] [指令]
+      ```
+
+    - 参数列表
+
+      |参数名|描述|
+          |:----:|:----:|
+      |  |   |
 
 ### ...说得再具体些？
 
@@ -48,7 +78,7 @@ Downloading (文件名) to (保存目录) from (下载连接) ...
 
 1. 首先，使用 `--list-sources` 查看可用的下载源...
 
-    ```
+    ```shell
     >java -jar ACGPicDownload.jar --list-sources
    
     Name     |  Description                                 |  URL                                                  
