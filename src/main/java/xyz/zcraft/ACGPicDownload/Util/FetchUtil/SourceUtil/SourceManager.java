@@ -12,16 +12,18 @@ import java.util.List;
 import java.util.Objects;
 
 public class SourceManager {
+    private static final List<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
     private static List<Source> sources;
 
-    public static void readConfig() throws IOException, JSONException{
+    public static void readConfig() throws IOException, JSONException {
         sources = parse(readStringFromConfig());
     }
+
     private static String readStringFromConfig() throws IOException {
         StringBuilder sb = new StringBuilder();
         File f = new File("sources.json");
-        if(!f.exists()){
-            if(!f.createNewFile()){
+        if (!f.exists()) {
+            if (!f.createNewFile()) {
                 throw new IOException("Could not create " + f);
             }
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
@@ -36,7 +38,7 @@ public class SourceManager {
 
             bw.close();
             reader.close();
-        }else {
+        } else {
             BufferedReader reader = new BufferedReader(new FileReader(f));
 
             String line;
@@ -50,11 +52,9 @@ public class SourceManager {
         return sb.toString();
     }
 
-    private static final List<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
-
     private static List<Source> parse(String configString) throws JSONException {
         JSONArray config = JSON.parseArray(configString);
-        if(config == null){
+        if (config == null) {
             return List.of();
         }
         List<Source> sources = new ArrayList<>();

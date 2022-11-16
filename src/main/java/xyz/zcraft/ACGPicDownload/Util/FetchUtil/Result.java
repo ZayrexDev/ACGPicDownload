@@ -4,6 +4,14 @@ public class Result {
     private String fileName;
     private String url;
 
+    public Result(String fileName, String url) {
+        this.fileName = fileName;
+        this.url = url;
+    }
+
+    public Result() {
+    }
+
     public String getFileName() {
         return fileName;
     }
@@ -23,13 +31,5 @@ public class Result {
     @Override
     public String toString() {
         return "Result{fileName=" + fileName + ", url=" + url + "}";
-    }
-
-    public Result(String fileName, String url) {
-        this.fileName = fileName;
-        this.url = url;
-    }
-
-    public Result() {
     }
 }

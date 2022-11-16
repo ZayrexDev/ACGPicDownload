@@ -53,14 +53,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event{" +
-                "commands=" + commands +
-                ", interval=" + interval +
-                ", maxTimes=" + maxTimes +
-                ", isActive=" + isActive +
-                ", timesRan=" + timesRan +
-                ", lastTimeRan=" + lastTimeRan +
-                '}';
+        return "Event{" + "commands=" + commands + ", interval=" + interval + ", maxTimes=" + maxTimes + ", isActive=" + isActive + ", timesRan=" + timesRan + ", lastTimeRan=" + lastTimeRan + '}';
     }
 
     public long getLastTimeRan() {
@@ -73,8 +66,8 @@ public class Event {
 
     public String getCommandString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < commands.size(); i++) {
-            sb.append(commands.get(i).concat(" "));
+        for (String command : commands) {
+            sb.append(command.concat(" "));
         }
         return sb.toString();
     }

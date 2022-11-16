@@ -13,10 +13,7 @@ import java.util.Objects;
 
 public class SourceFetcher {
     public static List<Result> fetch(Source source) throws Exception {
-        Connection.Response response = Jsoup.connect(source.getUrl())
-                .followRedirects(true)
-                .ignoreContentType(true)
-                .execute();
+        Connection.Response response = Jsoup.connect(source.getUrl()).followRedirects(true).ignoreContentType(true).execute();
 
         if (SourceManager.isEmpty(source.getReturnType())) {
             if (response.body().startsWith("{") && response.body().endsWith("}")) {
@@ -66,9 +63,7 @@ public class SourceFetcher {
 
             if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
                 r.setFileName(source.getNameRule());
-                jsonObject.forEach((t, u) -> r.setFileName(r.getFileName().replaceAll(
-                        "\\$\\{" + t + "}",
-                        String.valueOf(u))));
+                jsonObject.forEach((t, u) -> r.setFileName(r.getFileName().replaceAll("\\$\\{" + t + "}", String.valueOf(u))));
             } else {
                 r.setFileName(r.getUrl().substring(r.getUrl().lastIndexOf("/") + 1));
             }

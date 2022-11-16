@@ -3,22 +3,24 @@ package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
 import java.text.DecimalFormat;
 
 public class DownloadManager {
+    private static final DecimalFormat df = new DecimalFormat("##.#%");
     private final DownloadResult[] process;
-
-    public DownloadResult[] getProcess() {
-        return process;
-    }
-
-    public DownloadManager(DownloadResult[] process) {
-        this.process = process;
-    }
-
     long total = 0;
     long downloaded = 0;
     int failed = 0;
     int completed = 0;
     int started = 0;
     int created = 0;
+    private static final int PROGRESS_BAR_SIZE = 30;
+    private boolean done = false;
+
+    public DownloadManager(DownloadResult[] process) {
+        this.process = process;
+    }
+
+    public DownloadResult[] getProcess() {
+        return process;
+    }
 
     @Override
     public String toString() {
@@ -31,9 +33,7 @@ public class DownloadManager {
         started = 0;
         created = 0;
 
-        for (int i = 0; i < process.length; i++) {
-            DownloadResult r = process[i];
-
+        for (DownloadResult r : process) {
             if (r.getStatus() == DownloadStatus.CREATED) {
                 created++;
             } else if (r.getStatus() == DownloadStatus.STARTED) {
@@ -49,31 +49,20 @@ public class DownloadManager {
             }
         }
 
-        if(created == 0){
-            sb.append("R:").append(created).append(" S:").append(started).append(" C:").append(completed).append(" F:").append(failed).append(" |");
+        sb.append("Waiting:").append(created).append(" Started:").append(started).append(" Completed:").append(completed).append(" Failed:").append(failed).append(" |");
         double p = (double) downloaded / (double) total;
-        int a = (int) (20 * p);
-        int b = 20 - a;
+        int a = (int) (PROGRESS_BAR_SIZE * p);
+        int b = PROGRESS_BAR_SIZE - a;
+        sb.append("=".repeat(a)).append(" ".repeat(Math.max(0, b))).append("|").append(df.format(p));
 
-        sb.append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
-
-        }else{
-            sb.append("Starting ").append(started).append("/").append(process.length);
-        }
-
-        
-        if(created == 0 && started == 0){
+        if (created == 0 && started == 0) {
             done = true;
         }
 
         return sb.toString();
     }
 
-    private boolean done = false;
-
     public boolean done() {
         return done;
     }
-
-    private static final DecimalFormat df = new DecimalFormat("##.#%");
 }
