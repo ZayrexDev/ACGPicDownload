@@ -59,8 +59,21 @@ public class Schedule {
                 case "start" -> {
                     break INPUT;
                 }
+                case "list" -> {
+                    int a = "Command".length();
+                    int b = "Max Times".length();
+                    int c = "Interval".length();
+                    for (Event e : events) {
+                        a = Math.max(a, e.getCommandString().length());
+                        b = Math.max(b, String.valueOf(e.getMaxTimes()).length());
+                        c = Math.max(c, e.getInterval().toString().length());
+                        l.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", "Command", " | ", "Max Times", " | ", "Interval");
+                        for (Event event : events) {
+                            l.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", event.getCommandString(), " | ", String.valueOf(event.getMaxTimes()), " | ", event.getInterval().toString());
+                        }
+                    }
+                }
             }
-        }
 
         while (events.size() > 0) {
             for (int i = 0; i < events.size(); i++) {

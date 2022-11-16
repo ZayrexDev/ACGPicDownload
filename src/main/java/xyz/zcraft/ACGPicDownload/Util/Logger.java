@@ -56,4 +56,10 @@ public class Logger {
         out.printf(format, (Object[]) arg);
         out.flush();
     }
+
+    public void printlnf(String format, String... arg) {
+        printf(format, arg);
+        out.println();
+        out.flush();
+    }
 }

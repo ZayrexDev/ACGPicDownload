@@ -114,11 +114,9 @@ public class Fetch {
                 b = Math.max(b, source.getDescription().length());
                 c = Math.max(c, source.getUrl().length());
             }
-            logger.printf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", "Name", " | ", "Description", " | ", "URL");
-            logger.info();
+            logger.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", "Name", " | ", "Description", " | ", "URL");
             for (Source source : sources) {
-                logger.printf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", source.getName(), " | ", source.getDescription(), " | ", source.getUrl());
-                logger.info();
+                logger.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", source.getName(), " | ", source.getDescription(), " | ", source.getUrl());
             }
         }
     }

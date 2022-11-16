@@ -70,4 +70,12 @@ public class Event {
     public void setLastTimeRan(long lastTimeRan) {
         this.lastTimeRan = lastTimeRan;
     }
+
+    public String getCommandString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < commands.size(); i++) {
+            sb.append(commands.get(i).concat(" "));
+        }
+        return sb.toString();
+    }
 }
