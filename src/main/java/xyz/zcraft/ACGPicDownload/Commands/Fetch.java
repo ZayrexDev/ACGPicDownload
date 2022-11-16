@@ -1,8 +1,9 @@
 package xyz.zcraft.ACGPicDownload.Commands;
 
 import com.alibaba.fastjson.JSONException;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
+
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.*;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.Source;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceFetcher;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceManager;
@@ -21,6 +22,8 @@ public class Fetch {
     private boolean multiThread = false;
 
     private Logger logger;
+
+    public boolean enableConsoleProgressBar = false;
 
     public void main(ArrayList<String> args, Logger logger) {
         this.logger = logger;
@@ -164,18 +167,38 @@ public class Fetch {
                 logger.err("Can't create directory");
                 return;
             }
-            for (Result result : r) {
-                if (multiThread) {
+            if(multiThread){
+                DownloadManager manager;
+                DownloadResult[] rs = new DownloadResult[r.size()];
+                for (int index = 0; index < r.size(); index++) {
+                    Result result = r.get(index);
+                    DownloadResult dr = new DownloadResult();
                     new Thread(() -> {
                         try {
-                            new DownloadUtil().download(result, outDir, logger);
+                            new DownloadUtil().download(result, outDir, dr);
                         } catch (IOException e) {
-                            logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
+                            if(!enableConsoleProgressBar){
+                                logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
+                            }
                         }
                     }).start();
-                } else {
+                    rs[index] = dr;
+                }
+
+                manager = new DownloadManager(rs);
+
+                while(enableConsoleProgressBar && !manager.done()){
+                    logger.rprint(manager.toString().concat("     "));
                     try {
-                        new DownloadUtil().download(result, outDir, logger);
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {}
+                }
+            }else{
+                for (int i = 0; i < r.size(); i++) {
+                    Result result = r.get(i);
+                    try {
+                        logger.info("(" + i + " / " + r.size()  + ")Downloading " + result.getFileName() + " to " + outDir + " from " + result.getUrl() + " ...");
+                        new DownloadUtil().download(result, outDir);
                     } catch (IOException e) {
                         logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
                     }

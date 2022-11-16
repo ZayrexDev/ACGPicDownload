@@ -12,10 +12,12 @@ public class Main {
         ArrayList<String> argList = new ArrayList<>(List.of(args));
         if (argList.size() == 0) {
             Fetch f = new Fetch();
+            f.enableConsoleProgressBar = true;
             f.main(argList, new Logger("Fetch", System.out));
         } else if (argList.get(0).equalsIgnoreCase("fetch")) {
             argList.remove(0);
             Fetch f = new Fetch();
+            f.enableConsoleProgressBar = true;
             f.main(argList, new Logger("Fetch", System.out));
         } else if (argList.get(0).equalsIgnoreCase("schedule")) {
             argList.remove(0);
@@ -23,6 +25,7 @@ public class Main {
             s.main(argList);
         }else{
             Fetch f = new Fetch();
+            f.enableConsoleProgressBar = true;
             f.main(argList, new Logger("Fetch", System.out));
         }
     }
