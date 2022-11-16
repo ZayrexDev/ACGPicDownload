@@ -38,6 +38,7 @@ public class Logger {
     }
 
     public void info(String message) {
+        out.print("\r\n");
         out.println(getOutputName() + message);
         out.flush();
     }

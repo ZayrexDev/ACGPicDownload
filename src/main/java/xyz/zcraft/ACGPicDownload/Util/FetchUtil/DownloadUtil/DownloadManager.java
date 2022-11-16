@@ -49,22 +49,30 @@ public class DownloadManager {
             }
         }
 
-        if (created == 0) {
-            sb.append("S:").append(started).append(" C:").append(completed).append(" F:").append(failed).append(" |");
-            double p = (double) downloaded / (double) total;
-            int a = (int) (20 * p);
-            int b = 20 - a;
+        if(created == 0){
+            sb.append("R:").append(created).append(" S:").append(started).append(" C:").append(completed).append(" F:").append(failed).append(" |");
+        double p = (double) downloaded / (double) total;
+        int a = (int) (20 * p);
+        int b = 20 - a;
 
-            sb.append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
-        } else {
-            sb.append("Starting download:(").append(started).append("/").append(started + created).append(")");
+        sb.append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
+
+        }else{
+            sb.append("Starting ").append(started).append("/").append(process.length);
+        }
+
+        
+        if(created == 0 && started == 0){
+            done = true;
         }
 
         return sb.toString();
     }
 
+    private boolean done = false;
+
     public boolean done() {
-        return started != 0 && created != 0;
+        return done;
     }
 
     private static final DecimalFormat df = new DecimalFormat("##.#%");

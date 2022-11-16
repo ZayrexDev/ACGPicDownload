@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Fetch {
     private final HashMap<String, String> arguments = new HashMap<>();
@@ -98,7 +100,9 @@ public class Fetch {
         } catch (IOException e) {
             logger.err("ERROR:Could not read source config. Please check your source config file. Error detail:" + e);
         } catch (JSONException e) {
-            logger.err("ERROR:Could not parse source config as JSON file. Please check if your sources.json is correctly configured. Error detail:" + e);
+            logger.err(
+                    "ERROR:Could not parse source config as JSON file. Please check if your sources.json is correctly configured. Error detail:"
+                            + e);
         }
 
         return null;
@@ -119,7 +123,8 @@ public class Fetch {
             }
             logger.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", "Name", " | ", "Description", " | ", "URL");
             for (Source source : sources) {
-                logger.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", source.getName(), " | ", source.getDescription(), " | ", source.getUrl());
+                logger.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", source.getName(), " | ",
+                        source.getDescription(), " | ", source.getUrl());
             }
         }
     }
@@ -167,45 +172,64 @@ public class Fetch {
                 logger.err("Can't create directory");
                 return;
             }
-            if(multiThread){
+            ExecutorService es = Executors.newFixedThreadPool(20);
+            if (multiThread) {
                 DownloadManager manager;
                 DownloadResult[] rs = new DownloadResult[r.size()];
-                for (int index = 0; index < r.size(); index++) {
-                    Result result = r.get(index);
+
+                for (int i = 0; i < r.size(); i++) {
+                    Result result = r.get(i);
                     DownloadResult dr = new DownloadResult();
-                    new Thread(() -> {
+
+                    es.execute(() -> {
                         try {
                             new DownloadUtil().download(result, outDir, dr);
                         } catch (IOException e) {
-                            if(!enableConsoleProgressBar){
-                                logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
+                            if (!enableConsoleProgressBar) {
+                                dr.setStatus(DownloadStatus.FAILED);
                             }
                         }
-                    }).start();
-                    rs[index] = dr;
+                    });
+                    rs[i] = dr;
                 }
 
                 manager = new DownloadManager(rs);
 
-                while(enableConsoleProgressBar && !manager.done()){
-                    logger.rprint(manager.toString().concat("     "));
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignored) {}
-                }
-            }else{
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (enableConsoleProgressBar && !manager.done()) {
+                            logger.rprint(manager.toString().concat("     "));
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        logger.rprint(manager.toString().concat("     "));
+                        logger.info("Done");
+
+                        es.shutdown();
+                    }
+                });
+                t.setPriority(5);
+                t.start();
+            } else {
                 for (int i = 0; i < r.size(); i++) {
                     Result result = r.get(i);
                     try {
-                        logger.info("(" + i + " / " + r.size()  + ")Downloading " + result.getFileName() + " to " + outDir + " from " + result.getUrl() + " ...");
+                        logger.info("(" + (i+1) + "/" + r.size() + ")Downloading " + result.getFileName() + " to "
+                                + outDir + " from " + result.getUrl() + " ...");
                         new DownloadUtil().download(result, outDir);
                     } catch (IOException e) {
-                        logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl() + " .Error detail:" + e);
+                        logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl()
+                                + " .Error detail:" + e);
                     }
                 }
             }
         } else {
-            logger.err("Could not find source named " + sourceName + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
+            logger.err("Could not find source named " + sourceName
+                    + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
         }
     }
 
@@ -220,7 +244,6 @@ public class Fetch {
                                            Example:If the url is "https://www.someurl.com/pic?num=${num}", then with
                                                     "--arg num=1", the exact url will be "https://www.someurl.com/pic?num=1"
                                    --multi-thread : (Experimental) Enable multi thread download. May improve download speed.
-                        """
-        );
+                        """);
     }
 }
