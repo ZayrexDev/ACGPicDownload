@@ -77,23 +77,26 @@ public class Schedule {
             }
         }
 
+        s.close();
+
         while (events.size() > 0) {
             for (int i = 0; i < events.size(); i++) {
                 Event e = events.get(i);
                 if (e.isActive()) {
                     if (System.currentTimeMillis() - e.getLastTimeRan() >= e.getInterval().toMillis() && (e.getMaxTimes() == -1 || e.getTimesRan() <= e.getMaxTimes())) {
                         e.addTimesRan();
-                        int finalI = i;
-                        new Thread(new Runnable() {
+                        e.setLastTimeRan(System.currentTimeMillis());
+                        Logger logger = new Logger(String.valueOf(i), l, System.out);
+                        Thread t = new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 Fetch f = new Fetch();
-                                Logger logger = new Logger(String.valueOf(finalI), l, System.out);
-                                f.main(e.getCommands(), logger);
-                                e.setLastTimeRan(System.currentTimeMillis());
-                                logger.info("[Done]");
+                                Logger t = new Logger(String.valueOf(this.hashCode()), logger, System.out);
+                                f.main(e.getCommands(), t);
+                                t.info("[Event End]");
                             }
                         });
+                        t.start();
                     }
                 }
             }

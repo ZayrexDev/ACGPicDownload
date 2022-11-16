@@ -21,6 +21,9 @@ public class Main {
             argList.remove(0);
             Schedule s = new Schedule();
             s.main(argList);
+        }else{
+            Fetch f = new Fetch();
+            f.main(argList, new Logger("Fetch", System.out));
         }
     }
 }
