@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
+package xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
@@ -54,6 +54,9 @@ public class SourceManager {
 
     private static List<Source> parse(String configString) throws JSONException {
         JSONArray config = JSON.parseArray(configString);
+        if(config == null){
+            return List.of();
+        }
         List<Source> sources = new ArrayList<>();
         config.forEach(o -> {
             Source s = JSONObject.parseObject(String.valueOf(o), Source.class);

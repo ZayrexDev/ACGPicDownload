@@ -1,17 +1,15 @@
-package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
+package xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import xyz.zcraft.ACGPicDownload.Util.Result;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager.isEmpty;
 
 public class SourceFetcher {
     public static List<Result> fetch(Source source) throws Exception {
@@ -20,7 +18,7 @@ public class SourceFetcher {
                 .ignoreContentType(true)
                 .execute();
 
-        if (isEmpty(source.getReturnType())) {
+        if (SourceManager.isEmpty(source.getReturnType())) {
             if (response.body().startsWith("{") && response.body().endsWith("}")) {
                 source.setReturnType("json");
             } else if (Objects.equals(response.url().toString(), source.getUrl())) {

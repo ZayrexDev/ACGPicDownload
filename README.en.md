@@ -6,19 +6,32 @@
 
 A convenient tool to download ACG pictures from various sources.
 
-## Attention
+# Attention
 
 This project is still **Not stable**, so it may not work well for now...
 
-## Features
+# Features
 
-- Easy to use
+- Easy to use ([Simple tutorial](#simple-tutorial))
 - Supports custom sources
+- Supports scheduled execute
 - Highly customizable naming rules and fetching urls
 
-## Usage
+# Usage
 
-### Command line arguments
+## Command line arguments
+
+### Subcommand fetch
+
+Download picture from specfic source.
+
+- Usage
+
+  ```shell
+  java -jar ACGPicDownload.jar fetch [参数]
+  ```
+
+- Arguments
 
 |             Argument              |                                                                                          Description                                                                                           |
 |:---------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
@@ -28,23 +41,60 @@ This project is still **Not stable**, so it may not work well for now...
 | --arg key1=value1,key2=value2,... | custom the argument in the url. For example, If the url is `https://www.someurl.com/pic?num=${num}`, then with `--arg num=1`, The actual address would be `https://www.someurl.com/pic?num=1`  |
 |          --multi-thread           |                                             **Experimental**. Enable multi thread download. <font color=grey>(May improve download speed?)</font>                                              |
 
-### ...to be more specific?
+### Subcommand schedule
 
-#### Run directly
+Schedule commands.
+
+- Usage
+
+  - Enter `schedule` mode with initial command
+
+    ```shell
+    >java -jar ACGPicDownload.jar schedule [arguments] [fetch command to run]
+    Schedule>
+    ```
+
+   - Only enter `schedule` mode
+
+    ```shell
+    >java -jar ACGPicDownload.jar schedule
+    Schedule>
+    ```
+
+  In `schedule` mode, you can use the commands below:
+
+  |Command|Description|
+  |:-------:|:------:|
+  |add \<argument\> \<command\>|Add fetch event|
+  |del \<Event id\>|Delete a event|
+  |list|List all events|
+  |start|Exit `schedule` mode and start running|
+
+- Arguments in `schedule` mode 
+
+  |Argument|Description|
+  |:----:|:----:|
+  | --interval,-i \<interval\> | Set the interval between running, for example `10s` and `2m` |
+  | --max-times, -m \<max times to run\>|Set the max time to run|
+
+
+## <span id="simple-tutorial">...to be more specific?</span>
+
+### Run directly
 
 You can run ACGPicDownload.jar directly, in this case, program will use default `Lolicon` source...
 
 ```
 >java -jar ACGPicDownload.jar
 
-Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=1 ...
-Got 1 pictures!
-Downloading (FileName) to (OutputDir) from (Link) ...
+[Fetch] Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=1 ...
+[Fetch] Got 1 pictures!
+[Fetch] Downloading (FileName) to (OutputDir) from (Link) ...
 ```
 
 When the program is done, you should be able to find the picture under the program's folder.
 
-#### Add arguments
+### <span id="add-argument">Add arguments</span>
 
 If you want to add some customize argument, then you can follow these steps...
 
@@ -53,9 +103,9 @@ If you want to add some customize argument, then you can follow these steps...
     ```
     >java -jar ACGPicDownload.jar --list-sources
    
-    Name     |  Description                                 |  URL                                                  
-    lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
-    dmoe     |  Picture from Dmoe API (dmoe.cc)             |  https://www.dmoe.cc/random.php
+    [Fetch] Name     |  Description                                 |  URL                                                  
+    [Fetch] lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
+    [Fetch] dmoe     |  Picture from Dmoe API (dmoe.cc)             |  https://www.dmoe.cc/random.php
     ```
 
    ...As you can see, there's two sources available.
@@ -83,18 +133,49 @@ If you want to add some customize argument, then you can follow these steps...
          ```
          >java -jar ACGPicDownload.jar -s lolicon -o pic --arg num=5
        
-         Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
-         Got 5 pictures!
-         Downloading (FileName1) to (OutputDir) from (Link1) ...
-         Downloading (FileName2) to (OutputDir) from (Link2) ...
-         Downloading (FileName3) to (OutputDir) from (Link3) ...
-         Downloading (FileName4) to (OutputDir) from (Link4) ...
-         Downloading (FileName5) to (OutputDir) from (Link5) ...
+         [Fetch] Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
+         [Fetch] Got 5 pictures!
+         [Fetch] Downloading (FileName1) to (OutputDir) from (Link1) ...
+         [Fetch] Downloading (FileName2) to (OutputDir) from (Link2) ...
+         [Fetch] Downloading (FileName3) to (OutputDir) from (Link3) ...
+         [Fetch] Downloading (FileName4) to (OutputDir) from (Link4) ...
+         [Fetch] Downloading (FileName5) to (OutputDir) from (Link5) ...
          ```
 
        When it's done, you should be able to see 5 images under the `pic` folder.
+  
+### Schedule command
 
-### Add custom sources
+1. If you want to schedule command, then please see [`Add arguments`](#add-argument) to get your command first.
+
+2. Next, enter `schedule` mode
+
+  ```shell
+  >java -jar ACGPicDownload.jar schedule
+  Schedule>
+
+  ```
+
+3. If we want to run our command every 10m, run 20 times in total, then we should add `-i 10m` and `-m 20` . So, our event should be like `-i 10m -m 20 -s lolicon -o pic --arg num=5`
+
+4. Last add `add` in front of the event to add a event, then use `start` to run.
+
+  ```shell
+  >java -jar ACGPicDownload.jar schedule
+  Schedule>add -i 10m -m 20 -s lolicon -o pic --arg num=5
+  [Schedule] Event added. ID = 0
+  Schedule>start
+  [Schedule|0|114514] Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
+  [Schedule|0|114514] Got 5 pictures!
+  [Schedule|0|114514] Downloading (FileName1) to (OutpuDir) from (Link1) ...
+  [Schedule|0|114514] Downloading (FileName2) to (OutpuDir) from (Link2) ...
+  [Schedule|0|114514] Downloading (FileName3) to (OutpuDir) from (Link3) ...
+  [Schedule|0|114514] Downloading (FileName4) to (OutpuDir) from (Link4) ...
+  [Schedule|0|114514] Downloading (FileName5) to (OutpuDir) from (Link5) ...
+  [Schedule|0|114514] [Event end]
+  ```
+
+## Add custom sources
 
 There are already some sources in the default `sources.json`. You can see them to add your own source.
 
@@ -111,7 +192,7 @@ An available source should contain the following values in `sources.json`:
 |      [picUrl](#picUrl)      | String |    The path to image url in each image data    |                                    **Required**                                    |
 |    [nameRule](#nameRule)    | String |                The naming rules                |               It tells the program how to name the downloaded images               |
 
-#### <span id="url">url</a>
+### <span id="url">url</a>
 
 You can add custom vars in the url with `${varname}`. But You need to give a default value for them
 using `defaultArgs`, otherwise they will be ignored.
@@ -119,7 +200,7 @@ For example, if the `url` is `https://someurl/pic?num=${num}` , then with the `-
 will be `https://someurl/pic?num=1`
 When using var in `url`, you have to give a default value in `defaultArgs`
 
-#### <span id="defaultArgs">defaultArgs</a>
+### <span id="defaultArgs">defaultArgs</a>
 
 It is required when using vars in the url. In the example in [`url`](#url), the `defaultArgs` can be:
 
@@ -131,7 +212,7 @@ It is required when using vars in the url. In the example in [`url`](#url), the 
 }
 ```
 
-#### <span id="nameRule">nameRule</a>
+### <span id="nameRule">nameRule</a>
 
 You can use `${varname}` to use values from the return JSON as a part of the file name.
 
@@ -154,7 +235,7 @@ be `ID:6969 some_title by some_author.png`
 
 If the `nameRule` is empty, the program will try to get the file name from the download link.
 
-#### <span id="sourceKey">sourceKey</a>
+### <span id="sourceKey">sourceKey</a>
 
 Because of some source does not return the JSON directly of the image data, for example:
 
@@ -187,7 +268,7 @@ Because of some source does not return the JSON directly of the image data, for 
 
 The `sourceKey` of the JSON above should be `images/data`
 
-#### <span id="picUrl">picUrl</a>
+### <span id="picUrl">picUrl</a>
 
 Just like the `sourceKey`, the url of each return value should be told.
 
@@ -203,7 +284,7 @@ For example, the `sourceKey` of the following json should be `urls/original`
 }
 ```
 
-#### <span id="returnType">returnType</a>
+### <span id="returnType">returnType</a>
 
 Different sources may have different return type, we only supports json and redirect for now.
 
