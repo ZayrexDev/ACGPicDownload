@@ -67,13 +67,15 @@ public class Schedule {
                         a = Math.max(a, e.getCommandString().length());
                         b = Math.max(b, String.valueOf(e.getMaxTimes()).length());
                         c = Math.max(c, e.getInterval().toString().length());
-                        l.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", "Command", " | ", "Max Times", " | ", "Interval");
-                        for (Event event : events) {
-                            l.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", event.getCommandString(), " | ", String.valueOf(event.getMaxTimes()), " | ", event.getInterval().toString());
-                        }
                     }
+                    l.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", "Command", " | ", "Max Times", " | ", "Interval");
+                    for (Event event : events) {
+                        l.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", event.getCommandString(), " | ", String.valueOf(event.getMaxTimes()), " | ", event.getInterval().toString());
+                    }
+                    break;
                 }
             }
+        }
 
         while (events.size() > 0) {
             for (int i = 0; i < events.size(); i++) {
@@ -81,11 +83,17 @@ public class Schedule {
                 if (e.isActive()) {
                     if (System.currentTimeMillis() - e.getLastTimeRan() >= e.getInterval().toMillis() && (e.getMaxTimes() == -1 || e.getTimesRan() <= e.getMaxTimes())) {
                         e.addTimesRan();
-                        Fetch f = new Fetch();
-                        Logger logger = new Logger(String.valueOf(i), l, System.out);
-                        f.main(e.getCommands(), logger);
-                        e.setLastTimeRan(System.currentTimeMillis());
-                        logger.info("[Done]");
+                        int finalI = i;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Fetch f = new Fetch();
+                                Logger logger = new Logger(String.valueOf(finalI), l, System.out);
+                                f.main(e.getCommands(), logger);
+                                e.setLastTimeRan(System.currentTimeMillis());
+                                logger.info("[Done]");
+                            }
+                        });
                     }
                 }
             }
@@ -98,12 +106,13 @@ public class Schedule {
             Duration interval = null;
             for (int i = 0; i < args.size(); i++) {
                 switch (args.get(i)) {
-                    case "--max-time" -> {
+                    case "--max-times", "-m" -> {
                         if (args.size() > i + 1) {
                             try {
                                 maxTime = Integer.parseInt(args.get(i + 1));
                                 args.remove(i);
-                                args.remove(i + 1);
+                                args.remove(i);
+                                i -= 1;
                                 break;
                             } catch (NumberFormatException ignored) {
                             }
@@ -111,12 +120,13 @@ public class Schedule {
                         l.err("Please enter a valid number for the max time");
                         return false;
                     }
-                    case "--interval" -> {
+                    case "--interval", "-i" -> {
                         if (args.size() > i + 1) {
                             try {
                                 interval = Duration.parse("PT" + args.get(i + 1));
                                 args.remove(i);
                                 args.remove(i);
+                                i -= 1;
                                 break;
                             } catch (NumberFormatException ignored) {
                             }
