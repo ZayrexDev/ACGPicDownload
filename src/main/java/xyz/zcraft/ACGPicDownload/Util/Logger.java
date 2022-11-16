@@ -47,6 +47,31 @@ public class Logger {
         out.flush();
     }
 
+    public void r() {
+        out.print("\r");
+        out.flush();
+        out.print(getOutputName());
+        out.flush();
+    }
+
+    public void print(String str) {
+        out.print(getOutputName());
+        out.print(str);
+        out.flush();
+    }
+
+    public void rprint(String str){
+        out.print("\r");
+        out.print(getOutputName());
+        out.print(str);
+        out.flush();
+    }
+
+    public void printOutputName() {
+        out.print(getOutputName());
+        out.flush();
+    }
+
     public void err(String message) {
         System.err.println(getOutputName() + message);
     }
