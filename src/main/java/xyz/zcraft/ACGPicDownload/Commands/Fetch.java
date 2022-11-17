@@ -241,12 +241,15 @@ public class Fetch {
         manager = new DownloadManager(rs);
 
         Thread t = new Thread(() -> {
+            int lastLength = 0;
             while (enableConsoleProgressBar && !manager.done()) {
                 String m = manager.toString();
                 if (Main.isDebug()) {
                     m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
                 }
-                logger.printr(m + "   ");
+                logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))));
+                lastLength = m.length();
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -257,7 +260,7 @@ public class Fetch {
             if (Main.isDebug()) {
                 m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize();
             }
-            logger.printr(m + "  ");
+            logger.printr(m.concat(" ".repeat(Math.min(0,lastLength - m.length()))));
             logger.info("Done");
 
             tpe.shutdown();
