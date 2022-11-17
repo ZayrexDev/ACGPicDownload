@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
+    private static final DecimalFormat df2 = new DecimalFormat("#.##");
     private final DownloadResult[] process;
     long total = 0;
     long downloaded = 0;
@@ -23,6 +24,9 @@ public class DownloadManager {
     public DownloadResult[] getProcess() {
         return process;
     }
+
+    private long lastDownloaded = 0;
+    private long lastTime = 0;
 
     @Override
     public String toString() {
@@ -65,7 +69,7 @@ public class DownloadManager {
         double p = (double) downloaded / (double) total;
         int a = (int) (PROGRESS_BAR_SIZE * p);
         int b = PROGRESS_BAR_SIZE - a;
-        sb.append("=".repeat(Math.min(PROGRESS_BAR_SIZE, a))).append(" ".repeat(Math.max(0, b))).append("|");
+        sb.append("=".repeat(Math.abs(Math.min(PROGRESS_BAR_SIZE, a)))).append(" ".repeat(Math.abs(Math.max(0, b)))).append("|");
 
         if (p > 1) {
             sb.append("Waiting");
@@ -73,6 +77,21 @@ public class DownloadManager {
             sb.append(df.format(p));
         }
 
+        if(lastTime != 0){
+            sb.append(" ");
+            double speed = (((double)(downloaded - lastDownloaded)) / 1024.0) / (((double)(System.currentTimeMillis() - lastTime)) / 1000.0);
+            if(speed > 1024.0){
+                sb.append(df2.format(speed / 1024.0)).append("mb/s");
+            }else{
+                sb.append(df2.format(speed)).append("kb/s");
+            }
+        }
+
+        lastDownloaded = downloaded;
+        lastTime = System.currentTimeMillis();
+
+
+        // sb.append("|").append(df2.format(downloaded / 1024)).append("/").append(df2.format(total / 1024));
         if (created == 0 && started == 0) {
             done = true;
         }

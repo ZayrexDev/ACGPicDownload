@@ -260,7 +260,7 @@ public class Fetch {
             if (Main.isDebug()) {
                 m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize();
             }
-            logger.printr(m.concat(" ".repeat(Math.min(0,lastLength - m.length()))));
+            logger.printr(m.concat(" ".repeat(Math.max(0,lastLength - m.length()))));
             logger.info("Done");
 
             tpe.shutdown();
