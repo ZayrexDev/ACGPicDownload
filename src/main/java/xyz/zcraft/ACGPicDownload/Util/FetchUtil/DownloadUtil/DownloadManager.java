@@ -65,7 +65,7 @@ public class DownloadManager {
         double p = (double) downloaded / (double) total;
         int a = (int) (PROGRESS_BAR_SIZE * p);
         int b = PROGRESS_BAR_SIZE - a;
-        sb.append("=".repeat(Math.min(20, a))).append(" ".repeat(Math.max(0, b))).append("|");
+        sb.append("=".repeat(Math.min(PROGRESS_BAR_SIZE, a))).append(" ".repeat(Math.max(0, b))).append("|");
 
         if (p > 1) {
             sb.append("Waiting");
