@@ -25,13 +25,13 @@ This project is still **Not stable**, so it may not work well for now...
 
 Download picture from specific source.
 
-- Usage
+#### Usage
 
-  ```shell
-  java -jar ACGPicDownload.jar fetch [参数]
-  ```
+```shell
+java -jar ACGPicDownload.jar fetch [参数]
+```
 
-- Arguments
+#### Arguments
 
 |             Argument              |                                            Description                                            |
 | :-------------------------------: | :-----------------------------------------------------------------------------------------------: |
@@ -45,37 +45,37 @@ Download picture from specific source.
 
 Schedule commands.
 
-- Usage
+#### Usage
 
-    - Enter `schedule` mode with initial command
+- Enter `schedule` mode with initial command
 
-      ```shell
-      >java -jar ACGPicDownload.jar schedule [arguments] [fetch command to run]
-      Schedule>
-      ```
+  ```shell
+  >java -jar ACGPicDownload.jar schedule [arguments] [fetch command to run]
+  Schedule>
+  ```
 
-    - Only enter `schedule` mode
+- Only enter `schedule` mode
 
-      ```shell
-      >java -jar ACGPicDownload.jar schedule
-      Schedule>
-      ```
+  ```shell
+  >java -jar ACGPicDownload.jar schedule
+  Schedule>
+  ```
 
-  In `schedule` mode, you can use the commands below:
+In `schedule` mode, you can use the commands below:
 
-  | Command | Description |
-  | -------------------------- | :------------------------------------: | |
-  | add \<argument> \<command> | Add fetch event |
-  | del \<EventID>            | Delete a event |
-  | list | List all events |
-  | start | Exit `schedule` mode and start running |
+| Command | Description |
+| -------------------------- | :------------------------------------: | |
+| add \<argument> \<command> | Add fetch event |
+| del \<EventID>            | Delete a event |
+| list | List all events |
+| start | Exit `schedule` mode and start running |
 
-- Arguments in `schedule` mode
+Arguments in `schedule` mode
 
-  |               Argument               |                         Description                          |
-      | :----------------------------------: | :----------------------------------------------------------: |
-  |      --interval,-i \<interval\>      | Set the interval between running, for example `10s` and `2m` |
-  | --max-times, -m \<max times to run\> |                   Set the max time to run                    |
+|               Argument               |                         Description                          |
+| :----------------------------------: | :----------------------------------------------------------: |
+|      --interval,-i \<interval\>      | Set the interval between running, for example `10s` and `2m` |
+| --max-times, -m \<max times to run\> |                   Set the max time to run                    |
 
 ## <span id="simple-tutorial">...to be more specific?</span>
 
