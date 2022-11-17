@@ -57,7 +57,7 @@
   - 仅进入`schedule`模式
 
     ```shell
-    >java -jar ACGPicDownload.jar schedule [参数] [要执行的fetch指令]
+    >java -jar ACGPicDownload.jar schedule
     Schedule>
     ```
 
