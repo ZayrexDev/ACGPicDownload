@@ -58,14 +58,20 @@ public class DownloadManager {
         }
 
         for (String error2 : error) {
-            sb.append("Error:" + error2 + "\n");
+            sb.append("Error:").append(error2).append("\n");
         }
 
         sb.append("Waiting:").append(created).append(" Started:").append(started).append(" Completed:").append(completed).append(" Failed:").append(failed).append(" |");
         double p = (double) downloaded / (double) total;
         int a = (int) (PROGRESS_BAR_SIZE * p);
         int b = PROGRESS_BAR_SIZE - a;
-        sb.append("=".repeat(a)).append(" ".repeat(Math.max(0, b))).append("|").append(df.format(p));
+        sb.append("=".repeat(Math.min(20, a))).append(" ".repeat(Math.max(0, b))).append("|");
+
+        if (p > 1) {
+            sb.append("Waiting");
+        } else {
+            sb.append(df.format(p));
+        }
 
         if (created == 0 && started == 0) {
             done = true;
