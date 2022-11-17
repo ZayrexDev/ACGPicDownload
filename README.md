@@ -27,56 +27,56 @@
 
 从指定的下载源下载图片。
 
-- 用法:
+#### 用法:
 
-  ```shell
-  java -jar ACGPicDownload.jar fetch [参数]
-  ```
+```shell
+java -jar ACGPicDownload.jar fetch [参数]
+```
 
-- 参数列表:
+#### 参数列表:
 
-  |              参数名               |                        描述                        |
-      | :-------------------------------: | :------------------------------------------------: |
-  |          --list-sources           |               列出所有已配置的下载源               |
-  |     -s, --source source_name      | 设置需要使用的源，若为空，使用配置下的第一个下载源 |
-  |  -o, --output output_dictionary   |       设置下载目录，若为空，则默认为当前目录       |
-  | --arg key1=value1,key2=value2,... |   自定义URL里的某些参数。 详细请参见[url](#url)    |
-  |          --multi-thread           | **实验性功能** 启用多线程下载 可能会提升下载速度?  |
+|              参数名               |                        描述                        |
+| :-------------------------------: | :------------------------------------------------: |
+|          --list-sources           |               列出所有已配置的下载源               |
+|     -s, --source source_name      | 设置需要使用的源，若为空，使用配置下的第一个下载源 |
+|  -o, --output output_dictionary   |       设置下载目录，若为空，则默认为当前目录       |
+| --arg key1=value1,key2=value2,... |   自定义URL里的某些参数。 详细请参见[url](#url)    |
+|          --multi-thread           | **实验性功能** 启用多线程下载 可能会提升下载速度?  |
 
 ### <span id="schedule">子指令 schedule</span>
 
 定时执行指令
 
-- 用法
+#### 用法
 
-  - 添加初始指令并进入`schedule`模式
+- 添加初始指令并进入`schedule`模式
 
-    ```shell
-    >java -jar ACGPicDownload.jar schedule [参数] [要执行的fetch指令]
-    ```
+  ```shell
+  >java -jar ACGPicDownload.jar schedule [参数] [要执行的fetch指令]
+  ```
 
-  - 仅进入`schedule`模式
+- 仅进入`schedule`模式
 
-    ```shell
-    >java -jar ACGPicDownload.jar schedule
-    Schedule>
-    ```
+  ```shell
+  >java -jar ACGPicDownload.jar schedule
+  Schedule>
+  ```
 
-  在`schedule`模式模式下，你可以使用以下指令:
+在`schedule`模式模式下，你可以使用以下指令:
 
-  |         指令          |               描述               |
-      | :-------------------: | :------------------------------: |
-  | add \<参数\> \<指令\> |          添加fetch事件           |
-  |    del \<指令id\>     |          删除某一条事件          |
-  |         list          |      列出目前所有添加的事件      |
-  |         start         | 退出`schedule`模式并开始执行事件 |
+|         指令          |               描述               |
+| :-------------------: | :------------------------------: |
+| add \<参数\> \<指令\> |          添加fetch事件           |
+|    del \<指令id\>     |          删除某一条事件          |
+|         list          |      列出目前所有添加的事件      |
+|         start         | 退出`schedule`模式并开始执行事件 |
 
-    - 参数列表
+参数列表：
 
-  |            参数名            |                描述                |
-      | :--------------------------: | :--------------------------------: |
-  |  --interval,-i \<时间间隔\>  | 指定每次执行的间隔，例如`10s`,`2m` |
-  | --max-times, -m \<最大次数\> |         指定执行的最大次数         |
+|            参数名            |                描述                |
+| :--------------------------: | :--------------------------------: |
+|  --interval,-i \<时间间隔\>  | 指定每次执行的间隔，例如`10s`,`2m` |
+| --max-times, -m \<最大次数\> |         指定执行的最大次数         |
 
 ## <span id="tutorial">...说得再具体些？</span>
 
