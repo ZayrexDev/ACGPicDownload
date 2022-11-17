@@ -1,4 +1,4 @@
-[<- 中文版](https://github.com/zxzxy/ACGPicDownload/blob/master/README.md)
+[中文文档](https://github.com/zxzxy/ACGPicDownload/blob/master/README.md) | English Document
 
 ------------------
 
