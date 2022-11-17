@@ -1,12 +1,17 @@
 package xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil;
 
-import com.alibaba.fastjson2.*;
-import org.jsoup.*;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import xyz.zcraft.ACGPicDownload.Commands.Fetch;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class SourceFetcher {
     public static List<Result> fetch(Source source) throws Exception {
@@ -67,9 +72,7 @@ public class SourceFetcher {
                 r.setFileName(r.getUrl().substring(r.getUrl().lastIndexOf("/") + 1));
             }
 
-            try {
-                r.setFileName(new String(r.getFileName().getBytes("UTF-8"),"UTF-8"));
-            } catch (UnsupportedEncodingException e) {}
+            r.setFileName(new String(r.getFileName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
             results.add(r);
         });
 

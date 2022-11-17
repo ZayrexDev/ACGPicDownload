@@ -1,8 +1,15 @@
 package xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil;
 
-import com.alibaba.fastjson2.*;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
+
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class SourceManager {
     private static final List<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
@@ -82,11 +89,11 @@ public class SourceManager {
         return str == null || str.trim().isEmpty();
     }
 
-    public static List<Source> getSources() throws IOException {
+    public static List<Source> getSources() {
         return sources;
     }
 
-    public static Source getSourceByName(List<Source> sources, String name) throws IOException {
+    public static Source getSourceByName(List<Source> sources, String name) {
         for (Source source : sources) {
             if (source.getName().equals(name)) {
                 return source;

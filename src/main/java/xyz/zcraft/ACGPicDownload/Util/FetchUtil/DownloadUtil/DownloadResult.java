@@ -1,12 +1,24 @@
 package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
 
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
+
 public class DownloadResult {
     private long totalSize;
     private DownloadStatus status = DownloadStatus.CREATED;
     private long sizeDownloaded = 0;
     private String errorMessage;
 
+    private Result result;
+
     public DownloadResult() {
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(Result result) {
+        this.result = result;
     }
 
     public long getTotalSize() {

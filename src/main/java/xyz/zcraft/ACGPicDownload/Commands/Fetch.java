@@ -195,36 +195,18 @@ public class Fetch {
             logger.err("Can't create directory");
             return;
         }
-        if (multiThread) {
-            multiThreadDownload(r, outDir);
-        } else {
-            singleThreadDownload(r, outDir);
-        }
-    }
-
-    private void singleThreadDownload(List<Result> r, File outDir) {
-        for (int i = 0; i < r.size(); i++) {
-            Result result = r.get(i);
-            try {
-                logger.info("(" + (i + 1) + "/" + r.size() + ")Downloading " + result.getFileName() + " to "
-                        + outDir + " from " + result.getUrl() + " ...");
-                new DownloadUtil(1).download(result, outDir);
-            } catch (IOException e) {
-                logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl()
-                        + " .Error detail:" + e);
-            }
-        }
-    }
-
-    private void multiThreadDownload(List<Result> r, File outDir) {
-        ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-        DownloadManager manager;
+        ThreadPoolExecutor tpe;
         DownloadResult[] rs = new DownloadResult[r.size()];
+        if (multiThread) {
+            tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        } else {
+            tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+        }
 
         for (int i = 0; i < r.size(); i++) {
             Result result = r.get(i);
             DownloadResult dr = new DownloadResult();
-
+            dr.setResult(result);
             tpe.execute(() -> {
                 try {
                     new DownloadUtil(1).download(result, outDir, dr);
@@ -238,13 +220,16 @@ public class Fetch {
             rs[i] = dr;
         }
 
-        manager = new DownloadManager(rs);
+        startMonitoring(rs, tpe);
+    }
 
+    private void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe) {
+        DownloadManager manager = new DownloadManager(result);
         Thread t = new Thread(() -> {
             int lastLength = 0;
             while (enableConsoleProgressBar && !manager.done()) {
                 String m = manager.toString();
-                if (Main.isDebug()) {
+                if (Main.isDebug() && tpe != null) {
                     m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
                 }
                 logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))));
@@ -257,31 +242,47 @@ public class Fetch {
                 }
             }
             String m = manager.toString();
-            if (Main.isDebug()) {
+            if (Main.isDebug() && tpe != null) {
                 m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize();
             }
-            logger.printr(m.concat(" ".repeat(Math.max(0,lastLength - m.length()))));
+            logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))).concat("\n"));
             logger.info("Done");
 
-            tpe.shutdown();
+            if (tpe != null) {
+                tpe.shutdown();
+            }
+
+            printResult(result);
         });
         t.setPriority(5);
         t.start();
     }
 
+    private void printResult(DownloadResult[] r) {
+        HashMap<String, String> mapFailed = new HashMap<>();
+
+        for (DownloadResult downloadResult : r) {
+            String fileName = downloadResult.getResult().getFileName();
+            String url = downloadResult.getResult().getUrl();
+            if (downloadResult.getStatus() != DownloadStatus.COMPLETED) {
+                mapFailed.put(fileName, url);
+            }
+        }
+
+        if (!mapFailed.isEmpty()) {
+            logger.info("Failed:");
+            mapFailed.forEach((s, s2) -> logger.info(s + " : " + s2));
+        }
+    }
+
     private void execute() {
         Source s;
-        try {
-            List<Source> sources = getSourcesConfig();
-            if (sources == null) {
-                logger.err("can't find source to use");
-                return;
-            }
-            s = SourceManager.getSourceByName(sources, sourceName);
-        } catch (IOException e) {
-            logger.err("ERROR:Could not read source config. Please check your source config file. Error detail:" + e);
+        List<Source> sources = getSourcesConfig();
+        if (sources == null) {
+            logger.err("can't find source to use");
             return;
         }
+        s = SourceManager.getSourceByName(sources, sourceName);
         if (s != null) {
             replaceArgument(s);
 
@@ -314,18 +315,15 @@ public class Fetch {
                     }
                 }
                 i++;
-                if (times > 1 && enableConsoleProgressBar) {
-                    StringBuilder sb = new StringBuilder();
-                    double p = (double) i / (double) times;
-                    int a = (int) (20 * p);
-                    int b = 20 - a;
-                    sb.append("Fetching ").append(i).append("/").append(times);
-                    if (failed != 0) {
-                        sb.append(" Failed:").append(failed);
-                    }
-                    sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
-                    logger.printr(sb.toString());
+            }
+
+            if (times > 1 && enableConsoleProgressBar) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Fetching Done");
+                if (failed != 0) {
+                    sb.append(" Failed:").append(failed);
                 }
+                logger.printr(sb.toString().concat("\n"));
             }
 
             if (r.size() == 0) {

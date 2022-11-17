@@ -2,11 +2,15 @@ package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
 
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class DownloadUtil {
-    private int maxRetryCount = 1;
+    private final int maxRetryCount;
     private int retriedCount = 0;
 
     public DownloadUtil(int maxRetryCount) {
@@ -64,18 +68,16 @@ public class DownloadUtil {
             if (fos != null) {
                 fos.close();
             }
-            if(f!=null){
+            if (f != null) {
                 f.delete();
             }
             retriedCount++;
-            if(retriedCount > maxRetryCount){
-                d.setStatus(DownloadStatus.FAILED);
+            if (retriedCount > maxRetryCount) {
+                if (d != null) {
+                    d.setStatus(DownloadStatus.FAILED);
+                }
                 throw e;
             }
         }
-    }
-
-    public void download(Result r, File toDic) throws IOException {
-        download(r, toDic, null);
     }
 }

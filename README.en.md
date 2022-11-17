@@ -23,7 +23,7 @@ This project is still **Not stable**, so it may not work well for now...
 
 ### Subcommand fetch
 
-Download picture from specfic source.
+Download picture from specific source.
 
 - Usage
 
@@ -33,13 +33,13 @@ Download picture from specfic source.
 
 - Arguments
 
-|             Argument              |                                                                                          Description                                                                                           |
-|:---------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|          --list-sources           |                                                                                      List all the sources                                                                                      |
-|     -s, --source source_name      |                                               Set the source to use. If it's not set, then the program will use the first source in the config.                                                |
-|  -o, --output output_dictionary   |                                                Set the output dictionary. If it's not set, the program will use the dictionary of the program.                                                 |
-| --arg key1=value1,key2=value2,... | custom the argument in the url. Please see[url](#url)  |
-|          --multi-thread           |                                             **Experimental**. Enable multi thread download. <font color=grey>(May improve download speed?)</font>                                              |
+|             Argument              |                                            Description                                            |
+| :-------------------------------: | :-----------------------------------------------------------------------------------------------: |
+|          --list-sources           |                                       List all the sources                                        |
+|     -s, --source source_name      | Set the source to use. If it's not set, then the program will use the first source in the config. |
+|  -o, --output output_dictionary   |  Set the output dictionary. If it's not set, the program will use the dictionary of the program.  |
+| --arg key1=value1,key2=value2,... |                       custom the argument in the url. Please see[url](#url)                       |
+|          --multi-thread           |           **Experimental**. Enable multi thread download. (May improve download speed?)           |
 
 ### Subcommand schedule
 
@@ -47,36 +47,35 @@ Schedule commands.
 
 - Usage
 
-  - Enter `schedule` mode with initial command
+    - Enter `schedule` mode with initial command
 
-    ```shell
-    >java -jar ACGPicDownload.jar schedule [arguments] [fetch command to run]
-    Schedule>
-    ```
+      ```shell
+      >java -jar ACGPicDownload.jar schedule [arguments] [fetch command to run]
+      Schedule>
+      ```
 
-   - Only enter `schedule` mode
+    - Only enter `schedule` mode
 
-    ```shell
-    >java -jar ACGPicDownload.jar schedule
-    Schedule>
-    ```
+      ```shell
+      >java -jar ACGPicDownload.jar schedule
+      Schedule>
+      ```
 
   In `schedule` mode, you can use the commands below:
 
-  |Command|Description|
-  |:-------:|:------:|
-  |add \<argument\> \<command\>|Add fetch event|
-  |del \<Event id\>|Delete a event|
-  |list|List all events|
-  |start|Exit `schedule` mode and start running|
+  | Command | Description |
+  | -------------------------- | :------------------------------------: | |
+  | add \<argument> \<command> | Add fetch event |
+  | del \<EventID>            | Delete a event |
+  | list | List all events |
+  | start | Exit `schedule` mode and start running |
 
 - Arguments in `schedule` mode
 
-  |Argument|Description|
-  |:----:|:----:|
-  | --interval,-i \<interval\> | Set the interval between running, for example `10s` and `2m` |
-  | --max-times, -m \<max times to run\>|Set the max time to run|
-
+  |               Argument               |                         Description                          |
+      | :----------------------------------: | :----------------------------------------------------------: |
+  |      --interval,-i \<interval\>      | Set the interval between running, for example `10s` and `2m` |
+  | --max-times, -m \<max times to run\> |                   Set the max time to run                    |
 
 ## <span id="simple-tutorial">...to be more specific?</span>
 
@@ -84,7 +83,7 @@ Schedule commands.
 
 You can run ACGPicDownload.jar directly, in this case, program will use default `Lolicon` source...
 
-```
+```shell
 >java -jar ACGPicDownload.jar
 
 [Fetch] Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=1 ...
@@ -100,7 +99,7 @@ If you want to add some customize argument, then you can follow these steps...
 
 1. First, use `--list-sources` to see all the sources...
 
-    ```
+    ```shell
     >java -jar ACGPicDownload.jar --list-sources
 
     [Fetch] Name     |  Description                                 |  URL
@@ -130,7 +129,7 @@ If you want to add some customize argument, then you can follow these steps...
        like:`-s lolicon`,`-o pic`,`--arg num=5`
        So, we need to run like this:
 
-         ```
+         ```shell
          >java -jar ACGPicDownload.jar -s lolicon -o pic --arg num=5
 
          [Fetch] Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
@@ -150,13 +149,13 @@ If you want to add some customize argument, then you can follow these steps...
 
 2. Next, enter `schedule` mode
 
-  ```shell
-  >java -jar ACGPicDownload.jar schedule
-  Schedule>
+    ```shell
+    >java -jar ACGPicDownload.jar schedule
+    Schedule>
+    ```
 
-  ```
-
-3. If we want to run our command every 10m, run 20 times in total, then we should add `-i 10m` and `-m 20` . So, our event should be like `-i 10m -m 20 -s lolicon -o pic --arg num=5`
+3. If we want to run our command every 10m, run 20 times in total, then we should add `-i 10m` and `-m 20` . So, our
+   event should be like `-i 10m -m 20 -s lolicon -o pic --arg num=5`
 
 4. Last add `add` in front of the event to add a event, then use `start` to run.
 
@@ -182,12 +181,12 @@ There are already some sources in the default `sources.json`. You can see them t
 An available source should contain the following values in `sources.json`:
 
 |             Key             |  Type  |                  Description                   |                                       Detail                                       |
-|:---------------------------:|:------:|:----------------------------------------------:|:----------------------------------------------------------------------------------:|
+| :-------------------------: | :----: | :--------------------------------------------: | :--------------------------------------------------------------------------------: |
 |            name             | String |               Name of the source               |        **Required**. Please make sure that each source has different names.        |
 |         description         | String |           Description of the source            |                                      Optional                                      |
 |  [returnType](#returnType)  | String |           The return type of the url           | `json` or `redirect`, if it's empty, then the program will choose it automatically |
 |         [url](#url)         | String |             The url used to fetch              |                                    **Required**                                    |
-| [defaultArgs](#defaultArgs) |  JSON  | The default values of the variables in the url |                                    Optional                                       |
+| [defaultArgs](#defaultArgs) |  JSON  | The default values of the variables in the url |                                      Optional                                      |
 |   [sourceKey](#sourceKey)   | String |     The path to image data(s) in the JSON      |     Optional, if it's empty, the program will try to parse the json directly.      |
 |      [picUrl](#picUrl)      | String |    The path to image url in each image data    |                                    **Required**                                    |
 |    [nameRule](#nameRule)    | String |                The naming rules                |               It tells the program how to name the downloaded images               |
