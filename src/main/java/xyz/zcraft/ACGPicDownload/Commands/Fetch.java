@@ -208,7 +208,7 @@ public class Fetch {
             try {
                 logger.info("(" + (i + 1) + "/" + r.size() + ")Downloading " + result.getFileName() + " to "
                         + outDir + " from " + result.getUrl() + " ...");
-                new DownloadUtil().download(result, outDir);
+                new DownloadUtil(1).download(result, outDir);
             } catch (IOException e) {
                 logger.err("ERROR:Failed to download " + result.getFileName() + " from " + result.getUrl()
                         + " .Error detail:" + e);
@@ -227,7 +227,7 @@ public class Fetch {
 
             tpe.execute(() -> {
                 try {
-                    new DownloadUtil().download(result, outDir, dr);
+                    new DownloadUtil(1).download(result, outDir, dr);
                 } catch (Exception e) {
                     if (enableConsoleProgressBar) {
                         dr.setStatus(DownloadStatus.FAILED);

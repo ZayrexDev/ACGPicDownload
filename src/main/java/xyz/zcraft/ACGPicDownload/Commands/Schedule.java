@@ -4,9 +4,7 @@ import xyz.zcraft.ACGPicDownload.Util.Logger;
 import xyz.zcraft.ACGPicDownload.Util.ScheduleUtil.Event;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceManager.isEmpty;
 

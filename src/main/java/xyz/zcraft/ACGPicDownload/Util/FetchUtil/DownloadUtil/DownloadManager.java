@@ -1,8 +1,7 @@
 package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
@@ -14,7 +13,7 @@ public class DownloadManager {
     int completed = 0;
     int started = 0;
     int created = 0;
-    private static final int PROGRESS_BAR_SIZE = 30;
+    private static final int PROGRESS_BAR_SIZE = 25;
     private boolean done = false;
 
     public DownloadManager(DownloadResult[] process) {
@@ -65,21 +64,21 @@ public class DownloadManager {
             sb.append("Error:").append(error2).append("\n");
         }
 
-        sb.append("Waiting:").append(created).append(" Started:").append(started).append(" Completed:").append(completed).append(" Failed:").append(failed).append(" |");
+        sb.append("Wait:").append(created).append(" Start:").append(started).append(" Done:").append(completed).append(" Fail:").append(failed).append(" |");
         double p = (double) downloaded / (double) total;
         int a = (int) (PROGRESS_BAR_SIZE * p);
         int b = PROGRESS_BAR_SIZE - a;
         sb.append("=".repeat(Math.abs(Math.min(PROGRESS_BAR_SIZE, a)))).append(" ".repeat(Math.abs(Math.max(0, b)))).append("|");
 
         if (p > 1) {
-            sb.append("Waiting");
+            sb.append("...");
         } else {
             sb.append(df.format(p));
         }
 
         if(lastTime != 0){
             sb.append(" ");
-            double speed = (((double)(downloaded - lastDownloaded)) / 1024.0) / (((double)(System.currentTimeMillis() - lastTime)) / 1000.0);
+            double speed = Math.max((((double)(downloaded - lastDownloaded)) / 1024.0) / (((double)(System.currentTimeMillis() - lastTime)) / 1000.0),0);
             if(speed > 1024.0){
                 sb.append(df2.format(speed / 1024.0)).append("mb/s");
             }else{
