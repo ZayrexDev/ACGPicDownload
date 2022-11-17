@@ -187,7 +187,7 @@ An available source should contain the following values in `sources.json`:
 |         description         | String |           Description of the source            |                                      Optional                                      |
 |  [returnType](#returnType)  | String |           The return type of the url           | `json` or `redirect`, if it's empty, then the program will choose it automatically |
 |         [url](#url)         | String |             The url used to fetch              |                                    **Required**                                    |
-| [defaultArgs](#defaultArgs) |  JSON  | The default values of the variables in the url |                         **Required** when using var in url                         |
+| [defaultArgs](#defaultArgs) |  JSON  | The default values of the variables in the url |                                    Optional                                       |
 |   [sourceKey](#sourceKey)   | String |     The path to image data(s) in the JSON      |     Optional, if it's empty, the program will try to parse the json directly.      |
 |      [picUrl](#picUrl)      | String |    The path to image url in each image data    |                                    **Required**                                    |
 |    [nameRule](#nameRule)    | String |                The naming rules                |               It tells the program how to name the downloaded images               |
