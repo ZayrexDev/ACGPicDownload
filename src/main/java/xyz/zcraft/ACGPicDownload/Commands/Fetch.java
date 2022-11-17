@@ -291,6 +291,7 @@ public class Fetch {
             List<Result> r = new ArrayList<>();
 
             int failed = 0;
+            int lastLength = 0;
             for (int i = 0; i < times; ) {
                 if (times > 1 && enableConsoleProgressBar) {
                     StringBuilder sb = new StringBuilder();
@@ -303,6 +304,7 @@ public class Fetch {
                     }
                     sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
                     logger.printr(sb.toString());
+                    lastLength = sb.length();
                 }
                 try {
                     r.addAll(fetchResult(s));
@@ -315,6 +317,19 @@ public class Fetch {
                     }
                 }
                 i++;
+                if (times > 1 && enableConsoleProgressBar) {
+                    StringBuilder sb = new StringBuilder();
+                    double p = (double) i / (double) times;
+                    int a = (int) (20 * p);
+                    int b = 20 - a;
+                    sb.append("Fetching ").append(i).append("/").append(times);
+                    if (failed != 0) {
+                        sb.append(" Failed:").append(failed);
+                    }
+                    sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
+                    logger.printr(sb.toString());
+                    lastLength = sb.length();
+                }
             }
 
             if (times > 1 && enableConsoleProgressBar) {
@@ -323,7 +338,7 @@ public class Fetch {
                 if (failed != 0) {
                     sb.append(" Failed:").append(failed);
                 }
-                logger.printr(sb.toString().concat("\n"));
+                logger.printr(sb.append(" ".repeat(Math.max(0, lastLength - sb.length()))).toString());
             }
 
             if (r.size() == 0) {
