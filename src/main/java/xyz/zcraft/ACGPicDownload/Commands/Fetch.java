@@ -1,15 +1,12 @@
 package xyz.zcraft.ACGPicDownload.Commands;
 
-import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
+
 import xyz.zcraft.ACGPicDownload.Main;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadManager;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadResult;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadStatus;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadUtil;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.*;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.Source;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceFetcher;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceManager;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.*;
 import xyz.zcraft.ACGPicDownload.Util.Logger;
 
 import java.io.File;
@@ -266,6 +263,7 @@ public class Fetch {
                 } catch (Exception e) {
                     if (enableConsoleProgressBar) {
                         dr.setStatus(DownloadStatus.FAILED);
+                        dr.setErrorMessage(e.toString());
                     }
                 }
             });
@@ -300,18 +298,112 @@ public class Fetch {
         t.start();
     }
 
-    private void replaceArgument(Source s) {
-        s.getDefaultArgs().forEach((t, o) -> {
-            String value;
+    public static String replaceArgument(String orig, JSONObject args) {
+        if (orig == null) {
+            return null;
+        }
 
-            if (arguments.containsKey(t)) {
-                value = arguments.get(t);
+        int l;
+        int r;
+
+        while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
+            String[] a = { orig.substring(l, r) };
+            boolean[] have = { false };
+
+            args.forEach((t, o) -> {
+                String value = null;
+
+                if (args.containsKey(t)) {
+                    value = String.valueOf(args.get(t));
+                }
+
+                if (a[0].contains("$" + t) && value != null) {
+                    have[0] = true;
+                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
+                }
+            });
+
+            if (!have[0]) {
+                orig = orig.substring(0, l) + orig.substring(r, orig.length());
             } else {
-                value = String.valueOf(s.getDefaultArgs().get(t));
+                orig = orig.substring(0, l) + a[0] + orig.substring(r, orig.length());
             }
+        }
 
-            s.setUrl(s.getUrl().replaceAll("\\$\\{" + t + "}", value));
-        });
+        return orig;
+    }
+
+    public static String replaceArgument(String orig,HashMap<String,String> args){
+        if (orig == null) {
+            return null;
+        }
+
+        int l;
+        int r;
+
+        while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
+            String[] a = { orig.substring(l, r) };
+            boolean[] have = { false };
+
+            args.forEach((t, o) -> {
+                String value = null;
+
+                if (args.containsKey(t)) {
+                    value = args.get(t);
+                }
+
+                if (a[0].contains("$" + t) && value != null) {
+                    have[0] = true;
+                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
+                }
+            });
+
+            if (!have[0]) {
+                orig = orig.substring(0, l) + orig.substring(r, orig.length());
+            } else {
+                orig = orig.substring(0, l) + a[0] + orig.substring(r, orig.length());
+            }
+        }
+
+        return orig;
+    }
+
+    public void replaceArgument(Source s) {
+        String orig = s.getUrl();
+        if (orig == null) {
+            return;
+        }
+
+        int l;
+        int r;
+
+        while(((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0){
+            String[] a = { orig.substring(l, r) };
+            boolean[] have = { false };
+
+            s.getDefaultArgs().forEach((t, o) -> {
+                String value;
+
+                if (arguments.containsKey(t)) {
+                    value = arguments.get(t);
+                } else {
+                    value = String.valueOf(s.getDefaultArgs().get(t));
+                }
+
+                if (a[0].contains("$" + t) && value != null) {
+                    have[0] = true;
+                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
+                }
+            });
+
+            if (!have[0]) {
+                orig = orig.substring(0, l) + orig.substring(r, orig.length());
+            } else {
+                orig = orig.substring(0, l) + a[0] + orig.substring(r, orig.length());
+            }
+        }
+
+        s.setUrl(orig);
     }
 
     private void usage() {

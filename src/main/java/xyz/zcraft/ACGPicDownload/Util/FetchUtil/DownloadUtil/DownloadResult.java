@@ -4,6 +4,7 @@ public class DownloadResult {
     private long totalSize;
     private DownloadStatus status = DownloadStatus.CREATED;
     private long sizeDownloaded = 0;
+    private String errorMessage;
 
     public DownloadResult() {
     }
@@ -34,6 +35,14 @@ public class DownloadResult {
 
     public void addSizeDownloaded(long size) {
         sizeDownloaded += size;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }
 

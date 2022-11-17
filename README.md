@@ -12,7 +12,7 @@
 
 # 特性
 
-- 简单易用 ([简明教程](#simple-tutorial))
+- 简单易用 ([简明教程](#...说得再具体些？))
 - 支持自定义下载源
 - 支持定时执行
 - 高度可自定义的下载连接与文件名
@@ -75,7 +75,7 @@
   | --interval,-i \<时间间隔\> | 指定每次执行的间隔，例如`10s`,`2m` |
   | --max-times, -m \<最大次数\>|指定执行的最大次数|
 
-## <span id="simple-tutorial">...说得再具体些？</span>
+## ...说得再具体些？
 
 ### 直接运行
 
@@ -97,9 +97,9 @@
 
     ```shell
     >java -jar ACGPicDownload.jar --list-sources
-   
-    [Fetch] Name     |  Description                                 |  URL                                                  
-    [Fetch] lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
+
+    [Fetch] Name     |  Description                                 |  URL
+    [Fetch] lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?{r18=$r18}{&num=$num}{&keyword=$keyword}{&tag=$tag}
     [Fetch] dmoe     |  Picture from Dmoe API (dmoe.cc)             |  https://www.dmoe.cc/random.php
     ```
 
@@ -108,7 +108,7 @@
    > 如果你是第一次运行并且没有配置 `sources.json`
    >，那么在执行一次与下载源有关的操作时，程序将会自动复制默认的 `sources.json` 到程序目录。
 
-2. <span id="add-argument">设置自定义参数</span>
+2. 设置自定义参数
 
     1. 首先，确定下载源
 
@@ -116,7 +116,7 @@
 
     2. 自定义参数
 
-       在 `lolicon` 下载源中，url里面包含的 `${num}` 等即为参数。具体配置可见图源的地址。 我们暂且决定将 `num` 设置为 5。
+       在 `lolicon` 下载源中，url里面包含的 `{&num=$num}` 等即为参数块。具体配置可见图源的地址。 我们暂且决定将 `num` 设置为 5。
        并且，我们希望程序下载到程序目录下的 `pic` 文件夹...
 
     3. 运行
@@ -127,7 +127,7 @@
 
          ```shell
          >java -jar ACGPicDownload.jar -s lolicon -o pic --arg num=5
-       
+
          [Fetch] Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
          [Fetch] Got 5 pictures!
          [Fetch] Downloading (文件名1) to (保存目录) from (下载连接1) ...
@@ -141,7 +141,7 @@
 
 ### 定时执行
 
-1. 如果你需要定时执行那么请先按照 [`添加参数`](#add-argument) 一节的步骤确定要运行的指令
+1. 如果你需要定时执行那么请先按照 `添加参数` 一节的步骤确定要运行的指令
 
 2. 接下来，先进入 `schedule` 子指令
 
@@ -187,15 +187,16 @@
 |      [picUrl](#picUrl)      | 字符串  | 每张图片数据中指向每下载链接的路径 |             **需要**              |
 |    [nameRule](#nameRule)    | 字符串  |      下载的命名规则      |               可选                |
 
-### <span id="url">url</a>
+### url
 
-你可以通过 `${varname}` 在url中自定义参数，但是你需要使用 `defaultArgs` 为每个参数设定一个默认值，否则它将不会被识别为变量。
-举个栗子，如果 `url` 是 `https://someurl/pic?num=${num}` ，那么在命令行传入 `--arg num=1`
+你可以通过形如 `{sometext=$varname}` 的参数块在url中自定义参数，并且你可以使用 `defaultArgs` 为每个参数设定一个默认值。
+如果程序没有在某一个参数块中找到变量对应的值，那么就会将整个参数块从url中暂时移除。
+举个栗子，如果 `url` 是 `https://someurl/pic?{num=$num}{&keyword=$tag}` ，那么在命令行传入 `--arg num=1`
 时，实际上程序访问的url会是 `https://someurl/pic?num=1`
 
-### <span id="defaultArgs">defaultArgs</a>
+### defaultArgs
 
-当在使用 `url` 中的参数时需要指定。在 [`url`](#url) 的例子中，`defaultArgs` 可以是:
+当在使用 `url` 中的参数时可以指定。在 [`url`](#url) 的例子中，`defaultArgs` 可以是:
 
 ```json
 {
@@ -205,7 +206,7 @@
 }
 ```
 
-### <span id="nameRule">nameRule</a>
+### nameRule
 
 你可以使用形如 `${变量名}` 来使用返回值的json里的值来为每个文件命名
 
@@ -223,12 +224,12 @@
 }
 ```
 
-那么如果 `nameRule` 是 `ID:${id} ${title} by ${author}.${ext}`,
+那么如果 `nameRule` 是 `{ID:$id }{$title}{ by $author}.{$ext}`,
 下载下来的文件名就会是 `ID:6969 some_title by some_author.png`。
 
 如果 `nameRule` 是空的, 程序将会尝试从返回的下载链接自动获取文件名。
 
-### <span id="sourceKey">sourceKey</a>
+### sourceKey
 
 因为某些返回值是由某些值嵌套图片数据的，所以需要指定图片数据的位置。例如:
 
@@ -261,7 +262,7 @@
 
 对于以上的返回值 `sourceKey` 应是 `images/data`
 
-### <span id="picUrl">picUrl</a>
+### picUrl
 
 就如 `sourceKey`, 在返回值中指向下载连接的路径也应该在此被提前告知。
 
@@ -277,7 +278,7 @@
 }
 ```
 
-### <span id="returnType">returnType</a>
+### returnType
 
 不同的下载源可能会有不同的返回值类型，目前仅支持 json 返回和重定向。
 

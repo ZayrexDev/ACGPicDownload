@@ -2,7 +2,7 @@
   {
     "name": "lolicon",
     "description": "Picture from Lolicon API (api.lolicon.app)",
-    "url": "https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}",
+    "url": "https://api.lolicon.app/setu/v2?{r18=$r18}{&num=$num}{&keyword=$keyword}{&tag=$tag}",
     "returnType": "json",
     "defaultArgs": {
       "r18": "0",
@@ -10,7 +10,7 @@
     },
     "picUrl": "urls/original",
     "sourceKey": "data",
-    "nameRule": "PID-${pid} ${title} by ${author}.${ext}"
+    "nameRule": "{PID-$pid }{$title}{ by $author}.{$ext}"
   },
   {
     "name": "dmoe",

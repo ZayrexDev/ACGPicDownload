@@ -70,7 +70,7 @@ Schedule commands.
   |list|List all events|
   |start|Exit `schedule` mode and start running|
 
-- Arguments in `schedule` mode 
+- Arguments in `schedule` mode
 
   |Argument|Description|
   |:----:|:----:|
@@ -102,9 +102,9 @@ If you want to add some customize argument, then you can follow these steps...
 
     ```
     >java -jar ACGPicDownload.jar --list-sources
-   
-    [Fetch] Name     |  Description                                 |  URL                                                  
-    [Fetch] lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?r18=${r18}&num=${num}
+
+    [Fetch] Name     |  Description                                 |  URL
+    [Fetch] lolicon  |  Picture from Lolicon API (api.lolicon.app)  |  https://api.lolicon.app/setu/v2?{r18=$r18}{&num=$num}{&keyword=$keyword}{&tag=$tag}
     [Fetch] dmoe     |  Picture from Dmoe API (dmoe.cc)             |  https://www.dmoe.cc/random.php
     ```
 
@@ -120,7 +120,7 @@ If you want to add some customize argument, then you can follow these steps...
 
     2. Custom arguments
 
-       In the `lolicon` source, the `${num}` and other variable is arguments. As for them, you can see the source's page
+       In the `lolicon` source, the `{num=$num}` and other variable is arguments. As for them, you can see the source's page
        to know more. We are setting `num` to 5 in this case.
        What's more, we want the program to download to `pic` folder ...
 
@@ -132,7 +132,7 @@ If you want to add some customize argument, then you can follow these steps...
 
          ```
          >java -jar ACGPicDownload.jar -s lolicon -o pic --arg num=5
-       
+
          [Fetch] Fetching pictures from https://api.lolicon.app/setu/v2?r18=0&num=5 ...
          [Fetch] Got 5 pictures!
          [Fetch] Downloading (FileName1) to (OutputDir) from (Link1) ...
@@ -143,7 +143,7 @@ If you want to add some customize argument, then you can follow these steps...
          ```
 
        When it's done, you should be able to see 5 images under the `pic` folder.
-  
+
 ### Schedule command
 
 1. If you want to schedule command, then please see [`Add arguments`](#add-argument) to get your command first.
@@ -194,15 +194,14 @@ An available source should contain the following values in `sources.json`:
 
 ### <span id="url">url</a>
 
-You can add custom vars in the url with `${varname}`. But You need to give a default value for them
-using `defaultArgs`, otherwise they will be ignored.
-For example, if the `url` is `https://someurl/pic?num=${num}` , then with the `--arg num=1` argument, the actual url
+You can add custom vars in the url with `{sometext=$varname}`, and they are called `variable block`. And you can give them a default value using `defaultArgs`.
+If the program can't find the the value of the variable, it will delete the whole variable block in the url.
+For example, if the `url` is `https://someurl/pic?{num=$num}{&abc=$arg}` , then with the `--arg num=1` argument, the actual url
 will be `https://someurl/pic?num=1`
-When using var in `url`, you have to give a default value in `defaultArgs`
 
 ### <span id="defaultArgs">defaultArgs</a>
 
-It is required when using vars in the url. In the example in [`url`](#url), the `defaultArgs` can be:
+You can define default values when using vars in the url. In the example in [`url`](#url), the `defaultArgs` can be:
 
 ```json
 {
@@ -214,7 +213,7 @@ It is required when using vars in the url. In the example in [`url`](#url), the 
 
 ### <span id="nameRule">nameRule</a>
 
-You can use `${varname}` to use values from the return JSON as a part of the file name.
+You can use `{sometext$varname}` to use values from the return JSON as a part of the file name.
 
 For example, if a JSON return result is :
 
@@ -230,7 +229,7 @@ For example, if a JSON return result is :
 }
 ```
 
-Then if the `nameRule` is `ID:${id} ${title} by ${author}.${ext}`, the name of this result will
+Then if the `nameRule` is `{ID:$id }{$title}{ by $author}{.$ext}`, the name of this result will
 be `ID:6969 some_title by some_author.png`
 
 If the `nameRule` is empty, the program will try to get the file name from the download link.

@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+
+import xyz.zcraft.ACGPicDownload.Commands.Fetch;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
 import java.util.ArrayList;
@@ -62,8 +64,11 @@ public class SourceFetcher {
             r.setUrl(String.valueOf(followPath(jsonObject, source.getPicUrl())));
 
             if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
-                r.setFileName(source.getNameRule());
-                jsonObject.forEach((t, u) -> r.setFileName(r.getFileName().replaceAll("\\$\\{" + t + "}", String.valueOf(u))));
+                r.setFileName(Fetch.replaceArgument(source.getNameRule(), jsonObject));
+
+                for(String l : ILLEGAL_STRINGS){
+                    r.setFileName(r.getFileName().replaceAll(l, "_"));
+                }
             } else {
                 r.setFileName(r.getUrl().substring(r.getUrl().lastIndexOf("/") + 1));
             }
@@ -72,6 +77,8 @@ public class SourceFetcher {
 
         return results;
     }
+
+    private final static String[] ILLEGAL_STRINGS = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|"};
 
     // Follow the given path.
     private static Object followPath(JSONObject obj, String path) {

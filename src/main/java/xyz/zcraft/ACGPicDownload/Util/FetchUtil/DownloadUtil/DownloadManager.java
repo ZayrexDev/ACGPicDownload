@@ -1,6 +1,8 @@
 package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
@@ -33,6 +35,8 @@ public class DownloadManager {
         started = 0;
         created = 0;
 
+        ArrayList<String> error = new ArrayList<>();
+
         for (DownloadResult r : process) {
             if (r.getStatus() == DownloadStatus.CREATED) {
                 created++;
@@ -46,7 +50,15 @@ public class DownloadManager {
                 downloaded += r.getTotalSize();
             } else if (r.getStatus() == DownloadStatus.FAILED) {
                 failed++;
+                if(!Objects.equals("", r.getErrorMessage())){
+                    error.add(r.getErrorMessage());
+                    r.setErrorMessage("");
+                }
             }
+        }
+
+        for (String error2 : error) {
+            sb.append("Error:" + error2 + "\n");
         }
 
         sb.append("Waiting:").append(created).append(" Started:").append(started).append(" Completed:").append(completed).append(" Failed:").append(failed).append(" |");
