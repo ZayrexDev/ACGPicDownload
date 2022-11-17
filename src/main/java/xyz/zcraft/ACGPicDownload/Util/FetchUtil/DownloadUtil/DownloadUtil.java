@@ -12,8 +12,8 @@ import java.net.URLConnection;
 
 public class DownloadUtil {
     public void download(Result r, File toDic, DownloadResult d) throws IOException {
-        if (Main.debug) {
-            Main.addToPool(hashCode(), "created");
+        if (Main.isDebug()) {
+            Main.addToDownloadPool(hashCode(), "created");
         }
 
         if (!toDic.exists() && !toDic.mkdirs()) {
@@ -24,15 +24,15 @@ public class DownloadUtil {
             }
         }
 
-        if (Main.debug) {
-            Main.addToPool(hashCode(), "created dir");
+        if (Main.isDebug()) {
+            Main.addToDownloadPool(hashCode(), "created dir");
         }
 
         URL url = new URL(r.getUrl());
         URLConnection c = url.openConnection();
 
-        if (Main.debug) {
-            Main.addToPool(hashCode(), "opened connection");
+        if (Main.isDebug()) {
+            Main.addToDownloadPool(hashCode(), "opened connection");
         }
 
         if (d != null) {
@@ -42,27 +42,27 @@ public class DownloadUtil {
 
         InputStream is = c.getInputStream();
 
-        if (Main.debug) {
-            Main.addToPool(hashCode(), "opened stream");
+        if (Main.isDebug()) {
+            Main.addToDownloadPool(hashCode(), "opened stream");
         }
 
         FileOutputStream fos = new FileOutputStream(new File(toDic, r.getFileName()));
 
-        if (Main.debug) {
-            Main.addToPool(hashCode(), "fos");
+        if (Main.isDebug()) {
+            Main.addToDownloadPool(hashCode(), "fos");
         }
 
         byte[] buffer = new byte[10240];
         int byteRead;
         int total = 0;
 
-        if (Main.debug) {
-            Main.addToPool(hashCode(), "buffer");
+        if (Main.isDebug()) {
+            Main.addToDownloadPool(hashCode(), "buffer");
         }
 
         while ((byteRead = is.read(buffer)) != -1) {
-            if (Main.debug) {
-                Main.addToPool(hashCode(), total + "/" + c.getContentLengthLong());
+            if (Main.isDebug()) {
+                Main.addToDownloadPool(hashCode(), total + "/" + c.getContentLengthLong());
             }
             total += byteRead;
             fos.write(buffer, 0, byteRead);
@@ -74,8 +74,8 @@ public class DownloadUtil {
         is.close();
         fos.close();
 
-        if (Main.debug) {
-            Main.removeFromPool(hashCode());
+        if (Main.isDebug()) {
+            Main.removeFromDownloadPool(hashCode());
         }
 
         if (d != null) {

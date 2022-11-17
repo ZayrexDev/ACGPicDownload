@@ -105,7 +105,7 @@ public class Fetch {
                     }
                 }
                 case "--multi-thread" -> multiThread = true;
-                case "--debug" -> Main.debug = true;
+                case "--debug" -> Main.debugOn();
                 case "--list-sources" -> {
                     listSources();
                     return;
@@ -264,7 +264,7 @@ public class Fetch {
                 try {
                     new DownloadUtil().download(result, outDir, dr);
                 } catch (Exception e) {
-                    if (!enableConsoleProgressBar) {
+                    if (enableConsoleProgressBar) {
                         dr.setStatus(DownloadStatus.FAILED);
                     }
                 }
@@ -277,7 +277,7 @@ public class Fetch {
         Thread t = new Thread(() -> {
             while (enableConsoleProgressBar && !manager.done()) {
                 String m = manager.toString();
-                if (Main.debug) {
+                if (Main.isDebug()) {
                     m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
                 }
                 logger.printr(m.concat("     "));
@@ -288,7 +288,7 @@ public class Fetch {
                 }
             }
             String m = manager.toString();
-            if (Main.debug) {
+            if (Main.isDebug()) {
                 m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize();
             }
             logger.printr(m.concat("     "));

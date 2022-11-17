@@ -11,11 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Main {
-    public static boolean debug = false;
+    private static boolean debug = false;
     public static PrintWriter out;
     static HashMap<Integer, String> a = new HashMap<>();
 
-    static {
+    public static boolean isDebug() {
+        return debug;
+    }
+
+    public static void debugOn() {
+        Main.debug = true;
         try {
             out = new PrintWriter("debug.log");
         } catch (FileNotFoundException e) {
@@ -23,24 +28,26 @@ public class Main {
         }
     }
 
-    public static void addToPool(int hashCode, String status) {
+    public static void addToDownloadPool(int hashCode, String status) {
         a.put(hashCode, status);
-        update();
+        updateDebugLog();
     }
 
-    public static void removeFromPool(int hashCode) {
+    public static void removeFromDownloadPool(int hashCode) {
         a.remove(hashCode);
-        update();
+        updateDebugLog();
     }
 
-    public static void update() {
-        try {
-            out = new PrintWriter("debug.log");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+    public static void updateDebugLog() {
+        if (debug) {
+            try {
+                out = new PrintWriter("debug.log");
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            a.forEach((integer, s) -> out.println(integer.toString() + "  :  " + s));
+            out.flush();
         }
-        a.forEach((integer, s) -> out.println(integer.toString() + "  :  " + s));
-        out.flush();
     }
 
     public static void main(String[] args) {
