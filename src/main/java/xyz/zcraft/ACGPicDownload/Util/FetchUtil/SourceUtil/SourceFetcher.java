@@ -5,7 +5,6 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-
 import xyz.zcraft.ACGPicDownload.Commands.Fetch;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
@@ -78,7 +77,7 @@ public class SourceFetcher {
         return results;
     }
 
-    private final static String[] ILLEGAL_STRINGS = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|"};
+    private final static String[] ILLEGAL_STRINGS = {"\\\\", "/", ":", "\\*", "\\?", "\"", "<", ">", "|"};
 
     // Follow the given path.
     private static Object followPath(JSONObject obj, String path) {

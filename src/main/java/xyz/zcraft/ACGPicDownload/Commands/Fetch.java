@@ -2,11 +2,15 @@ package xyz.zcraft.ACGPicDownload.Commands;
 
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
-
 import xyz.zcraft.ACGPicDownload.Main;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.*;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadManager;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadResult;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadStatus;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil.DownloadUtil;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.*;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.Source;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceFetcher;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceManager;
 import xyz.zcraft.ACGPicDownload.Util.Logger;
 
 import java.io.File;
@@ -150,75 +154,39 @@ public class Fetch {
         return r;
     }
 
-    private void execute() {
-        Source s;
-        try {
-            List<Source> sources = getSourcesConfig();
-            if (sources == null) {
-                logger.err("can't find source to use");
-                return;
-            }
-            s = SourceManager.getSourceByName(sources, sourceName);
-        } catch (IOException e) {
-            logger.err("ERROR:Could not read source config. Please check your source config file. Error detail:" + e);
-            return;
+    public static String replaceArgument(String orig, JSONObject args) {
+        if (orig == null) {
+            return null;
         }
-        if (s != null) {
-            replaceArgument(s);
 
-            logger.info("Fetching pictures from " + s.getUrl() + " ...");
+        int l;
+        int r;
 
-            List<Result> r = new ArrayList<>();
+        while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
+            String[] a = {orig.substring(l, r)};
+            boolean[] have = {false};
 
-            int failed = 0;
-            for (int i = 0; i < times; ) {
-                if (times > 1 && enableConsoleProgressBar) {
-                    StringBuilder sb = new StringBuilder();
-                    double p = (double) i / (double) times;
-                    int a = (int) (20 * p);
-                    int b = 20 - a;
-                    sb.append("Fetching ").append(i).append("/").append(times);
-                    if (failed != 0) {
-                        sb.append(" Failed:").append(failed);
-                    }
-                    sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
-                    logger.printr(sb.toString());
+            args.forEach((t, o) -> {
+                String value = null;
+
+                if (args.containsKey(t)) {
+                    value = String.valueOf(args.get(t));
                 }
-                try {
-                    r.addAll(fetchResult(s));
-                } catch (Exception e) {
-                    failed++;
-                    if (!enableConsoleProgressBar) {
-                        logger.err("ERROR:Could not fetch. Error detail:" + e);
-                    }
+
+                if (a[0].contains("$" + t) && value != null) {
+                    have[0] = true;
+                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
                 }
-                i++;
-                if (times > 1 && enableConsoleProgressBar) {
-                    StringBuilder sb = new StringBuilder();
-                    double p = (double) i / (double) times;
-                    int a = (int) (20 * p);
-                    int b = 20 - a;
-                    sb.append("Fetching ").append(i).append("/").append(times);
-                    if (failed != 0) {
-                        sb.append(" Failed:").append(failed);
-                    }
-                    sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
-                    logger.printr(sb.toString());
-                }
+            });
+
+            if (!have[0]) {
+                orig = orig.substring(0, l) + orig.substring(r);
+            } else {
+                orig = orig.substring(0, l) + a[0] + orig.substring(r);
             }
-
-            if (r.size() == 0) {
-                logger.info("No pictures were found!");
-                return;
-            }
-
-            logger.info("Got " + r.size() + " pictures!");
-
-            startDownload(r);
-        } else {
-            logger.err("Could not find source named " + sourceName
-                    + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
         }
+
+        return orig;
     }
 
     private void startDownload(List<Result> r) {
@@ -298,74 +266,77 @@ public class Fetch {
         t.start();
     }
 
-    public static String replaceArgument(String orig, JSONObject args) {
-        if (orig == null) {
-            return null;
-        }
-
-        int l;
-        int r;
-
-        while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
-            String[] a = { orig.substring(l, r) };
-            boolean[] have = { false };
-
-            args.forEach((t, o) -> {
-                String value = null;
-
-                if (args.containsKey(t)) {
-                    value = String.valueOf(args.get(t));
-                }
-
-                if (a[0].contains("$" + t) && value != null) {
-                    have[0] = true;
-                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
-                }
-            });
-
-            if (!have[0]) {
-                orig = orig.substring(0, l) + orig.substring(r, orig.length());
-            } else {
-                orig = orig.substring(0, l) + a[0] + orig.substring(r, orig.length());
+    private void execute() {
+        Source s;
+        try {
+            List<Source> sources = getSourcesConfig();
+            if (sources == null) {
+                logger.err("can't find source to use");
+                return;
             }
+            s = SourceManager.getSourceByName(sources, sourceName);
+        } catch (IOException e) {
+            logger.err("ERROR:Could not read source config. Please check your source config file. Error detail:" + e);
+            return;
         }
+        if (s != null) {
+            replaceArgument(s);
 
-        return orig;
-    }
+            logger.info("Fetching pictures from " + s.getUrl() + " ...");
 
-    public static String replaceArgument(String orig,HashMap<String,String> args){
-        if (orig == null) {
-            return null;
-        }
+            List<Result> r = new ArrayList<>();
 
-        int l;
-        int r;
-
-        while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
-            String[] a = { orig.substring(l, r) };
-            boolean[] have = { false };
-
-            args.forEach((t, o) -> {
-                String value = null;
-
-                if (args.containsKey(t)) {
-                    value = args.get(t);
+            int failed = 0;
+            for (int i = 0; i < times; ) {
+                if (times > 1 && enableConsoleProgressBar) {
+                    StringBuilder sb = new StringBuilder();
+                    double p = (double) i / (double) times;
+                    int a = (int) (20 * p);
+                    int b = 20 - a;
+                    sb.append("Fetching ").append(i).append("/").append(times);
+                    if (failed != 0) {
+                        sb.append(" Failed:").append(failed);
+                    }
+                    sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
+                    logger.printr(sb.toString());
                 }
-
-                if (a[0].contains("$" + t) && value != null) {
-                    have[0] = true;
-                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
+                try {
+                    r.addAll(fetchResult(s));
+                } catch (Exception e) {
+                    failed++;
+                    if (!enableConsoleProgressBar) {
+                        logger.err("ERROR:Could not fetch. Error detail:" + e);
+                    } else {
+                        logger.printr("ERROR:" + e + "\n");
+                    }
                 }
-            });
-
-            if (!have[0]) {
-                orig = orig.substring(0, l) + orig.substring(r, orig.length());
-            } else {
-                orig = orig.substring(0, l) + a[0] + orig.substring(r, orig.length());
+                i++;
+                if (times > 1 && enableConsoleProgressBar) {
+                    StringBuilder sb = new StringBuilder();
+                    double p = (double) i / (double) times;
+                    int a = (int) (20 * p);
+                    int b = 20 - a;
+                    sb.append("Fetching ").append(i).append("/").append(times);
+                    if (failed != 0) {
+                        sb.append(" Failed:").append(failed);
+                    }
+                    sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(p));
+                    logger.printr(sb.toString());
+                }
             }
-        }
 
-        return orig;
+            if (r.size() == 0) {
+                logger.info("No pictures were found!");
+                return;
+            }
+
+            logger.info("Got " + r.size() + " pictures!");
+
+            startDownload(r);
+        } else {
+            logger.err("Could not find source named " + sourceName
+                    + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
+        }
     }
 
     public void replaceArgument(Source s) {
@@ -397,9 +368,9 @@ public class Fetch {
             });
 
             if (!have[0]) {
-                orig = orig.substring(0, l) + orig.substring(r, orig.length());
+                orig = orig.substring(0, l) + orig.substring(r);
             } else {
-                orig = orig.substring(0, l) + a[0] + orig.substring(r, orig.length());
+                orig = orig.substring(0, l) + a[0] + orig.substring(r);
             }
         }
 
