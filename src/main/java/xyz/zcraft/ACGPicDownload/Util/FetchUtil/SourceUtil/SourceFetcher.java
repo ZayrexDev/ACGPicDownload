@@ -77,7 +77,7 @@ public class SourceFetcher {
         return results;
     }
 
-    private final static String[] ILLEGAL_STRINGS = {"\\\\", "/", ":", "\\*", "\\?", "\"", "<", ">", "|"};
+    private final static String[] ILLEGAL_STRINGS = {"\\\\", "/", ":", "\\*", "\\?", "\"", "<", ">", "\\|"};
 
     // Follow the given path.
     private static Object followPath(JSONObject obj, String path) {
