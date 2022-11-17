@@ -64,7 +64,7 @@ Schedule commands.
 In `schedule` mode, you can use the commands below:
 
 | Command | Description |
-| -------------------------- | :------------------------------------: | |
+| -------------------------- | :------------------------------------: |
 | add \<argument> \<command> | Add fetch event |
 | del \<EventID>            | Delete a event |
 | list | List all events |
