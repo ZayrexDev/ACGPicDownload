@@ -246,7 +246,7 @@ public class Fetch {
                 if (Main.isDebug()) {
                     m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
                 }
-                logger.printr(m);
+                logger.printr(m + "   ");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
