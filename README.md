@@ -13,8 +13,8 @@
 # 特性
 
 - 简单易用 ([简明教程](#tutorial))
-- 支持自定义下载源
-- 支持定时执行
+- 支持自定义下载源 ([添加自定义下载源](#添加自定义下载源))
+- 支持定时执行 ([子指令 schedule](#schedule))
 - 高度可自定义的下载连接与文件名
 
 ![2022-11-17 14-51-29_2](https://user-images.githubusercontent.com/73475219/202380257-1592f3fb-e33a-49e2-be63-dca53291c4fd.gif)
@@ -40,9 +40,9 @@
   |     -s, --source source_name      |                                                         设置需要使用的源，若为空，使用配置下的第一个下载源                                                         |
   |  -o, --output output_dictionary   |                                                            设置下载目录，若为空，则默认为当前目录                                                            |
   | --arg key1=value1,key2=value2,... | 自定义URL里的某些参数。 详细请参见[url](#url) |
-  |          --multi-thread           |                                          **实验性功能** 启用多线程下载 可能会提升下载速度？）                                        |
+  |          --multi-thread           |                                          **实验性功能** 启用多线程下载 可能会提升下载速度?                                        |
 
-### 子指令 schedule
+### <span id="schedule">子指令 schedule</span>
 
 定时执行指令
 
