@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.function.BiConsumer;
 
 public class Fetch {
     private final HashMap<String, String> arguments = new HashMap<>();
@@ -100,7 +101,7 @@ public class Fetch {
                         for (String s : t) {
                             String key = s.substring(0, s.indexOf("="));
                             String value = s.substring(s.indexOf("=") + 1);
-                            if(value.startsWith("\"") && value.endsWith("\"")){
+                            if (value.startsWith("\"") && value.endsWith("\"")) {
                                 value = value.substring(1, value.length() - 1);
                             }
                             arguments.put(key, value);
@@ -111,7 +112,7 @@ public class Fetch {
                     }
                 }
                 case "--multi-thread" -> multiThread = true;
-                case "-f","--full" -> saveFullResult = true;
+                case "-f", "--full" -> saveFullResult = true;
                 case "--debug" -> Main.debugOn();
                 case "--list-sources" -> {
                     listSources();
@@ -169,19 +170,24 @@ public class Fetch {
         int r;
 
         while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
-            String[] a = {orig.substring(l, r)};
-            boolean[] have = {false};
+            String[] a = { orig.substring(l, r) };
+            boolean[] have = { false };
 
+            String str = a[0];
             args.forEach((t, o) -> {
-                String value = null;
+                String[] value = {};
 
                 if (args.containsKey(t)) {
-                    value = String.valueOf(args.get(t));
+                    value = String.valueOf(args.get(t)).split("&");
                 }
 
-                if (a[0].contains("$" + t) && value != null) {
+                if (a[0].contains("$" + t) && value.length != 0) {
                     have[0] = true;
-                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
+                    StringBuilder sb = new StringBuilder();
+                    for (int v = 0; v < value.length; v++) {
+                        sb.append(str.substring(1, a[0].length() - 1).replaceAll("\\$" + t, value[v]));
+                    }
+                    a[0] = sb.toString();
                 }
             });
 
@@ -236,7 +242,8 @@ public class Fetch {
             while (enableConsoleProgressBar && tpe.getCompletedTaskCount() != result.length) {
                 String m = manager.toString();
                 if (Main.isDebug() && tpe != null) {
-                    m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
+                    m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
+                            + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
                 }
                 logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))));
                 lastLength = m.length();
@@ -249,7 +256,8 @@ public class Fetch {
             }
             String m = manager.toString();
             if (Main.isDebug() && tpe != null) {
-                m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize();
+                m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
+                        + tpe.getPoolSize();
             }
             logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))).concat("\n"));
             logger.info("Done");
@@ -298,7 +306,7 @@ public class Fetch {
 
             int failed = 0;
             int lastLength = 0;
-            for (int i = 0; i < times; ) {
+            for (int i = 0; i < times;) {
                 if (times > 1 && enableConsoleProgressBar) {
                     try {
                         Thread.sleep(2000);
@@ -367,49 +375,27 @@ public class Fetch {
     }
 
     public void replaceArgument(Source s) {
-        String orig = s.getUrl();
-        if (orig == null) {
+        if (s == null) {
             return;
         }
 
-        int l;
-        int r;
-
-        while(((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0){
-            String[] a = { orig.substring(l, r) };
-            boolean[] have = { false };
-
-            s.getDefaultArgs().forEach((t, o) -> {
-                String[] value;
-
-                if (arguments.containsKey(t)) {
-                    value = arguments.get(t).split("&");
-                } else {
-                    value = String.valueOf(s.getDefaultArgs().get(t)).split("&");
-                }
-
-                if (a[0].contains("$" + t) && value != null) {
-                    have[0] = true;
-                    String str = a[0].substring(1, a[0].length() - 1);
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < value.length; i++) {
-                        sb.append(str.replaceAll("\\$" + t, value[i]));
-                        if(i != value.length - 1 && !str.startsWith("&")){
-                            sb.append("&");
-                        }
-                    }
-                    a[0] = sb.toString();
-                }
-            });
-
-            if (!have[0]) {
-                orig = orig.substring(0, l) + orig.substring(r);
-            } else {
-                orig = orig.substring(0, l) + a[0] + orig.substring(r);
+        JSONObject temp = new JSONObject();
+        s.getDefaultArgs().forEach(new BiConsumer<String,Object>() {
+            @Override
+            public void accept(String arg0, Object arg1) {
+                temp.put(arg0, arg1);
             }
-        }
+        });
 
-        s.setUrl(orig);
+        arguments.forEach(new BiConsumer<String,Object>() {
+            @Override
+            public void accept(String arg0, Object arg1) {
+                temp.put(arg0, arg1);
+            }
+        });
+
+        System.out.println(temp);
+        s.setUrl(replaceArgument(s.getUrl(), temp));
     }
 
     private void usage() {
