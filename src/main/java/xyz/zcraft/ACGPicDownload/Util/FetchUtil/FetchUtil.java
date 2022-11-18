@@ -2,7 +2,9 @@ package xyz.zcraft.ACGPicDownload.Util.FetchUtil;
 
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
+import org.jsoup.HttpStatusException;
 import xyz.zcraft.ACGPicDownload.Exceptions.SourceNotFoundException;
+import xyz.zcraft.ACGPicDownload.Exceptions.UnsupportedReturnTypeException;
 import xyz.zcraft.ACGPicDownload.Main;
 import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadManager;
 import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadResult;
@@ -90,7 +92,7 @@ public class FetchUtil {
         }
     }
 
-    public static ArrayList<Result> fetchResult(Source s) throws Exception {
+    public static ArrayList<Result> fetchResult(Source s) throws UnsupportedReturnTypeException, IOException {
         ArrayList<Result> r;
         r = SourceFetcher.fetch(s);
         return r;
@@ -192,7 +194,8 @@ public class FetchUtil {
 
         int failed = 0;
         int lastLength = 0;
-        for (int i = 0; i < times;) {
+
+        for (int i = 0; i < times; ) {
             if (times > 1 && enableConsoleProgressBar) {
                 try {
                     Thread.sleep(2000);
@@ -211,6 +214,11 @@ public class FetchUtil {
                 r.addAll(fetchResult(s));
             } catch (Exception e) {
                 failed++;
+                if (e instanceof HttpStatusException && ((HttpStatusException) e).getStatusCode() == 429) {
+                    logger.printr("Error: rate limit exceeded \n");
+                } else {
+                    logger.printr("Error occurred:" + e.getMessage());
+                }
             }
             i++;
         }

@@ -5,16 +5,18 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import xyz.zcraft.ACGPicDownload.Exceptions.UnsupportedReturnTypeException;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class SourceFetcher {
-    public static ArrayList<Result> fetch(Source source) throws Exception {
+    public static ArrayList<Result> fetch(Source source) throws UnsupportedReturnTypeException, IOException {
         Connection.Response response = Jsoup.connect(source.getUrl().replaceAll("\\|", "%7C")).followRedirects(true).ignoreContentType(true).timeout(10000).execute();
         if (SourceManager.isEmpty(source.getReturnType())) {
             if (response.body().startsWith("{") && response.body().endsWith("}")) {
@@ -22,16 +24,16 @@ public class SourceFetcher {
             } else if (Objects.equals(response.url().toString(), source.getUrl())) {
                 source.setReturnType("redirect");
             } else {
-                throw new Exception("Can't judge return type");
+                throw new UnsupportedReturnTypeException();
             }
         }
         if (Objects.equals("json", source.getReturnType().toLowerCase())) {
             return parseJson(response.body(), source);
         } else if (Objects.equals("redirect", source.getReturnType().toLowerCase())) {
             String s = response.url().toString();
-            return new ArrayList<Result>(List.of(new Result(s.substring(s.lastIndexOf("/") + 1), s, null)));
+            return new ArrayList<>(List.of(new Result(s.substring(s.lastIndexOf("/") + 1), s, null)));
         } else {
-            return new ArrayList<Result>(List.of());
+            return new ArrayList<>(List.of());
         }
     }
 
