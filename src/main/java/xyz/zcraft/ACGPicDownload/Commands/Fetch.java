@@ -233,7 +233,7 @@ public class Fetch {
         DownloadManager manager = new DownloadManager(result);
         Thread t = new Thread(() -> {
             int lastLength = 0;
-            while (enableConsoleProgressBar && !manager.done()) {
+            while (enableConsoleProgressBar && tpe.getCompletedTaskCount() != result.length) {
                 String m = manager.toString();
                 if (Main.isDebug() && tpe != null) {
                     m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
@@ -300,6 +300,11 @@ public class Fetch {
             int lastLength = 0;
             for (int i = 0; i < times; ) {
                 if (times > 1 && enableConsoleProgressBar) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     StringBuilder sb = new StringBuilder();
                     double p = (double) i / (double) times;
                     int a = (int) (20 * p);
