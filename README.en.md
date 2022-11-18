@@ -40,6 +40,8 @@ java -jar ACGPicDownload.jar fetch [参数]
 |  -o, --output output_dictionary   |  Set the output dictionary. If it's not set, the program will use the dictionary of the program.  |
 | --arg key1=value1,key2=value2,... |                       custom the argument in the url. Please see[url](#url)                       |
 |          --multi-thread           |           **Experimental**. Enable multi thread download. (May improve download speed?)           |
+|         -t, --times times         |                  Set times to fetch(**Not Recommended**, may trigger API limits)                  |
+|             -f,--full             | Download and save the image's json file to the json file that has the same name as the image file |
 
 ### Subcommand schedule
 
@@ -63,12 +65,12 @@ Schedule commands.
 
 In `schedule` mode, you can use the commands below:
 
-| Command | Description |
+| Command                    |              Description               |
 | -------------------------- | :------------------------------------: |
-| add \<argument> \<command> | Add fetch event |
-| del \<EventID>            | Delete a event |
-| list | List all events |
-| start | Exit `schedule` mode and start running |
+| add \<argument> \<command> |            Add fetch event             |
+| del \<EventID>             |             Delete a event             |
+| list                       |            List all events             |
+| start                      | Exit `schedule` mode and start running |
 
 Arguments in `schedule` mode
 

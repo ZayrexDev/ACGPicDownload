@@ -100,6 +100,9 @@ public class Fetch {
                         for (String s : t) {
                             String key = s.substring(0, s.indexOf("="));
                             String value = s.substring(s.indexOf("=") + 1);
+                            if(value.startsWith("\"") && value.endsWith("\"")){
+                                value = value.substring(1, value.length() - 1);
+                            }
                             arguments.put(key, value);
                         }
                         i += 1;
@@ -230,7 +233,7 @@ public class Fetch {
         DownloadManager manager = new DownloadManager(result);
         Thread t = new Thread(() -> {
             int lastLength = 0;
-            while (enableConsoleProgressBar && !manager.done()) {
+            while (enableConsoleProgressBar && tpe.getCompletedTaskCount() != result.length) {
                 String m = manager.toString();
                 if (Main.isDebug() && tpe != null) {
                     m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:" + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
@@ -297,6 +300,11 @@ public class Fetch {
             int lastLength = 0;
             for (int i = 0; i < times; ) {
                 if (times > 1 && enableConsoleProgressBar) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     StringBuilder sb = new StringBuilder();
                     double p = (double) i / (double) times;
                     int a = (int) (20 * p);
@@ -372,17 +380,25 @@ public class Fetch {
             boolean[] have = { false };
 
             s.getDefaultArgs().forEach((t, o) -> {
-                String value;
+                String[] value;
 
                 if (arguments.containsKey(t)) {
-                    value = arguments.get(t);
+                    value = arguments.get(t).split("&");
                 } else {
-                    value = String.valueOf(s.getDefaultArgs().get(t));
+                    value = String.valueOf(s.getDefaultArgs().get(t)).split("&");
                 }
 
                 if (a[0].contains("$" + t) && value != null) {
                     have[0] = true;
-                    a[0] = a[0].substring(1, a[0].length() - 1).replaceAll("\\$" + t, value);
+                    String str = a[0].substring(1, a[0].length() - 1);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < value.length; i++) {
+                        sb.append(str.replaceAll("\\$" + t, value[i]));
+                        if(i != value.length - 1 && !str.startsWith("&")){
+                            sb.append("&");
+                        }
+                    }
+                    a[0] = sb.toString();
                 }
             });
 
