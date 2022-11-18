@@ -17,7 +17,7 @@
 - 支持定时执行 ([子指令 schedule](#schedule))
 - 高度可自定义的下载连接与文件名
 
-![2022-11-17 14-51-29_2](https://user-images.githubusercontent.com/73475219/202380257-1592f3fb-e33a-49e2-be63-dca53291c4fd.gif)
+![2022-11-18 19-42-43_2](https://user-images.githubusercontent.com/73475219/202701179-2b8439ac-0f0a-4f12-9fbc-9574a1620411.gif)
 
 # 如何使用
 
