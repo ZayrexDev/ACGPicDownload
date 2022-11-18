@@ -31,6 +31,7 @@ public class DownloadManager {
     private long startTime = 0;
 
     private int timesGot = 0;
+    private int mtf = 8;
 
     @Override
     public String toString() {
@@ -59,7 +60,7 @@ public class DownloadManager {
                 downloaded += r.getTotalSize();
             } else if (r.getStatus() == DownloadStatus.FAILED) {
                 failed++;
-                if(!Objects.equals("", r.getErrorMessage())){
+                if (!Objects.equals("", r.getErrorMessage())) {
                     error.add(r.getErrorMessage());
                     r.setErrorMessage("");
                 }
@@ -70,17 +71,16 @@ public class DownloadManager {
             sb.append("Error:").append(error2).append("\n");
         }
 
-        int mtf = 5;
-
         sb.append(timesGot > mtf ? "W:" : "Wait:").append(created)
-            .append(timesGot > mtf ? " S:": " Start:").append(started)
-            .append(timesGot > mtf ? " D:" : " Done:").append(completed)
-            .append(timesGot > mtf ? " F:" : " Fail:").append(failed)
-            .append(" |");
+                .append(timesGot > mtf ? " S:" : " Start:").append(started)
+                .append(timesGot > mtf ? " D:" : " Done:").append(completed)
+                .append(timesGot > mtf ? " F:" : " Fail:").append(failed)
+                .append(" |");
         double p = (double) downloaded / (double) total;
         int a = (int) (PROGRESS_BAR_SIZE * p);
         int b = PROGRESS_BAR_SIZE - a;
-        sb.append("=".repeat(Math.abs(Math.min(PROGRESS_BAR_SIZE, a)))).append(" ".repeat(Math.abs(Math.max(0, b)))).append("|");
+        sb.append("=".repeat(Math.abs(Math.min(PROGRESS_BAR_SIZE, a)))).append(" ".repeat(Math.abs(Math.max(0, b))))
+                .append("|");
 
         if (p > 1) {
             sb.append("...");
@@ -88,12 +88,13 @@ public class DownloadManager {
             sb.append(df.format(p));
         }
 
-        if(lastTime != 0){
+        if (lastTime != 0) {
             sb.append(" ");
-            double speed = Math.max((((double)(downloaded - lastDownloaded)) / 1024.0) / (((double)(System.currentTimeMillis() - lastTime)) / 1000.0),0);
-            if(speed > 1024.0){
+            double speed = Math.max((((double) (downloaded - lastDownloaded)) / 1024.0)
+                    / (((double) (System.currentTimeMillis() - lastTime)) / 1000.0), 0);
+            if (speed > 1024.0) {
                 sb.append(df2.format(speed / 1024.0)).append("mb/s");
-            }else{
+            } else {
                 sb.append(df2.format(speed)).append("kb/s");
             }
 
@@ -105,7 +106,11 @@ public class DownloadManager {
                 sb.append(" AVG:").append(df2.format(avg).concat("kb/s"));
             }
 
-            sb.append(" ETA:").append(df2.format((double) (total - downloaded) / 1024 / avg)).append("s");
+            double eta = (double) (total - downloaded) / 1024 / avg;
+
+            if (eta >= 0) {
+                sb.append(" ETA:").append(df2.format(eta)).append("s");
+            }
         }
 
         lastDownloaded = downloaded;
