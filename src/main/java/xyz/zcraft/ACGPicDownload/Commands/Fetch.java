@@ -167,7 +167,7 @@ public class Fetch {
                                    -t, --t <times> : Set the number of times to fetch.
                                    -f, --full : Download the json data together with the image.
 
-                                See the documentation to get more information about usa
+                                See the documentation to get more information about usage
                         """);
     }
 }
