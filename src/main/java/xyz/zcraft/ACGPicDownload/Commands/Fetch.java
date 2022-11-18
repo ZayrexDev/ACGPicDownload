@@ -1,30 +1,18 @@
 package xyz.zcraft.ACGPicDownload.Commands;
 
-import com.alibaba.fastjson2.JSONException;
-import com.alibaba.fastjson2.JSONObject;
 import xyz.zcraft.ACGPicDownload.Main;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadManager;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadResult;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadStatus;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadUtil;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 import xyz.zcraft.ACGPicDownload.Util.Logger;
 import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceFetcher;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager;
-
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.function.BiConsumer;
 
 public class Fetch {
-    private static final DecimalFormat df = new DecimalFormat("#.##%");
+
     private final HashMap<String, String> arguments = new HashMap<>();
     public boolean enableConsoleProgressBar = false;
     private String sourceName;
@@ -33,255 +21,7 @@ public class Fetch {
     private Logger logger;
     private int times = 1;
     private boolean saveFullResult = false;
-    public static String replaceArgument(String orig, JSONObject args) {
-        if (orig == null) {
-            return null;
-        }
 
-        int l;
-        int r;
-
-        while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
-            String[] a = {orig.substring(l, r)};
-            boolean[] have = {false};
-
-            String str = a[0];
-            args.forEach((t, o) -> {
-                String[] value = {};
-
-                if (args.containsKey(t)) {
-                    value = String.valueOf(args.get(t)).split("&");
-                }
-
-                if (a[0].contains("$" + t) && value.length != 0) {
-                    have[0] = true;
-                    StringBuilder sb = new StringBuilder();
-                    for (int v = 0; v < value.length; v++) {
-                        sb.append(str.substring(1, a[0].length() - 1).replaceAll("\\$" + t, value[v]));
-                    }
-                    a[0] = sb.toString();
-                }
-            });
-
-            if (!have[0]) {
-                orig = orig.substring(0, l) + orig.substring(r);
-            } else {
-                orig = orig.substring(0, l) + a[0] + orig.substring(r);
-            }
-        }
-
-        return orig;
-    }
-
-    private static List<Source> getSourcesConfig() throws IOException, JSONException {
-        if (SourceManager.getSources() == null) {
-            SourceManager.readConfig();
-        }
-        return SourceManager.getSources();
-    }
-
-    private static void listSources(Logger logger) throws IOException, JSONException {
-        List<Source> sources = getSourcesConfig();
-        if (sources == null) {
-            logger.info("No sources found");
-        } else {
-            int a = 0;
-            int b = 0;
-            int c = 0;
-            for (Source source : sources) {
-                a = Math.max(a, source.getName().length());
-                b = Math.max(b, source.getDescription().length());
-                c = Math.max(c, source.getUrl().length());
-            }
-            logger.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", "Name", " | ", "Description", " | ", "URL");
-            for (Source source : sources) {
-                logger.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", source.getName(), " | ",
-                        source.getDescription(), " | ", source.getUrl());
-            }
-        }
-    }
-
-    private static List<Result> fetchResult(Source s) throws Exception {
-        List<Result> r;
-        r = SourceFetcher.fetch(s);
-        return r;
-    }
-
-    private static void startDownload(List<Result> r, String outputDir, Logger logger, boolean multiThread, boolean saveFullResult, boolean enableConsoleProgressBar) {
-        File outDir = new File(outputDir);
-        if (!outDir.exists() && !outDir.mkdirs()) {
-            logger.err("Can't create directory");
-            return;
-        }
-        ThreadPoolExecutor tpe;
-        DownloadResult[] rs = new DownloadResult[r.size()];
-        if (multiThread) {
-            tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-        } else {
-            tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-        }
-
-        for (int i = 0; i < r.size(); i++) {
-            Result result = r.get(i);
-            DownloadResult dr = new DownloadResult();
-            dr.setResult(result);
-            tpe.execute(() -> {
-                try {
-                    new DownloadUtil(1).download(result, outDir, dr, saveFullResult);
-                } catch (Exception e) {
-                    if (enableConsoleProgressBar) {
-                        dr.setStatus(DownloadStatus.FAILED);
-                        dr.setErrorMessage(e.toString());
-                    }
-                }
-            });
-            rs[i] = dr;
-        }
-
-        startMonitoring(rs, tpe, enableConsoleProgressBar, logger);
-    }
-
-    private static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe, boolean enableConsoleProgressBar, Logger logger) {
-        DownloadManager manager = new DownloadManager(result);
-        Thread t = new Thread(() -> {
-            int lastLength = 0;
-            while (enableConsoleProgressBar && tpe.getCompletedTaskCount() != result.length) {
-                String m = manager.toString();
-                if (Main.isDebug()) {
-                    m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
-                            + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
-                }
-                logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))));
-                lastLength = m.length();
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            String m = manager.toString();
-            if (Main.isDebug() && tpe != null) {
-                m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
-                        + tpe.getPoolSize();
-            }
-            logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))).concat("\n"));
-            logger.info("Done");
-
-            if (tpe != null) {
-                tpe.shutdown();
-            }
-
-            printResult(result, logger);
-        });
-        t.setPriority(5);
-        t.start();
-    }
-
-    private static void printResult(DownloadResult[] r, Logger logger) {
-        HashMap<String, String> mapFailed = new HashMap<>();
-
-        for (DownloadResult downloadResult : r) {
-            String fileName = downloadResult.getResult().getFileName();
-            String url = downloadResult.getResult().getUrl();
-            if (downloadResult.getStatus() != DownloadStatus.COMPLETED) {
-                mapFailed.put(fileName, url);
-            }
-        }
-
-        if (!mapFailed.isEmpty()) {
-            logger.info("Failed:");
-            mapFailed.forEach((s, s2) -> logger.info(s + " : " + s2));
-        }
-    }
-
-    private static List<Result> fetch(Source source) throws Exception {
-        return new ArrayList<>(fetchResult(source));
-    }
-
-    private static List<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar) {
-        logger.info("Fetching pictures from " + s.getUrl() + " ...");
-
-        List<Result> r = new ArrayList<>();
-
-        int failed = 0;
-        int lastLength = 0;
-        for (int i = 0; i < times; ) {
-            if (times > 1 && enableConsoleProgressBar) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                StringBuilder sb = new StringBuilder();
-                sb.append("Fetching ").append(i).append("/").append(times);
-                if (failed != 0) {
-                    sb.append(" Failed:").append(failed);
-                }
-                logger.printr(sb.toString());
-                lastLength = printTaskBar(sb.toString(), (double) i / (double) times, "", lastLength, logger);
-            }
-            try {
-                r.addAll(fetchResult(s));
-            } catch (Exception e) {
-                failed++;
-            }
-            i++;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("Fetching ").append(times).append("/").append(times);
-        if (failed != 0) {
-            sb.append(" Failed:").append(failed);
-        }
-        logger.printr(sb.toString());
-        printTaskBar(sb.toString(), 1, "", lastLength, logger);
-
-        return r;
-    }
-
-    private static int printTaskBar(String prefix, double progress, String suffix, int minLength, Logger logger) {
-        StringBuilder sb = new StringBuilder();
-        int a = (int) (20 * progress);
-        int b = 20 - a;
-        sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(progress)).append(suffix);
-        sb.append(" ".repeat(Math.max(0, minLength - sb.length())));
-        logger.printr(sb.toString());
-        return sb.length();
-    }
-
-    private static Source getSourceByName(String sourceName) throws Exception {
-        Source s;
-        List<Source> sources = getSourcesConfig();
-        if (sources == null) {
-            throw new Exception("Could not find any sources to use");
-        }
-        s = SourceManager.getSourceByName(sources, sourceName);
-        return s;
-    }
-
-    public static void replaceArgument(Source s, HashMap<String, String> arguments) {
-        if (s == null) {
-            return;
-        }
-
-        JSONObject temp = new JSONObject();
-        s.getDefaultArgs().forEach(new BiConsumer<String, Object>() {
-            @Override
-            public void accept(String arg0, Object arg1) {
-                temp.put(arg0, arg1);
-            }
-        });
-
-        arguments.forEach(new BiConsumer<String, Object>() {
-            @Override
-            public void accept(String arg0, Object arg1) {
-                temp.put(arg0, arg1);
-            }
-        });
-
-        s.setUrl(replaceArgument(s.getUrl(), temp));
-    }
 
     public void main(ArrayList<String> args, Logger logger) {
         this.logger = logger;
@@ -324,7 +64,7 @@ public class Fetch {
                 case "--debug" -> Main.debugOn();
                 case "--list-sources" -> {
                     try {
-                        listSources(logger);
+                        FetchUtil.listSources(logger);
                     } catch (IOException e) {
                         //TODO Auto-generated catch block
                         throw new RuntimeException(e);
@@ -356,7 +96,7 @@ public class Fetch {
         if (sourceName == null || sourceName.trim().equals("")) {
             List<Source> sources;
             try {
-                sources = getSourcesConfig();
+                sources = FetchUtil.getSourcesConfig();
             } catch (IOException e) {
                 //TODO Auto-generated catch block
                 throw new RuntimeException(e);
@@ -373,24 +113,19 @@ public class Fetch {
         }
         Source s;
         try {
-            s = getSourceByName(sourceName);
+            s = FetchUtil.getSourceByName(sourceName);
         } catch (Exception e) {
-            //TODO Auto generated catch block
-            throw new RuntimeException(e);
+            logger.err("Could not find source " + sourceName);
+            return;
         }
         if (s == null) {
             logger.err("Could not find source named " + sourceName
                     + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
             return;
         }
-        replaceArgument(s, arguments);
-        List<Result> r;
-        try {
-            r = fetch(s);
-        } catch (Exception e) {
-            //TODO Auto generated catch block
-            throw new RuntimeException(e);
-        }
+        FetchUtil.replaceArgument(s, arguments);
+        ArrayList<Result> r;
+        r = FetchUtil.fetch(s,times,logger,enableConsoleProgressBar);
         if (r.size() == 0) {
             logger.info("No pictures were found!");
             return;
@@ -398,7 +133,7 @@ public class Fetch {
 
         logger.info("Got " + r.size() + " pictures!");
 
-        startDownload(r, outputDir, logger, multiThread, saveFullResult, enableConsoleProgressBar);
+        FetchUtil.startDownload(r, outputDir, logger, multiThread, saveFullResult, enableConsoleProgressBar);
     }
 
     private void usage() {

@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import xyz.zcraft.ACGPicDownload.Commands.Fetch;
+import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
 import java.nio.charset.StandardCharsets;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class SourceFetcher {
-    public static List<Result> fetch(Source source) throws Exception {
+    public static ArrayList<Result> fetch(Source source) throws Exception {
         Connection.Response response = Jsoup.connect(source.getUrl().replaceAll("\\|", "%7C")).followRedirects(true).ignoreContentType(true).timeout(10000).execute();
         if (SourceManager.isEmpty(source.getReturnType())) {
             if (response.body().startsWith("{") && response.body().endsWith("}")) {
@@ -29,13 +30,13 @@ public class SourceFetcher {
             return parseJson(response.body(), source);
         } else if (Objects.equals("redirect", source.getReturnType().toLowerCase())) {
             String s = response.url().toString();
-            return List.of(new Result(s.substring(s.lastIndexOf("/") + 1), s, null));
+            return new ArrayList<Result>(List.of(new Result(s.substring(s.lastIndexOf("/") + 1), s, null)));
         } else {
-            return List.of();
+            return new ArrayList<Result>(List.of());
         }
     }
 
-    private static List<Result> parseJson(String jsonString, Source source) {
+    private static ArrayList<Result> parseJson(String jsonString, Source source) {
         JSONObject obj = JSONObject.parseObject(jsonString);
 
         // Follow the pathToSource
@@ -64,7 +65,7 @@ public class SourceFetcher {
             r.setUrl(String.valueOf(followPath(jsonObject, source.getPicUrl())));
 
             if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
-                r.setFileName(Fetch.replaceArgument(source.getNameRule(), jsonObject));
+                r.setFileName(FetchUtil.replaceArgument(source.getNameRule(), jsonObject));
                 for(String l : ILLEGAL_STRINGS){
                     r.setFileName(r.getFileName().replaceAll(l, "_"));
                 }

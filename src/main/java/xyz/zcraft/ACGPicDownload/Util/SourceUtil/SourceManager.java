@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class SourceManager {
-    private static final List<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
-    private static List<Source> sources;
+    private static final ArrayList<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
+    private static ArrayList<Source> sources;
 
     public static void readConfig() throws IOException, JSONException {
         sources = parse(readStringFromConfig());
@@ -52,12 +52,12 @@ public class SourceManager {
         return sb.toString();
     }
 
-    private static List<Source> parse(String configString) throws JSONException {
+    private static ArrayList<Source> parse(String configString) throws JSONException {
         JSONArray config = JSON.parseArray(configString);
         if (config == null) {
-            return List.of();
+            return new ArrayList<>();
         }
-        List<Source> sources = new ArrayList<>();
+        ArrayList<Source> sources = new ArrayList<>();
         config.forEach(o -> {
             Source s = JSONObject.parseObject(String.valueOf(o), Source.class);
             try {
@@ -89,7 +89,7 @@ public class SourceManager {
         return str == null || str.trim().isEmpty();
     }
 
-    public static List<Source> getSources() {
+    public static ArrayList<Source> getSources() {
         return sources;
     }
 
