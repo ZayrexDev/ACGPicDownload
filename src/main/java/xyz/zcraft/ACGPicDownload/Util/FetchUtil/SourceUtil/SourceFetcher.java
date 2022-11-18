@@ -15,8 +15,7 @@ import java.util.Objects;
 
 public class SourceFetcher {
     public static List<Result> fetch(Source source) throws Exception {
-        Connection.Response response = Jsoup.connect(source.getUrl()).followRedirects(true).ignoreContentType(true).timeout(10000).execute();
-
+        Connection.Response response = Jsoup.connect(source.getUrl().replaceAll("\\|", "%7C")).followRedirects(true).ignoreContentType(true).timeout(10000).execute();
         if (SourceManager.isEmpty(source.getReturnType())) {
             if (response.body().startsWith("{") && response.body().endsWith("}")) {
                 source.setReturnType("json");

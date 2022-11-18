@@ -394,7 +394,6 @@ public class Fetch {
             }
         });
 
-        System.out.println(temp);
         s.setUrl(replaceArgument(s.getUrl(), temp));
     }
 
