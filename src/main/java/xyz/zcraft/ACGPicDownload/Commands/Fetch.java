@@ -1,18 +1,18 @@
 package xyz.zcraft.ACGPicDownload.Commands;
 
+import com.alibaba.fastjson2.JSONException;
+import xyz.zcraft.ACGPicDownload.Exceptions.SourceNotFoundException;
 import xyz.zcraft.ACGPicDownload.Main;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 import xyz.zcraft.ACGPicDownload.Util.Logger;
-import xyz.zcraft.ACGPicDownload.Util.Exceptions.SourceNotFoundException;
 import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import com.alibaba.fastjson2.JSONException;
 
 public class Fetch {
 
@@ -142,13 +142,17 @@ public class Fetch {
 
         Source s = parseSource();
 
+        if (s == null) {
+            return;
+        }
+
         FetchUtil.replaceArgument(s, arguments);
 
         ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar);
         if (r.size() == 0) {
             logger.info("No pictures were found!");
             return;
-        }else{
+        } else {
             logger.info("Got " + r.size() + " pictures!");
         }
 

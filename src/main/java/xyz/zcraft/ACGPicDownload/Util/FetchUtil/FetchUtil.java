@@ -1,5 +1,18 @@
 package xyz.zcraft.ACGPicDownload.Util.FetchUtil;
 
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
+import xyz.zcraft.ACGPicDownload.Exceptions.SourceNotFoundException;
+import xyz.zcraft.ACGPicDownload.Main;
+import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadManager;
+import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadResult;
+import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadStatus;
+import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadUtil;
+import xyz.zcraft.ACGPicDownload.Util.Logger;
+import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
+import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceFetcher;
+import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -7,21 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.function.BiConsumer;
-
-import com.alibaba.fastjson2.JSONException;
-import com.alibaba.fastjson2.JSONObject;
-
-import xyz.zcraft.ACGPicDownload.Main;
-import xyz.zcraft.ACGPicDownload.Util.Logger;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadManager;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadResult;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadStatus;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadUtil;
-import xyz.zcraft.ACGPicDownload.Util.Exceptions.SourceNotFoundException;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceFetcher;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager;
 
 public class FetchUtil {
     public static String replaceArgument(String orig, JSONObject args) {
@@ -47,8 +45,8 @@ public class FetchUtil {
                 if (a[0].contains("$" + t) && value.length != 0) {
                     have[0] = true;
                     StringBuilder sb = new StringBuilder();
-                    for (int v = 0; v < value.length; v++) {
-                        sb.append(str.substring(1, a[0].length() - 1).replaceAll("\\$" + t, value[v]));
+                    for (String s : value) {
+                        sb.append(str.substring(1, a[0].length() - 1).replaceAll("\\$" + t, s));
                     }
                     a[0] = sb.toString();
                 }
@@ -146,6 +144,7 @@ public class FetchUtil {
                 lastLength = m.length();
 
                 try {
+                    //noinspection BusyWait
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -184,10 +183,6 @@ public class FetchUtil {
             logger.info("Failed:");
             mapFailed.forEach((s, s2) -> logger.info(s + " : " + s2));
         }
-    }
-
-    public static ArrayList<Result> fetch(Source source) throws Exception {
-        return new ArrayList<>(fetchResult(source));
     }
 
     public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar) {
@@ -270,19 +265,9 @@ public class FetchUtil {
         }
 
         JSONObject temp = new JSONObject();
-        s.getDefaultArgs().forEach(new BiConsumer<String, Object>() {
-            @Override
-            public void accept(String arg0, Object arg1) {
-                temp.put(arg0, arg1);
-            }
-        });
+        temp.putAll(s.getDefaultArgs());
 
-        arguments.forEach(new BiConsumer<String, Object>() {
-            @Override
-            public void accept(String arg0, Object arg1) {
-                temp.put(arg0, arg1);
-            }
-        });
+        temp.putAll(arguments);
 
         s.setUrl(replaceArgument(s.getUrl(), temp));
     }
