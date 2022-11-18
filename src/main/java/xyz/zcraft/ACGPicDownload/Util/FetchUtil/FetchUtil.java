@@ -121,10 +121,8 @@ public class FetchUtil {
                 try {
                     new DownloadUtil(1).download(result, outDir, dr, saveFullResult);
                 } catch (Exception e) {
-                    if (enableConsoleProgressBar) {
-                        dr.setStatus(DownloadStatus.FAILED);
-                        dr.setErrorMessage(e.toString());
-                    }
+                    dr.setStatus(DownloadStatus.FAILED);
+                    dr.setErrorMessage(e.toString());
                 }
             });
             rs[i] = dr;
