@@ -30,7 +30,7 @@ public class SourceFetcher {
             return parseJson(response.body(), source);
         } else if (Objects.equals("redirect", source.getReturnType().toLowerCase())) {
             String s = response.url().toString();
-            return List.of(new Result(s.substring(s.lastIndexOf("/") + 1), s));
+            return List.of(new Result(s.substring(s.lastIndexOf("/") + 1), s, null));
         } else {
             return List.of();
         }
@@ -61,6 +61,7 @@ public class SourceFetcher {
         // For each of the json objects to parse
         pics.forEach(jsonObject -> {
             Result r = new Result();
+            r.setJson(jsonObject);
             r.setUrl(String.valueOf(followPath(jsonObject, source.getPicUrl())));
 
             if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
