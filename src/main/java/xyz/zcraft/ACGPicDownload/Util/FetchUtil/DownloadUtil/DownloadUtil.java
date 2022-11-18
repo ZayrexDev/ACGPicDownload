@@ -2,12 +2,16 @@ package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
 
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+
+import com.alibaba.fastjson2.JSONWriter.Feature;
 
 public class DownloadUtil {
     private final int maxRetryCount;
@@ -17,10 +21,12 @@ public class DownloadUtil {
         this.maxRetryCount = maxRetryCount;
     }
 
-    public void download(Result r, File toDic, DownloadResult d) throws IOException {
+    public void download(Result r, File toDic, DownloadResult d, boolean saveFullResult) throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
+        BufferedOutputStream jsonos = null;
         File f = null;
+        File jsonf = null;
         try {
             if (!toDic.exists() && !toDic.mkdirs()) {
                 if (d != null) {
@@ -58,6 +64,16 @@ public class DownloadUtil {
             is.close();
             fos.close();
 
+            if(saveFullResult && r.getJson() != null){
+                jsonf = new File(toDic, r.getFileName().substring(0, r.getFileName().lastIndexOf(".") + 1).concat("json"));
+                jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
+
+                String str = r.getJson().toJSONString(Feature.PrettyFormat);
+                jsonos.write(str.getBytes(StandardCharsets.UTF_8));
+                jsonos.flush();
+                jsonos.close();
+            }
+
             if (d != null) {
                 d.setStatus(DownloadStatus.COMPLETED);
             }
@@ -70,6 +86,12 @@ public class DownloadUtil {
             }
             if (f != null) {
                 f.delete();
+            }
+            if (jsonos != null) {
+                jsonos.close();
+            }
+            if (jsonf != null) {
+                jsonf.delete();
             }
             retriedCount++;
             if (retriedCount > maxRetryCount) {

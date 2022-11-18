@@ -72,6 +72,8 @@ public class Fetch {
         }
     }
 
+    private boolean saveFullResult = false;
+
     public void main(ArrayList<String> args, Logger logger) {
         this.logger = logger;
         for (int i = 0; i < args.size(); i++) {
@@ -106,6 +108,7 @@ public class Fetch {
                     }
                 }
                 case "--multi-thread" -> multiThread = true;
+                case "-f","--full" -> saveFullResult = true;
                 case "--debug" -> Main.debugOn();
                 case "--list-sources" -> {
                     listSources();
@@ -209,7 +212,7 @@ public class Fetch {
             dr.setResult(result);
             tpe.execute(() -> {
                 try {
-                    new DownloadUtil(1).download(result, outDir, dr);
+                    new DownloadUtil(1).download(result, outDir, dr, saveFullResult);
                 } catch (Exception e) {
                     if (enableConsoleProgressBar) {
                         dr.setStatus(DownloadStatus.FAILED);
