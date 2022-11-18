@@ -13,6 +13,6 @@ public class Test {
         // s.setDefaultArgs(json);
         // f.replaceArgument(s);
         // System.out.println(s.getUrl());
-        Main.main("--multi-thread -o out --arg num=20,tag=\"萝莉|少女&黑丝|白丝\" -f".split(" "));
+        Main.main("--multi-thread -o out --arg num=20 -f".split(" "));
     }
 }

@@ -4,12 +4,15 @@ import xyz.zcraft.ACGPicDownload.Main;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 import xyz.zcraft.ACGPicDownload.Util.Logger;
+import xyz.zcraft.ACGPicDownload.Util.Exceptions.SourceNotFoundException;
 import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import com.alibaba.fastjson2.JSONException;
 
 public class Fetch {
 
@@ -22,9 +25,7 @@ public class Fetch {
     private int times = 1;
     private boolean saveFullResult = false;
 
-
-    public void main(ArrayList<String> args, Logger logger) {
-        this.logger = logger;
+    private void parseArguments(ArrayList<String> args){
         for (int i = 0; i < args.size(); i++) {
             switch (args.get(i)) {
                 case "-s", "--source" -> {
@@ -66,13 +67,12 @@ public class Fetch {
                     try {
                         FetchUtil.listSources(logger);
                     } catch (IOException e) {
-                        //TODO Auto-generated catch block
-                        throw new RuntimeException(e);
+                        logger.err("Error:Cannot read source.json");
                     }
                     return;
                 }
                 case "-h", "--help" -> {
-                    usage();
+                    usage(logger);
                     return;
                 }
                 case "-t", "--times" -> {
@@ -98,7 +98,7 @@ public class Fetch {
             try {
                 sources = FetchUtil.getSourcesConfig();
             } catch (IOException e) {
-                //TODO Auto-generated catch block
+                logger.err("Error:Cannot read source.json");
                 throw new RuntimeException(e);
             }
             if (sources == null || sources.size() == 0) {
@@ -111,42 +111,63 @@ public class Fetch {
         if (outputDir == null || outputDir.trim().equals("")) {
             outputDir = "";
         }
+    }
+
+    private Source parseSource(){
         Source s;
         try {
             s = FetchUtil.getSourceByName(sourceName);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.err("Could read sources.json");
+            return null;
+        }catch(JSONException e){
+            logger.err("Could not prase sources.json");
+            return null;
+        }catch(SourceNotFoundException e){
             logger.err("Could not find source " + sourceName);
-            return;
+            return null;
         }
         if (s == null) {
             logger.err("Could not find source named " + sourceName
                     + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
-            return;
+            return null;
         }
+        return s;
+    }
+
+    public void main(ArrayList<String> args, Logger logger) {
+        this.logger = logger;
+
+        parseArguments(args);
+
+        Source s = parseSource();
+
         FetchUtil.replaceArgument(s, arguments);
-        ArrayList<Result> r;
-        r = FetchUtil.fetch(s,times,logger,enableConsoleProgressBar);
+
+        ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar);
         if (r.size() == 0) {
             logger.info("No pictures were found!");
             return;
+        }else{
+            logger.info("Got " + r.size() + " pictures!");
         }
-
-        logger.info("Got " + r.size() + " pictures!");
 
         FetchUtil.startDownload(r, outputDir, logger, multiThread, saveFullResult, enableConsoleProgressBar);
     }
 
-    private void usage() {
+    public static void usage(Logger logger) {
         logger.info(
                 """
                                 Available arguments:
-                                   --list-sources : List all the sources
-                                   -s, --source <source name> : Set the source to use. Required.
-                                   -o, --output <output dictionary> : Set the output dictionary. Required.
+                                   --list-sources : List all the sources.
+                                   -s, --source <source name> : Set the source to use.
+                                   -o, --output <output dictionary> : Set the output dictionary.
                                    --arg key1=value1,key2=value2,... : custom the argument in the url.
-                                           Example:If the url is "https://www.someurl.com/pic?num=${num}", then with
-                                                    "--arg num=1", the exact url will be "https://www.someurl.com/pic?num=1"
                                    --multi-thread : (Experimental) Enable multi thread download. May improve download speed.
+                                   -t, --t <times> : Set the number of times to fetch.
+                                   -f, --full : Download the json data together with the image.
+
+                                See the documentation to get more information about usa
                         """);
     }
 }

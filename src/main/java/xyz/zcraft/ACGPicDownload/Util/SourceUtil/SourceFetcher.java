@@ -5,7 +5,6 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import xyz.zcraft.ACGPicDownload.Commands.Fetch;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
