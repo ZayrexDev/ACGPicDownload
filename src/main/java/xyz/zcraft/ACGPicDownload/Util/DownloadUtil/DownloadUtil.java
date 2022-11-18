@@ -1,17 +1,12 @@
-package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
+package xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
 
+import com.alibaba.fastjson2.JSONWriter.Feature;
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-
-import com.alibaba.fastjson2.JSONWriter.Feature;
 
 public class DownloadUtil {
     private final int maxRetryCount;

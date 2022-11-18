@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
+package xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
 
 import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
 

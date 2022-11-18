@@ -4,9 +4,11 @@ import xyz.zcraft.ACGPicDownload.Util.Logger;
 import xyz.zcraft.ACGPicDownload.Util.ScheduleUtil.Event;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
-import static xyz.zcraft.ACGPicDownload.Util.FetchUtil.SourceUtil.SourceManager.isEmpty;
+import static xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager.isEmpty;
 
 public class Schedule {
     private final ArrayList<Event> events = new ArrayList<>();

@@ -1,7 +1,8 @@
-package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
+package xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
