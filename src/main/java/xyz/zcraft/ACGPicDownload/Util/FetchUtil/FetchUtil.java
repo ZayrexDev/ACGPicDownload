@@ -231,20 +231,30 @@ public class FetchUtil {
         return r;
     }
 
+    private final static int PROGRESS_BAR_LENGTH = 20;
+
     public static int printTaskBar(String prefix, double progress, String suffix, int minLength, Logger logger) {
         StringBuilder sb = new StringBuilder(prefix);
-        int a = (int) (20 * progress);
-        int b = 20 - a;
-        sb.append(" |").append("=".repeat(a)).append(" ".repeat(b)).append("|").append(df.format(progress))
-                .append(suffix);
+        int a = (int) (PROGRESS_BAR_LENGTH * progress);
+        int b = PROGRESS_BAR_LENGTH - a;
+        sb.append(" |").append("=".repeat(Math.min(
+                PROGRESS_BAR_LENGTH,a))).append(" ".repeat(Math.max(0,b)))
+                .append("|");
+        if(progress > 1 || progress < 0) {
+            sb.append("...");
+        }else{
+            sb.append(df.format(progress));
+        }
+
+        sb.append(suffix);
         sb.append(" ".repeat(Math.max(0, minLength - sb.length())));
         logger.printr(sb.toString());
         return sb.length();
     }
 
     private static final DecimalFormat df = new DecimalFormat("#.##%");
-    public static Source getSourceByName(String sourceName)
-            throws IOException, JSONException, SourceNotFoundException {
+
+    public static Source getSourceByName(String sourceName) throws IOException, JSONException, SourceNotFoundException {
         Source s;
         ArrayList<Source> sources = getSourcesConfig();
         if (sources == null) {
