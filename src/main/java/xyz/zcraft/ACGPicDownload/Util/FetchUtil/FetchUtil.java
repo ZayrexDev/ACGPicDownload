@@ -92,14 +92,15 @@ public class FetchUtil {
         }
     }
 
-    public static ArrayList<Result> fetchResult(Source s) throws UnsupportedReturnTypeException, IOException {
+    public static ArrayList<Result> fetchResult(Source s, String proxyHost, int proxyPort)
+            throws UnsupportedReturnTypeException, IOException {
         ArrayList<Result> r;
-        r = SourceFetcher.fetch(s);
+        r = SourceFetcher.fetch(s, proxyHost, proxyPort);
         return r;
     }
 
-    public static void startDownload(ArrayList<Result> r, String outputDir, Logger logger, boolean multiThread,
-            boolean saveFullResult, boolean enableConsoleProgressBar) {
+    public static void startDownload(ArrayList<Result> r, String outputDir, Logger logger,
+            boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err("Can't create directory");
@@ -107,10 +108,10 @@ public class FetchUtil {
         }
         ThreadPoolExecutor tpe;
         DownloadResult[] rs = new DownloadResult[r.size()];
-        if (multiThread) {
+        if (maxThread == -1) {
             tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
         } else {
-            tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+            tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
         }
 
         for (int i = 0; i < r.size(); i++) {
@@ -146,7 +147,7 @@ public class FetchUtil {
                 lastLength = m.length();
 
                 try {
-                    //noinspection BusyWait
+                    // noinspection BusyWait
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -187,7 +188,8 @@ public class FetchUtil {
         }
     }
 
-    public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar) {
+    public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar,
+            String proxyHost, int proxyPort) {
         logger.info("Fetching pictures from " + s.getUrl() + " ...");
 
         ArrayList<Result> r = new ArrayList<>();
@@ -195,7 +197,7 @@ public class FetchUtil {
         int failed = 0;
         int lastLength = 0;
 
-        for (int i = 0; i < times; ) {
+        for (int i = 0; i < times;) {
             if (times > 1 && enableConsoleProgressBar) {
                 try {
                     Thread.sleep(2000);
@@ -211,7 +213,7 @@ public class FetchUtil {
                 lastLength = printTaskBar(sb.toString(), (double) i / (double) times, "", lastLength, logger);
             }
             try {
-                r.addAll(fetchResult(s));
+                r.addAll(fetchResult(s, proxyHost, proxyPort));
             } catch (Exception e) {
                 failed++;
                 if (e instanceof HttpStatusException && ((HttpStatusException) e).getStatusCode() == 429) {
@@ -241,11 +243,11 @@ public class FetchUtil {
         int a = (int) (PROGRESS_BAR_LENGTH * progress);
         int b = PROGRESS_BAR_LENGTH - a;
         sb.append(" |").append("=".repeat(Math.min(
-                PROGRESS_BAR_LENGTH,a))).append(" ".repeat(Math.max(0,b)))
+                PROGRESS_BAR_LENGTH, a))).append(" ".repeat(Math.max(0, b)))
                 .append("|");
-        if(progress > 1 || progress < 0) {
+        if (progress > 1 || progress < 0) {
             sb.append("...");
-        }else{
+        } else {
             sb.append(df.format(progress));
         }
 

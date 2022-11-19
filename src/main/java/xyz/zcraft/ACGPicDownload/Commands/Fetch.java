@@ -20,12 +20,14 @@ public class Fetch {
     public boolean enableConsoleProgressBar = false;
     private String sourceName;
     private String outputDir = new File("").getAbsolutePath();
-    private boolean multiThread = false;
     private Logger logger;
+    private int maxThread = 1;
+    private String proxyHost;
+    private int proxyPort;
     private int times = 1;
     private boolean saveFullResult = false;
 
-    private void parseArguments(ArrayList<String> args){
+    private boolean parseArguments(ArrayList<String> args){
         for (int i = 0; i < args.size(); i++) {
             switch (args.get(i)) {
                 case "-s", "--source" -> {
@@ -34,6 +36,7 @@ public class Fetch {
                         i += 1;
                     } else {
                         logger.err("Please provide a source name.");
+                        return false;
                     }
                 }
                 case "-o", "--output" -> {
@@ -42,6 +45,7 @@ public class Fetch {
                         i += 1;
                     } else {
                         logger.err("Please provide a output path.");
+                        return false;
                     }
                 }
                 case "--arg", "-a", "--args" -> {
@@ -58,9 +62,9 @@ public class Fetch {
                         i += 1;
                     } else {
                         logger.err("Please provide arguments.");
+                        return false;
                     }
                 }
-                case "--multi-thread" -> multiThread = true;
                 case "-f", "--full" -> saveFullResult = true;
                 case "--debug" -> Main.debugOn();
                 case "--list-sources" -> {
@@ -68,12 +72,12 @@ public class Fetch {
                         FetchUtil.listSources(logger);
                     } catch (IOException e) {
                         logger.err("Error:Cannot read source.json");
+                        return false;
                     }
-                    return;
                 }
                 case "-h", "--help" -> {
                     usage(logger);
-                    return;
+                    return false;
                 }
                 case "-t", "--times" -> {
                     if (args.size() > (i + 1)) {
@@ -85,10 +89,39 @@ public class Fetch {
                         }
                     }
                     logger.err("Please enter a number");
+                    return false;
+                }
+                case "-p", "--proxy" -> {
+                    if (args.size() > (i + 1)) {
+                        String[] str = args.get(i + 1).split(":");
+                        if(str.length == 2){
+                            proxyHost = str[0];
+                            try{
+                                proxyPort = Integer.parseInt(str[1]);
+                                i++;
+                                break;
+                            }catch(NumberFormatException ignored){}
+                        }
+                    }
+                    logger.err("Please provide a vaild proxy");
+                    return false;
+                }
+                case "-m", "--max-thread" -> {
+                    if (args.size() > (i + 1)) {
+                        try {
+                            maxThread = Integer.parseInt(args.get(i + 1));
+                            i++;
+                        } catch (NumberFormatException ignored) {
+                            maxThread = -1;
+                        }
+                    }else{
+                        maxThread = -1;
+                    }
+                    break;
                 }
                 default -> {
                     logger.err("Unknown argument " + args.get(i) + " . Please use -h to see usage.");
-                    return;
+                    return false;
                 }
             }
         }
@@ -103,7 +136,7 @@ public class Fetch {
             }
             if (sources == null || sources.size() == 0) {
                 logger.err("No available sources");
-                return;
+                return false;
             } else {
                 sourceName = sources.get(0).getName();
             }
@@ -111,6 +144,7 @@ public class Fetch {
         if (outputDir == null || outputDir.trim().equals("")) {
             outputDir = "";
         }
+        return true;
     }
 
     private Source parseSource(){
@@ -138,7 +172,15 @@ public class Fetch {
     public void main(ArrayList<String> args, Logger logger) {
         this.logger = logger;
 
-        parseArguments(args);
+        if(!parseArguments(args)){
+            return;
+        }
+
+        if(proxyHost != null && proxyPort != 0){
+            System.getProperties().put("proxySet", "true");
+            System.getProperties().put("proxyHost", proxyHost);
+            System.getProperties().put("proxyPort", String.valueOf(proxyPort));
+        }
 
         Source s = parseSource();
 
@@ -148,7 +190,7 @@ public class Fetch {
 
         FetchUtil.replaceArgument(s, arguments);
 
-        ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar);
+        ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar,proxyHost,proxyPort);
         if (r.size() == 0) {
             logger.info("No pictures were found!");
             return;
@@ -156,7 +198,7 @@ public class Fetch {
             logger.info("Got " + r.size() + " pictures!");
         }
 
-        FetchUtil.startDownload(r, outputDir, logger, multiThread, saveFullResult, enableConsoleProgressBar);
+        FetchUtil.startDownload(r, outputDir, logger, saveFullResult, enableConsoleProgressBar, maxThread);
     }
 
     public static void usage(Logger logger) {

@@ -59,8 +59,9 @@ public class DownloadUtil {
             is.close();
             fos.close();
 
-            if(saveFullResult && r.getJson() != null){
-                jsonf = new File(toDic, r.getFileName().substring(0, r.getFileName().lastIndexOf(".") + 1).concat("json"));
+            if (saveFullResult && r.getJson() != null) {
+                jsonf = new File(toDic,
+                        r.getFileName().substring(0, r.getFileName().lastIndexOf(".") + 1).concat("json"));
                 jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
 
                 String str = r.getJson().toJSONString(Feature.PrettyFormat);
@@ -94,6 +95,8 @@ public class DownloadUtil {
                     d.setStatus(DownloadStatus.FAILED);
                 }
                 throw e;
+            } else {
+                download(r, toDic, d, saveFullResult);
             }
         }
     }
