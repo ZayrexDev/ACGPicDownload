@@ -197,6 +197,11 @@ public class FetchUtil {
         int failed = 0;
         int lastLength = 0;
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("Fetching 0/").append(times);
+        logger.printr(sb.toString());
+        lastLength = printTaskBar(sb.toString(), 0, "", lastLength, logger);
+
         for (int i = 0; i < times;) {
             if (times > 1 && enableConsoleProgressBar) {
                 try {
@@ -204,7 +209,7 @@ public class FetchUtil {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                StringBuilder sb = new StringBuilder();
+                sb = new StringBuilder();
                 sb.append("Fetching ").append(i).append("/").append(times);
                 if (failed != 0) {
                     sb.append(" Failed:").append(failed);
@@ -225,7 +230,7 @@ public class FetchUtil {
             i++;
         }
 
-        StringBuilder sb = new StringBuilder();
+        sb = new StringBuilder();
         sb.append("Fetching ").append(times).append("/").append(times);
         if (failed != 0) {
             sb.append(" Failed:").append(failed);
