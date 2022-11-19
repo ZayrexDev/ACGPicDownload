@@ -1,7 +1,8 @@
-package xyz.zcraft.ACGPicDownload.Util.FetchUtil.DownloadUtil;
+package xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
@@ -17,6 +18,7 @@ public class DownloadManager {
     private boolean done = false;
 
     public DownloadManager(DownloadResult[] process) {
+        startTime = System.currentTimeMillis();
         this.process = process;
     }
 
@@ -26,9 +28,14 @@ public class DownloadManager {
 
     private long lastDownloaded = 0;
     private long lastTime = 0;
+    private long startTime = 0;
+
+    private int timesGot = 0;
+    private int mtf = 8;
 
     @Override
     public String toString() {
+        timesGot++;
         StringBuilder sb = new StringBuilder();
 
         total = 0;
@@ -53,7 +60,7 @@ public class DownloadManager {
                 downloaded += r.getTotalSize();
             } else if (r.getStatus() == DownloadStatus.FAILED) {
                 failed++;
-                if(!Objects.equals("", r.getErrorMessage())){
+                if (!Objects.equals("", r.getErrorMessage())) {
                     error.add(r.getErrorMessage());
                     r.setErrorMessage("");
                 }
@@ -64,11 +71,22 @@ public class DownloadManager {
             sb.append("Error:").append(error2).append("\n");
         }
 
-        sb.append("Wait:").append(created).append(" Start:").append(started).append(" Done:").append(completed).append(" Fail:").append(failed).append(" |");
+        sb.append(timesGot > mtf ? "W:" : "Wait:").append(created)
+                .append(timesGot > mtf ? " S:" : " Start:").append(started)
+                .append(timesGot > mtf ? " D:" : " Done:").append(completed)
+                .append(timesGot > mtf ? " F:" : " Fail:").append(failed)
+                .append(" |");
         double p = (double) downloaded / (double) total;
         int a = (int) (PROGRESS_BAR_SIZE * p);
+        if (a < 0) {
+            a = 0;
+        } else if (a > PROGRESS_BAR_SIZE) {
+            a = PROGRESS_BAR_SIZE;
+        }
         int b = PROGRESS_BAR_SIZE - a;
-        sb.append("=".repeat(Math.abs(Math.min(PROGRESS_BAR_SIZE, a)))).append(" ".repeat(Math.abs(Math.max(0, b)))).append("|");
+        sb.append("=".repeat(a))
+                .append(" ".repeat(b))
+                .append("|");
 
         if (p > 1) {
             sb.append("...");
@@ -76,21 +94,34 @@ public class DownloadManager {
             sb.append(df.format(p));
         }
 
-        if(lastTime != 0){
+        if (lastTime != 0) {
             sb.append(" ");
-            double speed = Math.max((((double)(downloaded - lastDownloaded)) / 1024.0) / (((double)(System.currentTimeMillis() - lastTime)) / 1000.0),0);
-            if(speed > 1024.0){
+            double speed = Math.max((((double) (downloaded - lastDownloaded)) / 1024.0)
+                    / (((double) (System.currentTimeMillis() - lastTime)) / 1000.0), 0);
+            if (speed > 1024.0) {
                 sb.append(df2.format(speed / 1024.0)).append("mb/s");
-            }else{
+            } else {
                 sb.append(df2.format(speed)).append("kb/s");
+            }
+
+            double avg = Math
+                    .max(((double) (total) / 1024.0) / ((double) (System.currentTimeMillis() - startTime) / 1000.0), 0);
+            if (avg > 1024.0) {
+                sb.append(" AVG:").append(df2.format(avg / 1024.0).concat("mb/s"));
+            } else {
+                sb.append(" AVG:").append(df2.format(avg).concat("kb/s"));
+            }
+
+            double eta = (double) (total - downloaded) / 1024 / avg;
+
+            if (eta >= 0) {
+                sb.append(" ETA:").append(df2.format(eta)).append("s");
             }
         }
 
         lastDownloaded = downloaded;
         lastTime = System.currentTimeMillis();
 
-
-        // sb.append("|").append(df2.format(downloaded / 1024)).append("/").append(df2.format(total / 1024));
         if (created == 0 && started == 0) {
             done = true;
         }

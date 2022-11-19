@@ -1,0 +1,54 @@
+[
+  {
+    "name": "lolicon",
+    "description": "Picture from Lolicon API (api.lolicon.app)",
+    "url": "https://api.lolicon.app/setu/v2?{r18=$r18}{&num=$num}{&keyword=$keyword}{&tag=$tag}",
+    "returnType": "json",
+    "defaultArgs": {
+      "r18": "0",
+      "num": "1"
+    },
+    "picUrl": "urls/original",
+    "sourceKey": "data",
+    "nameRule": "{PID-$pid }{$title}{ by $author}{.$ext}"
+  },
+  {
+    "name": "dmoe",
+    "description": "Picture from Dmoe API (dmoe.cc)",
+    "returnType": "redirect",
+    "url": "https://www.dmoe.cc/random.php",
+    "picUrl": "imgurl"
+  },
+  {
+    "name": "mirlkoi",
+    "description": "Picture from MirlKoiAPI (api.iw233.cn)",
+    "returnType": "json",
+    "url": "https://iw233.cn/api.php?sort=random&type=json{&num=$num}",
+    "defaultArgs": {
+      "num": "1"
+    },
+    "picUrl": "pic"
+  },
+  {
+    "name": "yande",
+    "description": "Picture from Yande (yande.re)",
+    "returnType": "json",
+    "url": "https://yande.re/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
+    "defaultArgs": {
+      "limit": "50"
+    },
+    "picUrl": "file_url",
+    "nameRule": "{$md5}{.$file_ext}"
+  },
+  {
+    "name": "konachan",
+    "description": "Picture from Konachan (konachan.com)",
+    "returnType": "json",
+    "url": "https://konachan.com/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
+    "defaultArgs": {
+      "limit": "50"
+    },
+    "picUrl": "file_url",
+    "nameRule": "{$md5}{.$file_ext}"
+  }
+]

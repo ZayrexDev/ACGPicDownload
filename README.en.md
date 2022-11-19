@@ -33,15 +33,16 @@ java -jar ACGPicDownload.jar fetch [参数]
 
 #### Arguments
 
-|             Argument              |                                            Description                                            |
-| :-------------------------------: | :-----------------------------------------------------------------------------------------------: |
-|          --list-sources           |                                       List all the sources                                        |
-|     -s, --source source_name      | Set the source to use. If it's not set, then the program will use the first source in the config. |
-|  -o, --output output_dictionary   |  Set the output dictionary. If it's not set, the program will use the dictionary of the program.  |
-| --arg key1=value1,key2=value2,... |                       custom the argument in the url. Please see[url](#url)                       |
-|          --multi-thread           |           **Experimental**. Enable multi thread download. (May improve download speed?)           |
-|         -t, --times times         |                  Set times to fetch(**Not Recommended**, may trigger API limits)                  |
-|             -f,--full             | Download and save the image's json file to the json file that has the same name as the image file |
+|             Argument              |                                                   Description                                                    |
+| :-------------------------------: | :--------------------------------------------------------------------------------------------------------------: |
+|          --list-sources           |                                               List all the sources                                               |
+|     -s, --source source_name      |        Set the source to use. If it's not set, then the program will use the first source in the config.         |
+|  -o, --output output_dictionary   |         Set the output dictionary. If it's not set, the program will use the dictionary of the program.          |
+| --arg key1=value1,key2=value2,... |                              custom the argument in the url. Please see[url](#url)                               |
+|      -m, --max-thread count       | The the max count of download progress at the same time. If count is not given then the count will be unlimited. |
+|         -t, --times times         |                         Set times to fetch(**Not Recommended**, may trigger API limits)                          |
+|             -f,--full             |        Download and save the image's json file to the json file that has the same name as the image file         |
+|     -p, --proxy address:port      |                                    Set the proxy of fetching and downloading                                     |
 
 ### Subcommand schedule
 
