@@ -61,5 +61,31 @@
     },
     "picUrl": "file_url",
     "nameRule": "{$md5}{.$file_ext}"
+  },
+  {
+    "name": "btstu",
+    "description": "Picture from btstu (api.btstu.cn)",
+    "returnType": "redirect",
+    "url": "https://api.btstu.cn/sjbz/api.php?lx=dongman&format=images"
+  },
+  {
+    "name": "r10086",
+    "description": "Picture from btstu (img.r10086.com)",
+    "returnType": "redirect",
+    "url": "https://api.r10086.com/img-api.php?type=%E5%8A%A8%E6%BC%AB%E7%BB%BC%E5%90%881"
+  },
+  {
+    "name": "mtyqx",
+    "description": "Picture from btstu (api.mtyqx.cn)",
+    "returnType": "redirect",
+    "url": "https://api.mtyqx.cn/tapi/random.php"
+  },{
+    "name": "eee.dog",
+    "description": "Picture from eee.dog (www.eee.dog/tech/rand-pic-api.html)",
+    "returnType": "redirect",
+    "url": "https://api.yimian.xyz/img?type=moe{&r18=$r18}",
+    "defaultArgs": {
+      "r18": "false"
+    }
   }
 ]
