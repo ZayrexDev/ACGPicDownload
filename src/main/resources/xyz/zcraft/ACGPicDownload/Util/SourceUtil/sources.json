@@ -50,5 +50,16 @@
     },
     "picUrl": "file_url",
     "nameRule": "{$md5}{.$file_ext}"
+  },
+  {
+    "name": "konachan_safe",
+    "description": "Picture from Konachan (SFW) (konachan.net)",
+    "returnType": "json",
+    "url": "https://konachan.net/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
+    "defaultArgs": {
+      "limit": "50"
+    },
+    "picUrl": "file_url",
+    "nameRule": "{$md5}{.$file_ext}"
   }
 ]
