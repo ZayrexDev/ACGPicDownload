@@ -1,7 +1,8 @@
-package xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
+package xyz.zcraft.acgpicdownload.util.downloadutil;
 
 import com.alibaba.fastjson2.JSONWriter.Feature;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
+import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 
 import java.io.*;
 import java.net.URL;
@@ -60,8 +61,7 @@ public class DownloadUtil {
             fos.close();
 
             if (saveFullResult && r.getJson() != null) {
-                jsonf = new File(toDic,
-                        r.getFileName().substring(0, r.getFileName().lastIndexOf(".") + 1).concat("json"));
+                jsonf = new File(toDic, r.getFileName().substring(0, r.getFileName().lastIndexOf(".") + 1).concat("json"));
                 jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
 
                 String str = r.getJson().toJSONString(Feature.PrettyFormat);
@@ -74,6 +74,7 @@ public class DownloadUtil {
                 d.setStatus(DownloadStatus.COMPLETED);
             }
         } catch (IOException e) {
+            Main.logError(e);
             if (is != null) {
                 is.close();
             }

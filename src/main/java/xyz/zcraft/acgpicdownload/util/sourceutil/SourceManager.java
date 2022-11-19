@@ -1,9 +1,11 @@
-package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
+package xyz.zcraft.acgpicdownload.util.sourceutil;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
+import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.exceptions.SourceConfigException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -63,25 +65,23 @@ public class SourceManager {
             try {
                 verifySource(s);
                 sources.add(s);
-            } catch (Exception e) {
+            } catch (SourceConfigException e) {
                 System.err.println("Failed to parse source " + s.getName() + " : " + e);
+                Main.logError(e);
             }
         });
         return sources;
     }
 
-    private static void verifySource(Source source) throws Exception {
+    private static void verifySource(Source source) throws SourceConfigException {
         if (isEmpty(source.getName())) {
-            throw new Exception("Source name must not be empty");
+            throw new SourceConfigException("Source name must not be empty");
         }
         if (isEmpty(source.getUrl())) {
-            throw new Exception("Source url must not be empty");
-        }
-        if (isEmpty(source.getPicUrl())) {
-            throw new Exception("Source's picUrl must not be empty");
+            throw new SourceConfigException("Source url must not be empty");
         }
         if (!isEmpty(source.getReturnType()) && !returnTypes.contains(source.getReturnType())) {
-            throw new Exception("Unknown return type:" + source.getReturnType());
+            throw new SourceConfigException("Unknown return type:" + source.getReturnType());
         }
     }
 

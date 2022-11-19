@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
+package xyz.zcraft.acgpicdownload.util.sourceutil;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
@@ -6,9 +6,9 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import xyz.zcraft.ACGPicDownload.Exceptions.UnsupportedReturnTypeException;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
+import xyz.zcraft.acgpicdownload.exceptions.UnsupportedReturnTypeException;
+import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
+import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,21 +16,18 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class SourceFetcher {
-    public static ArrayList<Result> fetch(Source source, String proxyHost,
-            int proxyPort) throws UnsupportedReturnTypeException, IOException {
-        Connection conn = Jsoup.connect(source.getUrl().replaceAll("\\|", "%7C"))
-                .followRedirects(true)
-                .ignoreContentType(true);
+    private final static String[] ILLEGAL_STRINGS = {"\\\\", "/", ":", "\\*", "\\?", "\"", "<", ">", "\\|"};
+
+    public static ArrayList<Result> fetch(Source source, String proxyHost, int proxyPort) throws UnsupportedReturnTypeException, IOException {
+        Connection conn = Jsoup.connect(source.getUrl().replaceAll("\\|", "%7C")).followRedirects(true).ignoreContentType(true);
 
         if (proxyHost != null && proxyPort != 0) {
             conn.proxy(proxyHost, proxyPort);
         }
 
-        Connection.Response response = conn.timeout(10000)
-                .execute();
+        Connection.Response response = conn.timeout(10000).execute();
         if (SourceManager.isEmpty(source.getReturnType())) {
             if (response.body().startsWith("{") && response.body().endsWith("}")) {
                 source.setReturnType("json");
@@ -50,12 +47,11 @@ public class SourceFetcher {
         }
     }
 
-    public static ArrayList<Result> parseJson(String jsonString, Source source) {
+    public static ArrayList<Result> parseJson(String jsonString, Source source) throws JSONException {
         Object tmpObj = JSON.parse(jsonString);
 
         Object data;
-        if (tmpObj instanceof JSONObject) {
-            JSONObject obj = (JSONObject) tmpObj;
+        if (tmpObj instanceof JSONObject obj) {
 
             // Follow the pathToSource
             if (source.getSourceKey() != null && !source.getSourceKey().trim().equals("")) {
@@ -64,16 +60,17 @@ public class SourceFetcher {
                 data = obj;
             }
         } else {
-            JSONArray arr = (JSONArray) tmpObj;
-            data = arr;
+            data = tmpObj;
         }
 
         // Judge if to parse as array
         ArrayList<JSONObject> pics = new ArrayList<>();
         if (data instanceof JSONArray array) {
             array.forEach(o -> pics.add((JSONObject) o));
-        } else {
+        } else if (data instanceof JSONObject) {
             pics.add((JSONObject) data);
+        } else {
+            throw new JSONException("Could not parse json");
         }
 
         ArrayList<Result> results = new ArrayList<>();
@@ -83,13 +80,10 @@ public class SourceFetcher {
             List<Result> r = new LinkedList<>();
             Object t = followPath(jsonObject, source.getPicUrl());
             if (t instanceof JSONArray) {
-                ((JSONArray) t).forEach(new Consumer<Object>() {
-                    @Override
-                    public void accept(Object arg0) {
-                        Result result = new Result();
-                        result.setUrl(String.valueOf(arg0));
-                        r.add(result);
-                    }
+                ((JSONArray) t).forEach(arg0 -> {
+                    Result result = new Result();
+                    result.setUrl(String.valueOf(arg0));
+                    r.add(result);
                 });
             } else {
                 Result result = new Result();
@@ -98,33 +92,23 @@ public class SourceFetcher {
                 r.add(result);
             }
 
-            // Result r = new Result();
-            //
-            // r.setUrl(String.valueOf(followPath(jsonObject, source.getPicUrl())));
-
-            r.forEach(new Consumer<Result>() {
-                @Override
-                public void accept(Result arg0) {
-                    if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
-                        arg0.setFileName(FetchUtil.replaceArgument(source.getNameRule(), jsonObject));
-                        for (String l : ILLEGAL_STRINGS) {
-                            arg0.setFileName(arg0.getFileName().replaceAll(l, "_"));
-                        }
-                    } else {
-                        arg0.setFileName(arg0.getUrl().substring(arg0.getUrl().lastIndexOf("/") + 1));
+            r.forEach(arg0 -> {
+                if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
+                    arg0.setFileName(FetchUtil.replaceArgument(source.getNameRule(), jsonObject));
+                    for (String l : ILLEGAL_STRINGS) {
+                        arg0.setFileName(arg0.getFileName().replaceAll(l, "_"));
                     }
-
-                    arg0.setFileName(new String(
-                            arg0.getFileName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
-                    results.add(arg0);
+                } else {
+                    arg0.setFileName(arg0.getUrl().substring(arg0.getUrl().lastIndexOf("/") + 1));
                 }
+
+                arg0.setFileName(new String(arg0.getFileName().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+                results.add(arg0);
             });
         });
 
         return results;
     }
-
-    private final static String[] ILLEGAL_STRINGS = { "\\\\", "/", ":", "\\*", "\\?", "\"", "<", ">", "\\|" };
 
     // Follow the given path.
     private static Object followPath(JSONObject obj, String path) {

@@ -1,14 +1,14 @@
-package xyz.zcraft.ACGPicDownload.Commands;
+package xyz.zcraft.acgpicdownload.commands;
 
-import xyz.zcraft.ACGPicDownload.Util.Logger;
-import xyz.zcraft.ACGPicDownload.Util.ScheduleUtil.Event;
+import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.scheduleutil.Event;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager.isEmpty;
+import static xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager.isEmpty;
 
 public class Schedule {
     private final ArrayList<Event> events = new ArrayList<>();

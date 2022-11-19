@@ -1,19 +1,19 @@
-package xyz.zcraft.ACGPicDownload.Util.FetchUtil;
+package xyz.zcraft.acgpicdownload.util.fetchutil;
 
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.HttpStatusException;
-import xyz.zcraft.ACGPicDownload.Exceptions.SourceNotFoundException;
-import xyz.zcraft.ACGPicDownload.Exceptions.UnsupportedReturnTypeException;
-import xyz.zcraft.ACGPicDownload.Main;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadManager;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadResult;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadStatus;
-import xyz.zcraft.ACGPicDownload.Util.DownloadUtil.DownloadUtil;
-import xyz.zcraft.ACGPicDownload.Util.Logger;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceFetcher;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.SourceManager;
+import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.exceptions.SourceNotFoundException;
+import xyz.zcraft.acgpicdownload.exceptions.UnsupportedReturnTypeException;
+import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadUtil;
+import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
+import xyz.zcraft.acgpicdownload.util.sourceutil.SourceFetcher;
+import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +24,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class FetchUtil {
+    private final static int PROGRESS_BAR_LENGTH = 20;
+    private static final DecimalFormat df = new DecimalFormat("#.##%");
+
     public static String replaceArgument(String orig, JSONObject args) {
         if (orig == null) {
             return null;
@@ -33,8 +36,8 @@ public class FetchUtil {
         int r;
 
         while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
-            String[] a = { orig.substring(l, r) };
-            boolean[] have = { false };
+            String[] a = {orig.substring(l, r)};
+            boolean[] have = {false};
 
             String str = a[0];
             args.forEach((t, o) -> {
@@ -100,7 +103,7 @@ public class FetchUtil {
     }
 
     public static void startDownload(ArrayList<Result> r, String outputDir, Logger logger,
-            boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
+                                     boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err("Can't create directory");
@@ -122,6 +125,7 @@ public class FetchUtil {
                 try {
                     new DownloadUtil(1).download(result, outDir, dr, saveFullResult);
                 } catch (Exception e) {
+                    Main.logError(e);
                     dr.setStatus(DownloadStatus.FAILED);
                     dr.setErrorMessage(e.toString());
                 }
@@ -133,7 +137,7 @@ public class FetchUtil {
     }
 
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
-            boolean enableConsoleProgressBar, Logger logger) {
+                                       boolean enableConsoleProgressBar, Logger logger) {
         DownloadManager manager = new DownloadManager(result);
         Thread t = new Thread(() -> {
             int lastLength = 0;
@@ -150,6 +154,7 @@ public class FetchUtil {
                     // noinspection BusyWait
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
+                    Main.logError(e);
                     e.printStackTrace();
                 }
             }
@@ -189,7 +194,7 @@ public class FetchUtil {
     }
 
     public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar,
-            String proxyHost, int proxyPort) {
+                                          String proxyHost, int proxyPort) {
         logger.info("Fetching pictures from " + s.getUrl() + " ...");
 
         ArrayList<Result> r = new ArrayList<>();
@@ -202,11 +207,12 @@ public class FetchUtil {
         logger.printr(sb.toString());
         lastLength = printTaskBar(sb.toString(), 0, "", lastLength, logger);
 
-        for (int i = 0; i < times;) {
+        for (int i = 0; i < times; ) {
             if (times > 1 && enableConsoleProgressBar) {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
+                    Main.logError(e);
                     e.printStackTrace();
                 }
                 sb = new StringBuilder();
@@ -220,6 +226,7 @@ public class FetchUtil {
             try {
                 r.addAll(fetchResult(s, proxyHost, proxyPort));
             } catch (Exception e) {
+                Main.logError(e);
                 failed++;
                 if (e instanceof HttpStatusException && ((HttpStatusException) e).getStatusCode() == 429) {
                     logger.printr("Error: rate limit exceeded \n");
@@ -241,14 +248,12 @@ public class FetchUtil {
         return r;
     }
 
-    private final static int PROGRESS_BAR_LENGTH = 20;
-
     public static int printTaskBar(String prefix, double progress, String suffix, int minLength, Logger logger) {
         StringBuilder sb = new StringBuilder(prefix);
         int a = (int) (PROGRESS_BAR_LENGTH * progress);
         int b = PROGRESS_BAR_LENGTH - a;
         sb.append(" |").append("=".repeat(Math.min(
-                PROGRESS_BAR_LENGTH, a))).append(" ".repeat(Math.max(0, b)))
+                        PROGRESS_BAR_LENGTH, a))).append(" ".repeat(Math.max(0, b)))
                 .append("|");
         if (progress > 1 || progress < 0) {
             sb.append("...");
@@ -261,8 +266,6 @@ public class FetchUtil {
         logger.printr(sb.toString());
         return sb.length();
     }
-
-    private static final DecimalFormat df = new DecimalFormat("#.##%");
 
     public static Source getSourceByName(String sourceName) throws IOException, JSONException, SourceNotFoundException {
         Source s;

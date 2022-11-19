@@ -1,15 +1,20 @@
-package xyz.zcraft.ACGPicDownload;
+package xyz.zcraft.acgpicdownload;
 
-import xyz.zcraft.ACGPicDownload.Commands.*;
-import xyz.zcraft.ACGPicDownload.Util.Logger;
+import xyz.zcraft.acgpicdownload.commands.Fetch;
+import xyz.zcraft.acgpicdownload.commands.Schedule;
+import xyz.zcraft.acgpicdownload.util.Logger;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class Main {
     private static boolean debug = false;
     public static PrintWriter out;
-
+    public static PrintWriter err;
     public static boolean isDebug() {
         return debug;
     }
@@ -21,6 +26,30 @@ public class Main {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void logError(String message) {
+        if (err == null) {
+            try {
+                err = new PrintWriter("error.log");
+            } catch (FileNotFoundException ignored) {
+            }
+        }
+        err.print("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]");
+        err.println(message);
+        err.flush();
+    }
+
+    public static void logError(Exception e) {
+        if (err == null) {
+            try {
+                err = new PrintWriter("error.log");
+            } catch (FileNotFoundException ignored) {
+            }
+        }
+        err.print("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]");
+        e.printStackTrace(err);
+        err.flush();
     }
 
     public static void main(String[] args) {

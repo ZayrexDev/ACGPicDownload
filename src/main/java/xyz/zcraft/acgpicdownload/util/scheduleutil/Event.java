@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Util.ScheduleUtil;
+package xyz.zcraft.acgpicdownload.util.scheduleutil;
 
 import java.time.Duration;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Exceptions;
+package xyz.zcraft.acgpicdownload.exceptions;
 
 public class UnsupportedReturnTypeException extends Exception {
     public UnsupportedReturnTypeException() {

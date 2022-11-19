@@ -1,6 +1,6 @@
-package xyz.zcraft.ACGPicDownload.Util.DownloadUtil;
+package xyz.zcraft.acgpicdownload.util.downloadutil;
 
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
+import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 
 public class DownloadResult {
     private long totalSize;

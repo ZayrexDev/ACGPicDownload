@@ -1,12 +1,12 @@
-package xyz.zcraft.ACGPicDownload.Commands;
+package xyz.zcraft.acgpicdownload.commands;
 
 import com.alibaba.fastjson2.JSONException;
-import xyz.zcraft.ACGPicDownload.Exceptions.SourceNotFoundException;
-import xyz.zcraft.ACGPicDownload.Main;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.FetchUtil;
-import xyz.zcraft.ACGPicDownload.Util.FetchUtil.Result;
-import xyz.zcraft.ACGPicDownload.Util.Logger;
-import xyz.zcraft.ACGPicDownload.Util.SourceUtil.Source;
+import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.exceptions.SourceNotFoundException;
+import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
+import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
+import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,23 @@ public class Fetch {
     private int times = 1;
     private boolean saveFullResult = false;
 
-    private boolean parseArguments(ArrayList<String> args){
+    public static void usage(Logger logger) {
+        logger.info(
+                """
+                                Available arguments:
+                                   --list-sources : List all the sources.
+                                   -s, --source <source name> : Set the source to use.
+                                   -o, --output <output dictionary> : Set the output dictionary.
+                                   --arg key1=value1,key2=value2,... : custom the argument in the url.
+                                   --multi-thread : (Experimental) Enable multi thread download. May improve download speed.
+                                   -t, --t <times> : Set the number of times to fetch.
+                                   -f, --full : Download the json data together with the image.
+
+                                See the documentation to get more information about usage
+                        """);
+    }
+
+    private boolean parseArguments(ArrayList<String> args) {
         for (int i = 0; i < args.size(); i++) {
             switch (args.get(i)) {
                 case "-s", "--source" -> {
@@ -72,6 +88,7 @@ public class Fetch {
                         FetchUtil.listSources(logger);
                     } catch (IOException e) {
                         logger.err("Error:Cannot read source.json");
+                        Main.logError(e);
                     }
                     return false;
                 }
@@ -94,13 +111,14 @@ public class Fetch {
                 case "-p", "--proxy" -> {
                     if (args.size() > (i + 1)) {
                         String[] str = args.get(i + 1).split(":");
-                        if(str.length == 2){
+                        if (str.length == 2) {
                             proxyHost = str[0];
-                            try{
+                            try {
                                 proxyPort = Integer.parseInt(str[1]);
                                 i++;
                                 break;
-                            }catch(NumberFormatException ignored){}
+                            } catch (NumberFormatException ignored) {
+                            }
                         }
                     }
                     logger.err("Please provide a vaild proxy");
@@ -114,7 +132,7 @@ public class Fetch {
                         } catch (NumberFormatException ignored) {
                             maxThread = -1;
                         }
-                    }else{
+                    } else {
                         maxThread = -1;
                     }
                     break;
@@ -132,7 +150,8 @@ public class Fetch {
                 sources = FetchUtil.getSourcesConfig();
             } catch (IOException e) {
                 logger.err("Error:Cannot read source.json");
-                throw new RuntimeException(e);
+                Main.logError(e);
+                return false;
             }
             if (sources == null || sources.size() == 0) {
                 logger.err("No available sources");
@@ -147,17 +166,17 @@ public class Fetch {
         return true;
     }
 
-    private Source parseSource(){
+    private Source parseSource() {
         Source s;
         try {
             s = FetchUtil.getSourceByName(sourceName);
         } catch (IOException e) {
             logger.err("Could read sources.json");
             return null;
-        }catch(JSONException e){
-            logger.err("Could not prase sources.json");
+        } catch (JSONException e) {
+            logger.err("Could not parse sources.json");
             return null;
-        }catch(SourceNotFoundException e){
+        } catch (SourceNotFoundException e) {
             logger.err("Could not find source " + sourceName);
             return null;
         }
@@ -172,11 +191,11 @@ public class Fetch {
     public void main(ArrayList<String> args, Logger logger) {
         this.logger = logger;
 
-        if(!parseArguments(args)){
+        if (!parseArguments(args)) {
             return;
         }
 
-        if(proxyHost != null && proxyPort != 0){
+        if (proxyHost != null && proxyPort != 0) {
             System.getProperties().put("proxySet", "true");
             System.getProperties().put("proxyHost", proxyHost);
             System.getProperties().put("proxyPort", String.valueOf(proxyPort));
@@ -190,7 +209,7 @@ public class Fetch {
 
         FetchUtil.replaceArgument(s, arguments);
 
-        ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar,proxyHost,proxyPort);
+        ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar, proxyHost, proxyPort);
         if (r.size() == 0) {
             logger.info("No pictures were found!");
             return;
@@ -199,21 +218,5 @@ public class Fetch {
         }
 
         FetchUtil.startDownload(r, outputDir, logger, saveFullResult, enableConsoleProgressBar, maxThread);
-    }
-
-    public static void usage(Logger logger) {
-        logger.info(
-                """
-                                Available arguments:
-                                   --list-sources : List all the sources.
-                                   -s, --source <source name> : Set the source to use.
-                                   -o, --output <output dictionary> : Set the output dictionary.
-                                   --arg key1=value1,key2=value2,... : custom the argument in the url.
-                                   --multi-thread : (Experimental) Enable multi thread download. May improve download speed.
-                                   -t, --t <times> : Set the number of times to fetch.
-                                   -f, --full : Download the json data together with the image.
-
-                                See the documentation to get more information about usage
-                        """);
     }
 }

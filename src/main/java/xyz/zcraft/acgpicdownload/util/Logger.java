@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Util;
+package xyz.zcraft.acgpicdownload.util;
 
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;

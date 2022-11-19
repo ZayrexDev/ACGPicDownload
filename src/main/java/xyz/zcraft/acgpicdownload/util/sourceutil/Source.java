@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Util.SourceUtil;
+package xyz.zcraft.acgpicdownload.util.sourceutil;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;

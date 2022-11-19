@@ -1,4 +1,4 @@
-package xyz.zcraft.ACGPicDownload.Util.FetchUtil;
+package xyz.zcraft.acgpicdownload.util.fetchutil;
 
 import com.alibaba.fastjson2.JSONObject;
 
@@ -15,7 +15,6 @@ public class Result {
 
     public Result() {
     }
-
 
 
     public String getFileName() {
