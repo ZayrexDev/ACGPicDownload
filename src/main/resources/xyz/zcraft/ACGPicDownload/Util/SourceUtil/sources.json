@@ -33,7 +33,18 @@
     "name": "yande",
     "description": "Picture from Yande (yande.re)",
     "returnType": "json",
-    "url": "https://yande.re/post.json{?limit=$limit}",
+    "url": "https://yande.re/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
+    "defaultArgs": {
+      "limit": "50"
+    },
+    "picUrl": "file_url",
+    "nameRule": "{$md5}{.$file_ext}"
+  },
+  {
+    "name": "konachan",
+    "description": "Picture from Konachan (konachan.com)",
+    "returnType": "json",
+    "url": "https://konachan.com/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
     "defaultArgs": {
       "limit": "50"
     },
