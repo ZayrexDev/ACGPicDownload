@@ -78,9 +78,14 @@ public class DownloadManager {
                 .append(" |");
         double p = (double) downloaded / (double) total;
         int a = (int) (PROGRESS_BAR_SIZE * p);
+        if(a < 0){
+            a = 0;
+        }else if(a > PROGRESS_BAR_SIZE){
+            a = PROGRESS_BAR_SIZE;
+        }
         int b = PROGRESS_BAR_SIZE - a;
-        sb.append("=".repeat(Math.min(PROGRESS_BAR_SIZE, a)))
-                .append(" ".repeat(Math.max(0, b)))
+        sb.append("=".repeat(a))
+                .append(" ".repeat(b))
                 .append("|");
 
         if (p > 1) {
