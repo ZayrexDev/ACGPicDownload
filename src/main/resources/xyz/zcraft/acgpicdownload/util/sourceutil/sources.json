@@ -70,13 +70,13 @@
   },
   {
     "name": "r10086",
-    "description": "Picture from btstu (img.r10086.com)",
+    "description": "Picture from r10086 (img.r10086.com)",
     "returnType": "redirect",
     "url": "https://api.r10086.com/img-api.php?type=%E5%8A%A8%E6%BC%AB%E7%BB%BC%E5%90%881"
   },
   {
     "name": "mtyqx",
-    "description": "Picture from btstu (api.mtyqx.cn)",
+    "description": "Picture from mtyqx (api.mtyqx.cn)",
     "returnType": "redirect",
     "url": "https://api.mtyqx.cn/tapi/random.php"
   },{
