@@ -72,8 +72,8 @@ public class Fetch {
                         FetchUtil.listSources(logger);
                     } catch (IOException e) {
                         logger.err("Error:Cannot read source.json");
-                        return false;
                     }
+                    return false;
                 }
                 case "-h", "--help" -> {
                     usage(logger);
