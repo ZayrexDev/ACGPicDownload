@@ -79,7 +79,8 @@
     "description": "Picture from mtyqx (api.mtyqx.cn)",
     "returnType": "redirect",
     "url": "https://api.mtyqx.cn/tapi/random.php"
-  },{
+  },
+  {
     "name": "eee.dog",
     "description": "Picture from eee.dog (www.eee.dog/tech/rand-pic-api.html)",
     "returnType": "redirect",
@@ -87,5 +88,23 @@
     "defaultArgs": {
       "r18": "false"
     }
+  },
+  {
+    "name": "xiaowai",
+    "description": "Picture from xiaowai (api.ixiaowai.cn)",
+    "returnType": "redirect",
+    "url": "https://api.ixiaowai.cn/api/api.php"
+  },
+  {
+    "name": "vvhan",
+    "description": "Picture from vvhan (api.vvhan.com)",
+    "returnType": "redirect",
+    "url": "https://api.vvhan.com/api/acgimg"
+  },
+  {
+    "name": "tenapi",
+    "description": "Picture from tenapi (tenapi.cn)",
+    "returnType": "redirect",
+    "url": "https://tenapi.cn/acg"
   }
 ]
