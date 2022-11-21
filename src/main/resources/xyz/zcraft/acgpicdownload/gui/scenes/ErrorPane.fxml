@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="errorPane" style="-fx-background-color: #ffffffb8;"
+            xmlns="http://javafx.com/javafx/19"
+            fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.ErrorPaneController">
+   <children>
+      <VBox prefHeight="197.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #c3c3c394;"
+            AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+            AnchorPane.topAnchor="100.0">
+         <children>
+            <Label text="错误：">
+               <font>
+                  <Font size="20.0"/>
+               </font>
+            </Label>
+            <TextArea fx:id="errorArea" editable="false" prefHeight="200.0" prefWidth="200.0"/>
+            <MFXButton fx:id="errorOkBtn" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308"
+                       onAction="#errorOkBtnOnAction" text="好叭"/>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="100.0" right="100.0" top="10.0"/>
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

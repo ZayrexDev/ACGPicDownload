@@ -3,28 +3,61 @@ package xyz.zcraft.acgpicdownload.gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController;
+import xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.WelcomeSceneController;
 
 import java.util.Objects;
 
 public class GUI extends Application {
+    public FetchSceneController fetchSceneController;
+    public WelcomeSceneController welcomeSceneController;
+    public MainPaneController mainPaneController;
+
+    public Pane mainPane;
+    public Pane fetchPane;
+    public Pane welcomePane;
+
+    public GUI gui;
+
     public static void main(String[] args) {
         launch();
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("WelcomeScene.fxml")));
+        gui = this;
 
-        AnchorPane pane = loader.load();
-        Scene s = new Scene(pane);
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("WelcomePane.fxml")));
+        welcomePane = loader.load();
+        welcomeSceneController = loader.getController();
+        welcomeSceneController.setGui(gui);
+
+        loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("FetchPane.fxml")));
+        fetchPane = loader.load();
+        fetchSceneController = loader.getController();
+        fetchSceneController.setGui(gui);
+
+        loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("MainPane.fxml")));
+        mainPane = loader.load();
+        mainPaneController = loader.getController();
+        mainPaneController.setGui(gui);
+
+        mainPaneController.setBackground(Objects.requireNonNull(WelcomeSceneController.class.getResourceAsStream("bg.png")));
+
+        mainPane.getChildren().addAll(welcomePane, fetchPane);
+        Scene s = new Scene(mainPane);
+
+        stage.setResizable(false);
         stage.setScene(s);
 
-        WelcomeSceneController controller = loader.getController();
-
         stage.show();
-        controller.playAnimation();
+        welcomeSceneController.playAnimation();
+    }
+
+    public void openFetchPane() {
+        fetchSceneController.show();
     }
 }

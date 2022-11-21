@@ -12,4 +12,6 @@ module xyz.zcraft.acgpicdownload {
     opens xyz.zcraft.acgpicdownload.gui to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;
     opens xyz.zcraft.acgpicdownload.gui.scenes to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;
     exports xyz.zcraft.acgpicdownload.gui.scenes;
+    opens xyz.zcraft.acgpicdownload.util.sourceutil to com.alibaba.fastjson2;
+    exports xyz.zcraft.acgpicdownload.util.sourceutil;
 }
