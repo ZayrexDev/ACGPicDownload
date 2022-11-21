@@ -1,12 +1,13 @@
 package xyz.zcraft.acgpicdownload.gui.scenes;
 
+import io.github.palexdev.materialfx.collections.TransformableList;
 import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXComboBox;
+import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
+import io.github.palexdev.materialfx.utils.StringUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -21,7 +22,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class FetchSceneController implements Initializable {
-    public MFXComboBox<Source> sourcesComboBox;
+    public MFXFilterComboBox<Source> sourcesComboBox;
     TranslateTransition tt = new TranslateTransition();
     private ObservableList<Source> sources;
     private GUI gui;
@@ -32,6 +33,7 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     private AnchorPane mainPane;
 
+    TransformableList<Source> sourceTransformableList;
     public GUI getGui() {
         return gui;
     }
@@ -56,7 +58,7 @@ public class FetchSceneController implements Initializable {
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
-        sourcesComboBox.setConverter(new StringConverter<>() {
+        StringConverter<Source> converter = new StringConverter<>() {
             @Override
             public String toString(Source source) {
                 return source == null ? null : source.getName();
@@ -66,13 +68,17 @@ public class FetchSceneController implements Initializable {
             public Source fromString(String s) {
                 return null;
             }
-        });
+        };
+        sourcesComboBox.setConverter(converter);
 
         sources = sourcesComboBox.getItems();
+        sourceTransformableList = sourcesComboBox.getFilterList();
+
+        sourcesComboBox.setFilterFunction(s -> source -> StringUtils.containsIgnoreCase(converter.toString(source), s));
     }
 
     @javafx.fxml.FXML
-    public void sourceUpdateBtnOnAction(ActionEvent actionEvent) {
+    public void sourceUpdateBtnOnAction() {
         updateSource();
     }
 

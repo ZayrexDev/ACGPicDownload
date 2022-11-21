@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
-<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
+<?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
@@ -15,22 +13,25 @@
             style="-fx-background-color: #ffffff88;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
             AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox prefHeight="0.0" prefWidth="600.0" spacing="5.0" VBox.vgrow="NEVER">
+            <VBox spacing="8.0">
                <children>
-                  <MFXComboBox fx:id="sourcesComboBox" editable="false" floatMode="BORDER" floatingText="下载源"
-                               graphicTextGap="100.0" maxWidth="1.7976931348623157E308" prefHeight="0.0"
-                               prefWidth="119.0" HBox.hgrow="ALWAYS"/>
-                  <MFXButton fx:id="sourceUpdateBtn" maxHeight="1.7976931348623157E308"
-                             onAction="#sourceUpdateBtnOnAction" prefHeight="34.0" prefWidth="55.0" text="刷新"
-                             HBox.hgrow="ALWAYS"/>
+                  <HBox prefHeight="0.0" prefWidth="600.0" spacing="5.0">
+                     <children>
+                        <MFXFilterComboBox fx:id="sourcesComboBox" editable="false" floatMode="BORDER"
+                                           floatingText="下载源" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS"/>
+                        <MFXButton fx:id="sourceUpdateBtn" maxHeight="1.7976931348623157E308"
+                                   onAction="#sourceUpdateBtnOnAction" prefHeight="34.0" prefWidth="55.0" text="刷新"
+                                   HBox.hgrow="ALWAYS"/>
+                     </children>
+                  </HBox>
+                  <MFXTextField floatMode="BORDER" floatingText="参数" maxWidth="1.7976931348623157E308"
+                                prefWidth="502.0"/>
+                  <MFXButton maxWidth="1.7976931348623157E308" text="开始抓取"/>
                </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-               </padding>
-            </HBox>
+            </VBox>
          </children>
          <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
          </padding>
       </VBox>
       <HBox fx:id="sourceUpdatePane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0"
