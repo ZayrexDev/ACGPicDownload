@@ -7,10 +7,13 @@ public class DownloadResult {
     private DownloadStatus status = DownloadStatus.CREATED;
     private long sizeDownloaded = 0;
     private String errorMessage;
-
     private Result result;
 
     public DownloadResult() {
+    }
+
+    public DownloadResult(Result result) {
+        this.result = result;
     }
 
     public Result getResult() {

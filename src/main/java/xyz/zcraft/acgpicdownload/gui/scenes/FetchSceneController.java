@@ -6,12 +6,16 @@ import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
+import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.utils.StringUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableListBase;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -19,12 +23,14 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
+import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
 import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class FetchSceneController implements Initializable {
@@ -42,7 +48,7 @@ public class FetchSceneController implements Initializable {
     private Label operationLabel;
     @javafx.fxml.FXML
     private MFXTableView<DownloadResult> dataTable;
-
+    private ObservableList<DownloadResult> data;
     private MFXTableColumn<DownloadResult> titleColumn;
     private MFXTableColumn<DownloadResult> linkColumn;
     private MFXTableColumn<DownloadResult> statusColumn;
@@ -98,6 +104,8 @@ public class FetchSceneController implements Initializable {
 
         sourcesComboBox.setFilterFunction(s -> source -> StringUtils.containsIgnoreCase(converter.toString(source), s));
 
+        data = FXCollections.observableArrayList(new DownloadResult());
+
         titleColumn = new MFXTableColumn<>("文件名", true);
         linkColumn = new MFXTableColumn<>("下载链接", true);
         statusColumn = new MFXTableColumn<>("状态", true);
@@ -106,7 +114,25 @@ public class FetchSceneController implements Initializable {
         linkColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
         statusColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getStatus()));
 
-        dataTable.getTableColumns().addAll(titleColumn,linkColumn,statusColumn);
+        titleColumn.setAlignment(Pos.CENTER);
+        linkColumn.setAlignment(Pos.CENTER);
+        statusColumn.setAlignment(Pos.CENTER);
+
+        titleColumn.prefWidthProperty().bind(dataTable.widthProperty().multiply(0.5));
+        linkColumn.prefWidthProperty().bind(dataTable.widthProperty().multiply(0.4));
+        statusColumn.prefWidthProperty().bind(dataTable.widthProperty().multiply(0.1));
+
+        dataTable.getTableColumns().addAll(List.of(titleColumn,linkColumn,statusColumn));
+
+        dataTable.getFilters().addAll(List.of(
+            new StringFilter<>("文件名", arg0 -> arg0.getResult().getFileName()),
+            new StringFilter<>("下载链接", arg0 -> arg0.getResult().getUrl()),
+            new StringFilter<>("状态", arg0 -> arg0.getStatus().toString())
+        ));
+
+        dataTable.setItems(data);
+
+        data.clear();
     }
 
     @javafx.fxml.FXML
