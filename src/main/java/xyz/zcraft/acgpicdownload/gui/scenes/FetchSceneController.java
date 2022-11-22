@@ -47,7 +47,7 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     private MFXButton sourceUpdateBtn;
     @javafx.fxml.FXML
-    private HBox sourceUpdatePane;
+    private AnchorPane lodingPane;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
@@ -66,10 +66,10 @@ public class FetchSceneController implements Initializable {
 
     @javafx.fxml.FXML
     public void fetchBtnOnAction() {
-        sourceUpdatePane.setVisible(true);
+        lodingPane.setVisible(true);
         operationLabel.setText("抓取中");
         ft = new FadeTransition();
-        ft.setNode(sourceUpdatePane);
+        ft.setNode(lodingPane);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.setAutoReverse(false);
@@ -112,7 +112,7 @@ public class FetchSceneController implements Initializable {
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 data.addAll(r);
-                ft.setOnFinished((e) -> sourceUpdatePane.setVisible(false));
+                ft.setOnFinished((e) -> lodingPane.setVisible(false));
                 ft.play();
             });
         }).start();
@@ -155,7 +155,7 @@ public class FetchSceneController implements Initializable {
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
-        ft.setNode(sourceUpdatePane);
+        ft.setNode(lodingPane);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.setAutoReverse(false);
@@ -224,7 +224,7 @@ public class FetchSceneController implements Initializable {
     private void updateSource() {
         sourcesComboBox.getItems().clear();
 
-        sourceUpdatePane.setVisible(true);
+        lodingPane.setVisible(true);
         ft.play();
 
         new Thread(() -> {
@@ -237,7 +237,7 @@ public class FetchSceneController implements Initializable {
                 throw new RuntimeException(e);
             }
             ft.play();
-            ft.setOnFinished((e) -> sourceUpdatePane.setVisible(false));
+            ft.setOnFinished((e) -> lodingPane.setVisible(false));
         }).start();
 
         ft.setFromValue(1);
