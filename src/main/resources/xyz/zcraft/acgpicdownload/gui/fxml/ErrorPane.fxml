@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="errorPane" style="-fx-background-color: #ffffffb8;"
-            xmlns="http://javafx.com/javafx/19"
+            xmlns="http://javafx.com/javafx/19" stylesheets="@../default.css"
             fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.ErrorPaneController">
    <children>
       <VBox prefHeight="197.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #c3c3c394;"

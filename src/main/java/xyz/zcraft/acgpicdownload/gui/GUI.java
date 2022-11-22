@@ -9,8 +9,6 @@ import xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.WelcomeSceneController;
 
-import java.util.Objects;
-
 public class GUI extends Application {
     public FetchSceneController fetchSceneController;
     public WelcomeSceneController welcomeSceneController;
@@ -30,22 +28,22 @@ public class GUI extends Application {
     public void start(Stage stage) throws Exception {
         gui = this;
 
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("WelcomePane.fxml")));
+        FXMLLoader loader = new FXMLLoader(ResourceLoader.loadURL("fxml/welcomePane.fxml"));
         welcomePane = loader.load();
         welcomeSceneController = loader.getController();
         welcomeSceneController.setGui(gui);
 
-        loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("FetchPane.fxml")));
+        loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"));
         fetchPane = loader.load();
         fetchSceneController = loader.getController();
         fetchSceneController.setGui(gui);
 
-        loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("MainPane.fxml")));
+        loader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"));
         mainPane = loader.load();
         mainPaneController = loader.getController();
         mainPaneController.setGui(gui);
 
-        mainPaneController.setBackground(Objects.requireNonNull(WelcomeSceneController.class.getResourceAsStream("bg.png")));
+        mainPaneController.setBackground(ResourceLoader.loadStream("bg.png"));
 
         mainPane.getChildren().addAll(welcomePane, fetchPane);
         Scene s = new Scene(mainPane);

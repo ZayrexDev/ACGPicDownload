@@ -4,7 +4,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="600.0" stylesheets="@default.css"
+            minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="600.0" stylesheets="@../default.css"
             xmlns="http://javafx.com/javafx/19" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController">
    <children>
       <ImageView fx:id="background" fitHeight="408.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true"

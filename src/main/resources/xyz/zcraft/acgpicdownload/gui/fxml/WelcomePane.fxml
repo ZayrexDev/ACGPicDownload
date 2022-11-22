@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="360.0" prefWidth="600.0" stylesheets="@default.css"
+            minWidth="-Infinity" prefHeight="360.0" prefWidth="600.0" stylesheets="@../default.css"
             xmlns="http://javafx.com/javafx/19"
             fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.WelcomeSceneController">
    <children>
