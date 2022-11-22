@@ -3,22 +3,28 @@ package xyz.zcraft.acgpicdownload.gui.scenes;
 import io.github.palexdev.materialfx.collections.TransformableList;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
+import io.github.palexdev.materialfx.controls.MFXTableColumn;
+import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.utils.StringUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.gui.GUI;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
 import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 
 public class FetchSceneController implements Initializable {
@@ -32,8 +38,17 @@ public class FetchSceneController implements Initializable {
     private HBox sourceUpdatePane;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
+    @javafx.fxml.FXML
+    private Label operationLabel;
+    @javafx.fxml.FXML
+    private MFXTableView<DownloadResult> dataTable;
+
+    private MFXTableColumn<DownloadResult> titleColumn;
+    private MFXTableColumn<DownloadResult> linkColumn;
+    private MFXTableColumn<DownloadResult> statusColumn;
 
     TransformableList<Source> sourceTransformableList;
+
     public GUI getGui() {
         return gui;
     }
@@ -58,6 +73,13 @@ public class FetchSceneController implements Initializable {
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
+        ft.setNode(sourceUpdatePane);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.setAutoReverse(false);
+        ft.setRate(0.05);
+        ft.setDuration(Duration.millis(5));
+
         StringConverter<Source> converter = new StringConverter<>() {
             @Override
             public String toString(Source source) {
@@ -75,6 +97,16 @@ public class FetchSceneController implements Initializable {
         sourceTransformableList = sourcesComboBox.getFilterList();
 
         sourcesComboBox.setFilterFunction(s -> source -> StringUtils.containsIgnoreCase(converter.toString(source), s));
+
+        titleColumn = new MFXTableColumn<>("文件名", true);
+        linkColumn = new MFXTableColumn<>("下载链接", true);
+        statusColumn = new MFXTableColumn<>("状态", true);
+
+        titleColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getFileName()));
+        linkColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
+        statusColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getStatus()));
+
+        dataTable.getTableColumns().addAll(titleColumn,linkColumn,statusColumn);
     }
 
     @javafx.fxml.FXML
@@ -82,16 +114,10 @@ public class FetchSceneController implements Initializable {
         updateSource();
     }
 
+    FadeTransition ft = new FadeTransition();
+
     private void updateSource() {
         sourcesComboBox.getItems().clear();
-
-        FadeTransition ft = new FadeTransition();
-        ft.setNode(sourceUpdatePane);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        ft.setAutoReverse(false);
-        ft.setRate(0.05);
-        ft.setDuration(Duration.millis(5));
 
         sourceUpdatePane.setVisible(true);
         ft.play();
