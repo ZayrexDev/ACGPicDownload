@@ -46,12 +46,12 @@
                   </HBox>
                   <HBox spacing="10.0">
                      <children>
-                        <MFXButton maxWidth="1.7976931348623157E308" text="开始抓取" HBox.hgrow="ALWAYS">
+                        <MFXButton fx:id="fetchBtn" disable="true" maxWidth="1.7976931348623157E308" onAction="#fetchBtnOnAction" text="开始抓取" HBox.hgrow="ALWAYS">
                            <effect>
                               <DropShadow height="5.0" radius="2.0" width="5.0" />
                            </effect>
                         </MFXButton>
-                        <MFXButton maxWidth="1.7976931348623157E308" text="开始下载" HBox.hgrow="ALWAYS">
+                        <MFXButton fx:id="downloadBtn" disable="true" maxWidth="1.7976931348623157E308" onAction="#downloadBtnOnAction" text="开始下载" HBox.hgrow="ALWAYS">
                            <effect>
                               <DropShadow height="5.0" radius="2.0" width="5.0" />
                            </effect>

@@ -12,8 +12,8 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableListBase;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -23,13 +23,11 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
-import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
 import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -38,6 +36,10 @@ public class FetchSceneController implements Initializable {
     TranslateTransition tt = new TranslateTransition();
     private ObservableList<Source> sources;
     private GUI gui;
+    @javafx.fxml.FXML
+    private MFXButton fetchBtn;
+    @javafx.fxml.FXML
+    private MFXButton downloadBtn;
     @javafx.fxml.FXML
     private MFXButton sourceUpdateBtn;
     @javafx.fxml.FXML
@@ -54,6 +56,16 @@ public class FetchSceneController implements Initializable {
     private MFXTableColumn<DownloadResult> statusColumn;
 
     TransformableList<Source> sourceTransformableList;
+
+    @javafx.fxml.FXML
+    public void fetchBtnOnAction(){
+
+    }
+
+    @javafx.fxml.FXML
+    public void downloadBtnOnAction() {
+
+    }
 
     public GUI getGui() {
         return gui;
@@ -133,6 +145,9 @@ public class FetchSceneController implements Initializable {
         dataTable.setItems(data);
 
         data.clear();
+
+        fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
+        data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size()==0));
     }
 
     @javafx.fxml.FXML
