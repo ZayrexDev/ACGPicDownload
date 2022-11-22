@@ -12,9 +12,9 @@ This project is still **Not stable**, so it may not work well for now...
 
 # Features
 
-- Easy to use ([Simple tutorial](#simple-tutorial))
-- Supports custom sources
-- Supports scheduled execute
+- Easy to use ([Simple tutorial](https://github.com/zxzxy/ACGPicDownload/wiki/How-to-use#to-be-more-specific))
+- Supports custom sources ([Add custom sources](https://github.com/zxzxy/ACGPicDownload/wiki/Add-custom-sources))
+- Supports scheduled execute ([schedule subcommand](https://github.com/zxzxy/ACGPicDownload/wiki/How-to-use#subcommand-schedule))
 - Highly customizable naming rules and fetching urls
 
 # Usage
