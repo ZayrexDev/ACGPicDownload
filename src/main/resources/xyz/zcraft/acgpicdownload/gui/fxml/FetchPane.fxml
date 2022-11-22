@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
-<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
-<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
-<?import io.github.palexdev.materialfx.controls.MFXSlider?>
-<?import io.github.palexdev.materialfx.controls.MFXTableView?>
-<?import io.github.palexdev.materialfx.controls.MFXTextField?>
-<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+<?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane fx:id="mainPane" prefHeight="400.0" prefWidth="600.0" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController">
    <children>
       <VBox layoutX="235.0" layoutY="92.0" prefHeight="200.0" prefWidth="100.0" spacing="5.0" style="-fx-background-color: #ffffff88;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -53,36 +43,57 @@
                         </MFXButton>
                         <MFXButton fx:id="downloadBtn" disable="true" maxWidth="1.7976931348623157E308" onAction="#downloadBtnOnAction" text="开始下载" HBox.hgrow="ALWAYS">
                            <effect>
-                              <DropShadow height="5.0" radius="2.0" width="5.0" />
+                              <DropShadow height="5.0" radius="2.0" width="5.0"/>
                            </effect>
                         </MFXButton>
                      </children>
                      <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                      </VBox.margin>
                   </HBox>
                </children>
             </VBox>
-            <MFXScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER" prefHeight="0.0" prefWidth="579.0" spacing="10.0" VBox.vgrow="NEVER">
+               <children>
+                  <MFXButton fx:id="delCompletedBtn" maxWidth="1.7976931348623157E308"
+                             onAction="#delCompletedBtnOnAction" text="删除已完成">
+                     <effect>
+                        <DropShadow height="5.0" radius="2.0" width="5.0"/>
+                     </effect>
+                  </MFXButton>
+                  <MFXProgressBar fx:id="progressBar" progress="0.0"/>
+                  <Label fx:id="statusLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                         prefHeight="26.0" prefWidth="250.0" text="创建:0 下载中:0 已完成:0 失败:0 0kb/s"
+                         HBox.hgrow="NEVER"/>
+               </children>
+            </HBox>
+            <MFXScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308"
+                           maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <content>
-                  <MFXTableView fx:id="dataTable" footerVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                  <MFXTableView fx:id="dataTable" footerVisible="false" maxHeight="1.7976931348623157E308"
+                                maxWidth="1.7976931348623157E308"/>
                </content>
             </MFXScrollPane>
          </children>
          <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
          </padding>
       </VBox>
-      <AnchorPane fx:id="lodingPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ffffffb8;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="loadingPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ffffffb8;"
+                  visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                  AnchorPane.topAnchor="0.0">
          <children>
-            <AnchorPane layoutY="171.1999969482422" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="150.0">
+            <AnchorPane layoutY="171.1999969482422" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="150.0"
+                        AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="150.0">
                <children>
-                  <Label fx:id="operationLabel" text="正在读取源" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                  <Label fx:id="operationLabel" text="正在读取源" AnchorPane.leftAnchor="0.0"
+                         AnchorPane.rightAnchor="0.0">
                      <font>
-                        <Font size="24.0" />
+                        <Font size="24.0"/>
                      </font>
                   </Label>
-                  <MFXProgressBar layoutY="52.0" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                  <MFXProgressBar layoutY="52.0" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="0.0"
+                                  AnchorPane.rightAnchor="0.0"/>
                </children>
             </AnchorPane>
          </children>

@@ -16,12 +16,13 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
 import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
@@ -47,7 +48,7 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     private MFXButton sourceUpdateBtn;
     @javafx.fxml.FXML
-    private AnchorPane lodingPane;
+    private AnchorPane loadingPane;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
@@ -63,13 +64,22 @@ public class FetchSceneController implements Initializable {
     private MFXToggleButton multiThreadToggle;
     @javafx.fxml.FXML
     private MFXTextField argumentField;
+    @javafx.fxml.FXML
+    private MFXButton delCompletedBtn;
+    @javafx.fxml.FXML
+    private MFXProgressBar progressBar;
+    @javafx.fxml.FXML
+    private Label statusLabel;
+
+    private boolean downloading;
+    private DownloadManager dm;
 
     @javafx.fxml.FXML
     public void fetchBtnOnAction() {
-        lodingPane.setVisible(true);
+        loadingPane.setVisible(true);
         operationLabel.setText("抓取中");
         ft = new FadeTransition();
-        ft.setNode(lodingPane);
+        ft.setNode(loadingPane);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.setAutoReverse(false);
@@ -96,23 +106,21 @@ public class FetchSceneController implements Initializable {
                 }
             }
             FetchUtil.replaceArgument(s, arg);
-            ArrayList<Result> r1 = FetchUtil.fetch(
-                    s,
-                    (int) timesSlider.getValue(),
-                    new Logger("GUI", System.out),
-                    true,
-                    null, 0
-            );
+            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out), true, null, 0);
+            LinkedList<DownloadResult> drs = new LinkedList<>();
             for (Result result : r1) {
                 DownloadResult dr = new DownloadResult();
                 dr.setResult(result);
                 r.add(dr);
+                drs.add(dr);
             }
+            dm = new DownloadManager(drs.toArray(new DownloadResult[]{}));
+
             Platform.runLater(() -> {
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 data.addAll(r);
-                ft.setOnFinished((e) -> lodingPane.setVisible(false));
+                ft.setOnFinished((e) -> loadingPane.setVisible(false));
                 ft.play();
             });
         }).start();
@@ -120,15 +128,25 @@ public class FetchSceneController implements Initializable {
 
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
-        FetchUtil.startDownloadWithResults(
-                new ArrayList<>(data),
-                Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(),
-                new Logger("GUI", System.out),
-                false,
-                true,
-                -1,
-                () -> Platform.runLater(() -> dataTable.update())
-        );
+        downloading = true;
+        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out), false, true, -1, () -> Platform.runLater(this::updateStatus));
+        downloading = false;
+    }
+
+    private void updateStatus() {
+        dm.update();
+
+        downloading = !dm.isDone();
+
+        progressBar.setProgress(dm.getPercentComplete());
+        if (downloading) {
+            String sb = "创建:" + dm.getCreated() + " 下载中:" + dm.getStarted() + " 已完成:" + dm.getCompleted() + " 失败:" + dm.getFailed() + " " + dm.getSpeed();
+            Platform.runLater(() -> statusLabel.setText(sb));
+        } else {
+            Platform.runLater(() -> statusLabel.setText("完成！"));
+        }
+
+        dataTable.update();
     }
 
     public GUI getGui() {
@@ -140,6 +158,12 @@ public class FetchSceneController implements Initializable {
     }
 
     public void show() {
+        AnchorPane.setTopAnchor(mainPane, 0d);
+        AnchorPane.setBottomAnchor(mainPane, 0d);
+        AnchorPane.setLeftAnchor(mainPane, 0d);
+        AnchorPane.setRightAnchor(mainPane, 0d);
+        mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
+        mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
         tt.setFromY(mainPane.getHeight());
         tt.setToY(0);
         mainPane.setVisible(true);
@@ -155,31 +179,22 @@ public class FetchSceneController implements Initializable {
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
-        ft.setNode(lodingPane);
+        ft.setNode(loadingPane);
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.setAutoReverse(false);
         ft.setRate(0.05);
         ft.setDuration(Duration.millis(5));
 
-        StringConverter<Source> converter = new StringConverter<>() {
-            @Override
-            public String toString(Source source) {
-                return source == null ? null : source.getName();
-            }
+        initSourceCombo();
 
-            @Override
-            public Source fromString(String s) {
-                return null;
-            }
-        };
-        sourcesComboBox.setConverter(converter);
+        initTable();
 
-        sources = sourcesComboBox.getItems();
-        sourceTransformableList = sourcesComboBox.getFilterList();
+        fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
+        data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size() == 0));
+    }
 
-        sourcesComboBox.setFilterFunction(s -> source -> StringUtils.containsIgnoreCase(converter.toString(source), s));
-
+    private void initTable() {
         data = FXCollections.observableArrayList(new DownloadResult());
 
         MFXTableColumn<DownloadResult> titleColumn = new MFXTableColumn<>("文件名", true);
@@ -200,20 +215,31 @@ public class FetchSceneController implements Initializable {
 
         dataTable.getTableColumns().addAll(List.of(titleColumn, linkColumn, statusColumn));
 
-        dataTable.getFilters().addAll(
-                List.of(
-                        new StringFilter<>("文件名", arg0 -> arg0.getResult().getFileName()),
-                        new StringFilter<>("下载链接", arg0 -> arg0.getResult().getUrl()),
-                        new StringFilter<>("状态", DownloadResult::getStatusString)
-                )
-        );
+        dataTable.getFilters().addAll(List.of(new StringFilter<>("文件名", arg0 -> arg0.getResult().getFileName()), new StringFilter<>("下载链接", arg0 -> arg0.getResult().getUrl()), new StringFilter<>("状态", DownloadResult::getStatusString)));
 
         dataTable.setItems(data);
 
         data.clear();
+    }
 
-        fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
-        data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size() == 0));
+    private void initSourceCombo() {
+        StringConverter<Source> converter = new StringConverter<>() {
+            @Override
+            public String toString(Source source) {
+                return source == null ? null : source.getName();
+            }
+
+            @Override
+            public Source fromString(String s) {
+                return null;
+            }
+        };
+        sourcesComboBox.setConverter(converter);
+
+        sources = sourcesComboBox.getItems();
+        sourceTransformableList = sourcesComboBox.getFilterList();
+
+        sourcesComboBox.setFilterFunction(s -> source -> StringUtils.containsIgnoreCase(converter.toString(source), s));
     }
 
     @javafx.fxml.FXML
@@ -224,7 +250,7 @@ public class FetchSceneController implements Initializable {
     private void updateSource() {
         sourcesComboBox.getItems().clear();
 
-        lodingPane.setVisible(true);
+        loadingPane.setVisible(true);
         ft.play();
 
         new Thread(() -> {
@@ -237,10 +263,15 @@ public class FetchSceneController implements Initializable {
                 throw new RuntimeException(e);
             }
             ft.play();
-            ft.setOnFinished((e) -> lodingPane.setVisible(false));
+            ft.setOnFinished((e) -> loadingPane.setVisible(false));
         }).start();
 
         ft.setFromValue(1);
         ft.setToValue(0);
+    }
+
+    @javafx.fxml.FXML
+    public void delCompletedBtnOnAction() {
+        data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
     }
 }

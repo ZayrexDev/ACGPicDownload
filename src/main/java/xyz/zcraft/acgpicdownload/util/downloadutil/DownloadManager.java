@@ -1,8 +1,9 @@
 package xyz.zcraft.acgpicdownload.util.downloadutil;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
@@ -14,27 +15,46 @@ public class DownloadManager {
     int failed = 0;
     int completed = 0;
     int started = 0;
+    private final long startTime;
+    private final LinkedList<String> error = new LinkedList<>();
+    ThreadPoolExecutor tpe;
+
     int created = 0;
     private boolean done = false;
     private long lastDownloaded = 0;
     private long lastTime = 0;
-    private long startTime;
+    String speed;
     private int timesGot = 0;
+    private double p = 0;
+
+    public DownloadManager(DownloadResult[] process, ThreadPoolExecutor tpe) {
+        this.tpe = tpe;
+        startTime = System.currentTimeMillis();
+        this.process = process;
+    }
 
     public DownloadManager(DownloadResult[] process) {
         startTime = System.currentTimeMillis();
         this.process = process;
     }
 
+    public ThreadPoolExecutor getTpe() {
+        return tpe;
+    }
+
+    public void setTpe(ThreadPoolExecutor tpe) {
+        this.tpe = tpe;
+    }
+
     public DownloadResult[] getProcess() {
         return process;
     }
 
-    @Override
-    public String toString() {
-        timesGot++;
-        StringBuilder sb = new StringBuilder();
+    public double getPercentComplete() {
+        return p;
+    }
 
+    public void update() {
         total = 0;
         downloaded = 0;
         failed = 0;
@@ -42,7 +62,6 @@ public class DownloadManager {
         started = 0;
         created = 0;
 
-        ArrayList<String> error = new ArrayList<>();
 
         for (DownloadResult r : process) {
             if (r.getStatus() == DownloadStatus.CREATED) {
@@ -64,13 +83,99 @@ public class DownloadManager {
             }
         }
 
+        if (total != 0) {
+            p = (double) downloaded / (double) total;
+            if (p < 0) p = 0;
+            if (p > 1) p = 1;
+        }
+
+        double speed = Math.max((((double) (downloaded - lastDownloaded)) / 1024.0) / (((double) (System.currentTimeMillis() - lastTime)) / 1000.0), 0);
+        if (speed > 1024.0) {
+            this.speed = df2.format(speed / 1024.0).concat("mb/s");
+        } else {
+            this.speed = df2.format(speed).concat("kb/s");
+        }
+
+        lastDownloaded = downloaded;
+        lastTime = System.currentTimeMillis();
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public long getDownloaded() {
+        return downloaded;
+    }
+
+    public int getFailed() {
+        return failed;
+    }
+
+    public int getCompleted() {
+        return completed;
+    }
+
+    public int getStarted() {
+        return started;
+    }
+
+    public int getCreated() {
+        return created;
+    }
+
+    public boolean isDone() {
+        if (tpe == null) {
+            return done;
+        } else {
+            return tpe.getCompletedTaskCount() == tpe.getTaskCount();
+        }
+    }
+
+    public long getLastDownloaded() {
+        return lastDownloaded;
+    }
+
+    public long getLastTime() {
+        return lastTime;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public int getTimesGot() {
+        return timesGot;
+    }
+
+    public double getP() {
+        return p;
+    }
+
+    public String getSpeed() {
+        return speed;
+    }
+
+    public LinkedList<String> getError() {
+        return error;
+    }
+
+    @Override
+    public String toString() {
+        update();
+
+        timesGot++;
+        StringBuilder sb = new StringBuilder();
+
         for (String error2 : error) {
             sb.append("Error:").append(error2).append("\n");
         }
 
+        error.clear();
+
         int mtf = 8;
         sb.append(timesGot > mtf ? "W:" : "Wait:").append(created).append(timesGot > mtf ? " S:" : " Start:").append(started).append(timesGot > mtf ? " D:" : " Done:").append(completed).append(timesGot > mtf ? " F:" : " Fail:").append(failed).append(" |");
-        double p = (double) downloaded / (double) total;
+
         int a = (int) (PROGRESS_BAR_SIZE * p);
         if (a < 0) {
             a = 0;
@@ -87,13 +192,7 @@ public class DownloadManager {
         }
 
         if (lastTime != 0) {
-            sb.append(" ");
-            double speed = Math.max((((double) (downloaded - lastDownloaded)) / 1024.0) / (((double) (System.currentTimeMillis() - lastTime)) / 1000.0), 0);
-            if (speed > 1024.0) {
-                sb.append(df2.format(speed / 1024.0)).append("mb/s");
-            } else {
-                sb.append(df2.format(speed)).append("kb/s");
-            }
+            sb.append(" ").append(speed);
 
             double avg = Math.max(((double) (total) / 1024.0) / ((double) (System.currentTimeMillis() - startTime) / 1000.0), 0);
             if (avg > 1024.0) {
@@ -108,9 +207,6 @@ public class DownloadManager {
                 sb.append(" ETA:").append(df2.format(eta)).append("s");
             }
         }
-
-        lastDownloaded = downloaded;
-        lastTime = System.currentTimeMillis();
 
         if (created == 0 && started == 0) {
             done = true;

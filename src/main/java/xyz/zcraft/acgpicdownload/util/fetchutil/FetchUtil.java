@@ -136,7 +136,7 @@ public class FetchUtil {
         startMonitoring(rs, tpe, enableConsoleProgressBar, logger);
     }
 
-    public static void startDownloadWithResults(ArrayList<DownloadResult> r, String outputDir, Logger logger,
+    public static void startDownloadWithResults(DownloadManager dm, ArrayList<DownloadResult> r, String outputDir, Logger logger,
                                                 boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
@@ -149,7 +149,7 @@ public class FetchUtil {
         } else {
             tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
         }
-
+        dm.setTpe(tpe);
         for (DownloadResult downloadResult : r) {
             tpe.execute(() -> {
                 try {
@@ -167,7 +167,7 @@ public class FetchUtil {
 
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
                                        boolean enableConsoleProgressBar, Logger logger, Runnable onUpdate) {
-        DownloadManager manager = new DownloadManager(result);
+        DownloadManager manager = new DownloadManager(result, tpe);
         Thread t = new Thread(() -> {
             int lastLength = 0;
             while (enableConsoleProgressBar && tpe.getCompletedTaskCount() != result.length) {
