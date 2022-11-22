@@ -68,8 +68,13 @@ public class FetchSceneController implements Initializable {
     public void fetchBtnOnAction() {
         sourceUpdatePane.setVisible(true);
         operationLabel.setText("抓取中");
+        ft = new FadeTransition();
+        ft.setNode(sourceUpdatePane);
         ft.setFromValue(0);
         ft.setToValue(1);
+        ft.setAutoReverse(false);
+        ft.setRate(0.05);
+        ft.setDuration(Duration.millis(5));
         ft.play();
         new Thread(() -> {
             LinkedList<DownloadResult> r = new LinkedList<>();

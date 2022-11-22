@@ -28,7 +28,7 @@ public class GUI extends Application {
     public void start(Stage stage) throws Exception {
         gui = this;
 
-        FXMLLoader loader = new FXMLLoader(ResourceLoader.loadURL("fxml/welcomePane.fxml"));
+        FXMLLoader loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"));
         welcomePane = loader.load();
         welcomeSceneController = loader.getController();
         welcomeSceneController.setGui(gui);
