@@ -59,5 +59,19 @@ public class DownloadResult {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    public String getStatusString() {
+        if (status == DownloadStatus.CREATED) {
+            return "已创建";
+        } else if (status == DownloadStatus.COMPLETED) {
+            return "已完成";
+        } else if (status == DownloadStatus.FAILED) {
+            return "失败";
+        } else if (status == DownloadStatus.STARTED) {
+            return "下载中";
+        } else {
+            return "未知";
+        }
+    }
 }
 

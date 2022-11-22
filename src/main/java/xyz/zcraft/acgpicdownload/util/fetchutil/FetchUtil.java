@@ -136,6 +136,77 @@ public class FetchUtil {
         startMonitoring(rs, tpe, enableConsoleProgressBar, logger);
     }
 
+    public static void startDownloadWithResults(ArrayList<DownloadResult> r, String outputDir, Logger logger,
+                                                boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate) {
+        File outDir = new File(outputDir);
+        if (!outDir.exists() && !outDir.mkdirs()) {
+            logger.err("Can't create directory");
+            return;
+        }
+        ThreadPoolExecutor tpe;
+        if (maxThread == -1) {
+            tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        } else {
+            tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
+        }
+
+        for (DownloadResult downloadResult : r) {
+            tpe.execute(() -> {
+                try {
+                    new DownloadUtil(1).download(downloadResult.getResult(), outDir, downloadResult, saveFullResult);
+                } catch (Exception e) {
+                    Main.logError(e);
+                    downloadResult.setStatus(DownloadStatus.FAILED);
+                    downloadResult.setErrorMessage(e.toString());
+                }
+            });
+        }
+
+        startMonitoring(r.toArray(new DownloadResult[]{}), tpe, enableConsoleProgressBar, logger, onUpdate);
+    }
+
+    public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
+                                       boolean enableConsoleProgressBar, Logger logger, Runnable onUpdate) {
+        DownloadManager manager = new DownloadManager(result);
+        Thread t = new Thread(() -> {
+            int lastLength = 0;
+            while (enableConsoleProgressBar && tpe.getCompletedTaskCount() != result.length) {
+                String m = manager.toString();
+                if (Main.isDebug()) {
+                    m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
+                            + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
+                }
+                logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))));
+                lastLength = m.length();
+                onUpdate.run();
+
+                try {
+                    // noinspection BusyWait
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Main.logError(e);
+                    e.printStackTrace();
+                }
+            }
+            String m = manager.toString();
+            if (Main.isDebug() && tpe != null) {
+                m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
+                        + tpe.getPoolSize();
+            }
+            logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))).concat("\n"));
+            logger.info("Done");
+            onUpdate.run();
+
+            if (tpe != null) {
+                tpe.shutdown();
+            }
+
+            printResult(result, logger);
+        });
+        t.setPriority(5);
+        t.start();
+    }
+
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
                                        boolean enableConsoleProgressBar, Logger logger) {
         DownloadManager manager = new DownloadManager(result);

@@ -26,7 +26,7 @@
             <Label text="请问今天要来点什么呢"/>
             <MFXButton fx:id="fetchBtn" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
                        onAction="#fetchBtnOnAction" text="抓取图片" textAlignment="RIGHT" VBox.vgrow="ALWAYS"/>
-            <MFXButton fx:id="galleryBtn" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+            <MFXButton fx:id="galleryBtn" alignment="CENTER_RIGHT" disable="true" maxWidth="1.7976931348623157E308"
                        onAction="#galleryBtnOnAction" text="图库" textAlignment="RIGHT" VBox.vgrow="ALWAYS"/>
          </children>
       </VBox>
