@@ -2,6 +2,7 @@ package xyz.zcraft.acgpicdownload;
 
 import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.Schedule;
+import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
 
 import java.io.FileNotFoundException;
@@ -55,9 +56,7 @@ public class Main {
     public static void main(String[] args) {
         ArrayList<String> argList = new ArrayList<>(List.of(args));
         if (argList.size() == 0) {
-            Fetch f = new Fetch();
-            f.enableConsoleProgressBar = true;
-            f.main(argList, new Logger("Fetch", System.out));
+            GUI.main(args);
         } else if (argList.get(0).equalsIgnoreCase("fetch")) {
             argList.remove(0);
             Fetch f = new Fetch();
@@ -67,10 +66,6 @@ public class Main {
             argList.remove(0);
             Schedule s = new Schedule();
             s.main(argList);
-        } else {
-            Fetch f = new Fetch();
-            f.enableConsoleProgressBar = true;
-            f.main(argList, new Logger("Fetch", System.out));
         }
     }
 }
