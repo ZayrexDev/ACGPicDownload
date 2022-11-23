@@ -5,8 +5,23 @@
     "url": "https://api.lolicon.app/setu/v2?{r18=$r18}{&num=$num}{&keyword=$keyword}{&tag=$tag}",
     "returnType": "json",
     "defaultArgs": {
-      "r18": "0",
-      "num": "1"
+      "r18": {
+        "type": "string",
+        "from": [0,1,2],
+        "value": "0"
+      },
+      "num": {
+        "type": "int",
+        "min": 1,
+        "max": 20,
+        "value": 1
+      },
+      "keyword": {
+        "type": "string"
+      },
+      "tag": {
+        "type": "string"
+      }
     },
     "picUrl": "urls/original",
     "sourceKey": "data",
@@ -25,7 +40,12 @@
     "returnType": "json",
     "url": "https://iw233.cn/api.php?sort=random&type=json{&num=$num}",
     "defaultArgs": {
-      "num": "1"
+      "num": {
+        "type": "int",
+        "min": 1,
+        "max": 100,
+        "value": 1
+      }
     },
     "picUrl": "pic"
   },
@@ -35,7 +55,19 @@
     "returnType": "json",
     "url": "https://yande.re/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
     "defaultArgs": {
-      "limit": "50"
+      "limit": {
+        "type": "int",
+        "min": 1,
+        "max": 100,
+        "value": 10
+      },
+      "tag":{
+        "type": "string"
+      },
+      "page":{
+        "type": "int",
+        "min": 1
+      }
     },
     "picUrl": "file_url",
     "nameRule": "{$md5}{.$file_ext}"
@@ -46,21 +78,21 @@
     "returnType": "json",
     "url": "https://konachan.com/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
     "defaultArgs": {
-      "limit": "50"
+      "limit": {
+        "type": "int",
+        "min": 1,
+        "max": 100,
+        "value": 10
+      },
+      "tag": {
+        "type": "string"
+      },
+      "page": {
+        "type": "int",
+        "min": 1
+      }
     },
-    "picUrl": "file_url",
-    "nameRule": "{$md5}{.$file_ext}"
-  },
-  {
-    "name": "konachan_safe",
-    "description": "Picture from Konachan (SFW) (konachan.net)",
-    "returnType": "json",
-    "url": "https://konachan.net/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
-    "defaultArgs": {
-      "limit": "50"
-    },
-    "picUrl": "file_url",
-    "nameRule": "{$md5}{.$file_ext}"
+    "picUrl": "file_url"
   },
   {
     "name": "btstu",
@@ -86,7 +118,10 @@
     "returnType": "redirect",
     "url": "https://api.yimian.xyz/img?type=moe{&r18=$r18}",
     "defaultArgs": {
-      "r18": "false"
+      "r18": {
+        "type": "string",
+        "from": ["false","true"]
+      }
     }
   },
   {

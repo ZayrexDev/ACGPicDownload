@@ -7,16 +7,21 @@ import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 public class Fetch {
 
-    private final HashMap<String, String> arguments = new HashMap<>();
+    private final LinkedList<Argument<? extends Object>> arguments = new LinkedList<>();
     public boolean enableConsoleProgressBar = false;
     private String sourceName;
     private String outputDir = new File("").getAbsolutePath();
@@ -26,6 +31,7 @@ public class Fetch {
     private int proxyPort;
     private int times = 1;
     private boolean saveFullResult = false;
+    private HashMap<String, String> argumentsTmp = new HashMap<>();
 
     public static void usage(Logger logger) {
         logger.info(
@@ -73,7 +79,7 @@ public class Fetch {
                             if (value.startsWith("\"") && value.endsWith("\"")) {
                                 value = value.substring(1, value.length() - 1);
                             }
-                            arguments.put(key, value);
+                            argumentsTmp.put(key, value);
                         }
                         i += 1;
                     } else {
@@ -163,6 +169,7 @@ public class Fetch {
         if (outputDir == null || outputDir.trim().equals("")) {
             outputDir = "";
         }
+
         return true;
     }
 
@@ -204,6 +211,24 @@ public class Fetch {
         Source s = parseSource();
 
         if (s == null) {
+            return;
+        }
+
+        try {
+            for (Argument<? extends Object> arg : s.getArguments()) {
+                String str = argumentsTmp.get(arg.getName());
+                if (str != null) {
+                    if (arg instanceof StringArgument) {
+                        ((StringArgument) arg).set(str);
+                    } else if (arg instanceof IntegerArgument) {
+                        ((IntegerArgument) arg).set(Integer.parseInt(argumentsTmp.get(arg.getName())));
+                    }
+                    arguments.add(arg);
+                }
+            }
+        } catch (Exception e) {
+            Main.logError(e);
+            logger.err("Can't parse arguments :" + e);
             return;
         }
 
