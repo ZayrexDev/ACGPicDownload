@@ -41,8 +41,15 @@ public class SourceFetcher {
             return parseJson(response.body(), source);
         } else if (Objects.equals("redirect", source.getReturnType().toLowerCase())) {
             String s = response.url().toString();
-            return new ArrayList<>(List.of(new Result(s.substring(s.lastIndexOf("/") + 1,
-                    s.lastIndexOf("?")), s, null)));
+            String t;
+            int a = s.lastIndexOf("?");
+            int b = s.lastIndexOf("/");
+           if(a > b){
+                t = s.substring(a + 1,b);
+            }else{
+                t = s.substring(a + 1);
+            }
+            return new ArrayList<>(List.of(new Result(t, s, null)));
         } else {
             return new ArrayList<>(List.of());
         }
@@ -97,8 +104,13 @@ public class SourceFetcher {
                 if (source.getNameRule() != null && !source.getNameRule().trim().equals("")) {
                     arg0.setFileName(FetchUtil.replaceArgument(source.getNameRule(), jsonObject));
                 } else {
-                    arg0.setFileName(arg0.getUrl().substring(arg0.getUrl().lastIndexOf("/") + 1,
-                            arg0.getUrl().lastIndexOf("?")));
+                    int a = arg0.getUrl().lastIndexOf("?");
+                    int b = arg0.getUrl().lastIndexOf("/");
+                    if(a > b){
+                        arg0.setFileName(arg0.getUrl().substring(a + 1,b));
+                    }else{
+                        arg0.setFileName(arg0.getUrl().substring(a + 1));
+                    }
                 }
                 for (String l : ILLEGAL_STRINGS) {
                     arg0.setFileName(arg0.getFileName().replaceAll(l, "_"));
