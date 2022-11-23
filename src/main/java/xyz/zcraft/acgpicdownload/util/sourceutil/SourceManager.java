@@ -6,12 +6,21 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.exceptions.SourceConfigException;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerLimit;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class SourceManager {
     private static final ArrayList<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
@@ -29,7 +38,8 @@ public class SourceManager {
                 throw new IOException("Could not create " + f);
             }
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(SourceManager.class.getResource("sources.json")).openStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    Objects.requireNonNull(SourceManager.class.getResource("sources.json")).openStream()));
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -100,5 +110,43 @@ public class SourceManager {
             }
         }
         return null;
+    }
+
+    public static Argument<?> parseArgument(String name, JSONObject arg) throws SourceConfigException {
+        Argument<?> t = null;
+
+        if (arg.containsKey("type")) {
+            if (arg.get("type").equals("int")) {
+                if(arg.containsKey("min") || arg.containsKey("max") || arg.containsKey("step")){
+                    IntegerLimit l = new IntegerLimit(arg.getInteger("min"),arg.getInteger("max"),arg.getInteger("step"));
+                    t = new LimitedIntegerArgument(name,l);
+                }else{
+                    t = new IntegerArgument(name);
+                }
+            }else if(arg.get("type").equals("string")){
+                if (arg.containsKey("from")) {
+                    Object obj = arg.get("from");
+                    if(obj instanceof JSONArray){
+                        HashSet<String> tmp = new HashSet<>();
+                        JSONArray arr = (JSONArray) obj;
+                        arr.forEach(new Consumer<Object>() {
+                            @Override
+                            public void accept(Object arg0) {
+                                tmp.add(String.valueOf(arg0));
+                            }
+                        });
+                        t = new LimitedStringArgument(name, tmp);
+                    }
+                } else {
+                    t = new StringArgument(name);
+                }
+            }
+        }
+
+        if(t == null){
+            throw new SourceConfigException();
+        }else{
+            return t;
+        }
     }
 }

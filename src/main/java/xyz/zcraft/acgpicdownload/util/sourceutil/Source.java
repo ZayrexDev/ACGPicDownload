@@ -1,7 +1,11 @@
 package xyz.zcraft.acgpicdownload.util.sourceutil;
 
+import java.util.ArrayList;
+
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
+
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
 
 public class Source {
     @JSONField(name = "name")
@@ -23,8 +27,9 @@ public class Source {
     @JSONField(name = "returnType")
     private String returnType;
 
-    public Source() {
-    }
+    private ArrayList<Argument<?>> arguments;
+
+    public Source() {}
 
     public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey, JSONObject defaultArgs, String returnType) {
         this.name = name;
@@ -99,5 +104,13 @@ public class Source {
 
     public void setReturnType(String returnType) {
         this.returnType = returnType;
+    }
+
+    public ArrayList<Argument<?>> getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(ArrayList<Argument<?>> arguments) {
+        this.arguments = arguments;
     }
 }
