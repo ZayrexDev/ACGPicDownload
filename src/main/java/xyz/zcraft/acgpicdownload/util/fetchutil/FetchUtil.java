@@ -14,12 +14,14 @@ import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadUtil;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
 import xyz.zcraft.acgpicdownload.util.sourceutil.SourceFetcher;
 import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -277,15 +279,20 @@ public class FetchUtil {
         return s;
     }
 
-    public static void replaceArgument(Source s, HashMap<String, String> arguments) {
+    public static void replaceArgument(Source s, List<Argument<?>> arguments) {
         if (s == null) {
             return;
         }
 
         JSONObject temp = new JSONObject();
-        temp.putAll(s.getDefaultArgs());
 
-        temp.putAll(arguments);
+        for (Argument<?> a : s.getArguments()) {
+            temp.put(a.getName(), a.getValue());
+        }
+
+        for (Argument<?> a : arguments) {
+            temp.put(a.getName(), a.getValue());
+        }
 
         s.setUrl(replaceArgument(s.getUrl(), temp));
     }

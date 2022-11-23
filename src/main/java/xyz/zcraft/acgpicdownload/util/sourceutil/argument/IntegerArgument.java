@@ -11,9 +11,15 @@ public class IntegerArgument extends Argument<Integer> {
         this.value = value;
     }
 
+
     @Override
     public boolean isValid(Integer value) {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "IntegerArgument {name=" + name + ", value=" + value + "}";
     }
 
 }

@@ -5,6 +5,11 @@ public abstract class Argument<T> {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Argument {name=" + name + ", value=" + value + "}";
+    }
+
     public abstract void set(T value);
     public abstract boolean isValid(T value);
 

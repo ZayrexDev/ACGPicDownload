@@ -7,16 +7,19 @@ import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 public class Fetch {
 
-    private final HashMap<String, String> arguments = new HashMap<>();
+    private final LinkedList<Argument<?>> arguments = new LinkedList<>();
     public boolean enableConsoleProgressBar = false;
     private String sourceName;
     private String outputDir = new File("").getAbsolutePath();
@@ -26,6 +29,7 @@ public class Fetch {
     private int proxyPort;
     private int times = 1;
     private boolean saveFullResult = false;
+    private HashMap<String,String> argumentsTmp = new HashMap<>();
 
     public static void usage(Logger logger) {
         logger.info(
@@ -73,7 +77,7 @@ public class Fetch {
                             if (value.startsWith("\"") && value.endsWith("\"")) {
                                 value = value.substring(1, value.length() - 1);
                             }
-                            arguments.put(key, value);
+                            argumentsTmp.put(key, value);
                         }
                         i += 1;
                     } else {
@@ -163,6 +167,12 @@ public class Fetch {
         if (outputDir == null || outputDir.trim().equals("")) {
             outputDir = "";
         }
+
+        try{
+
+        }catch(Exception e){
+            return false;
+        }
         return true;
     }
 
@@ -207,7 +217,7 @@ public class Fetch {
             return;
         }
 
-        FetchUtil.replaceArgument(s, arguments);
+        FetchUtil.replaceArgument(s,arguments);
 
         ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar, proxyHost, proxyPort);
         if (r.size() == 0) {

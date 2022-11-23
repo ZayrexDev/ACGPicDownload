@@ -1,9 +1,12 @@
 package xyz.zcraft.acgpicdownload.util.sourceutil.argument;
 
 public class LimitedIntegerArgument extends Argument<Integer> {
-    private int minValue;
-    private int maxValue;
     private IntegerLimit limit;
+
+    @Override
+    public String toString() {
+        return "LimitedIntegerArgument {limit=" + limit + ", name" + name + ", value" + value + "}";
+    }
 
     public LimitedIntegerArgument(String name, IntegerLimit limit) {
         super(name);

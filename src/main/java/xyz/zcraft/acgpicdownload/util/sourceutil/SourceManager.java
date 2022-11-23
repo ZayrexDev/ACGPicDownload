@@ -74,6 +74,7 @@ public class SourceManager {
             Source s = JSONObject.parseObject(String.valueOf(o), Source.class);
             try {
                 verifySource(s);
+                s.setArguments(parseArguments(s.getDefaultArgs()));
                 sources.add(s);
             } catch (SourceConfigException e) {
                 System.err.println("Failed to parse source " + s.getName() + " : " + e);
@@ -112,6 +113,19 @@ public class SourceManager {
         return null;
     }
 
+    public static ArrayList<Argument<?>> parseArguments(JSONObject args) throws SourceConfigException{
+        ArrayList<Argument<?>> t = new ArrayList<>();
+        if(args == null){
+            return t;
+        }
+
+        for (String key : args.keySet()) {
+            t.add(parseArgument(key, args.getJSONObject(key)));
+        }
+
+        return t;
+    }
+
     public static Argument<?> parseArgument(String name, JSONObject arg) throws SourceConfigException {
         Argument<?> t = null;
 
@@ -119,7 +133,11 @@ public class SourceManager {
             if (arg.get("type").equals("int")) {
                 if(arg.containsKey("min") || arg.containsKey("max") || arg.containsKey("step")){
                     IntegerLimit l = new IntegerLimit(arg.getInteger("min"),arg.getInteger("max"),arg.getInteger("step"));
-                    t = new LimitedIntegerArgument(name,l);
+                    LimitedIntegerArgument lia = new LimitedIntegerArgument(name,l);
+                    if(arg.containsKey("value")){
+                        lia.set(arg.getInteger("value"));
+                    }
+                    t = lia;
                 }else{
                     t = new IntegerArgument(name);
                 }

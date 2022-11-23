@@ -6,6 +6,12 @@ public class LimitedStringArgument extends Argument<String> {
     private Set<String> vaildValues;
 
 
+
+    @Override
+    public String toString() {
+        return "LimitedStringArgument {name=" + name + ", value=" + value + ", vaildValues=" + vaildValues + "}";
+    }
+
     public LimitedStringArgument(String name,Set<String> vaildValues) {
         super(name);
         this.vaildValues = vaildValues;

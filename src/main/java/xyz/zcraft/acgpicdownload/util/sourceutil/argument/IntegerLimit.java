@@ -113,6 +113,13 @@ public class IntegerLimit {
         }
     }
 
+
+
+    @Override
+    public String toString() {
+        return "IntegerLimit [minValue=" + minValue + ", maxValue=" + maxValue + ", step=" + step + "]";
+    }
+
     public Integer getMinValue() {
         return minValue;
     }

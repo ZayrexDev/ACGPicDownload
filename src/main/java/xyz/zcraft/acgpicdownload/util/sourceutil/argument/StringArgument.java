@@ -19,4 +19,12 @@ public class StringArgument extends Argument<String> {
     public void set(String value) {
         this.value = value;
     }
+
+
+
+    @Override
+    public String toString() {
+        return "StringArgument {" + "name=" + name + ", value=" + value + "}";
+    }
+
 }
