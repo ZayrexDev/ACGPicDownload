@@ -45,9 +45,9 @@ public class SourceFetcher {
             int a = s.lastIndexOf("?");
             int b = s.lastIndexOf("/");
            if(a > b){
-                t = s.substring(a + 1,b);
+                t = s.substring(b + 1,a);
             }else{
-                t = s.substring(a + 1);
+                t = s.substring(b + 1);
             }
             return new ArrayList<>(List.of(new Result(t, s, null)));
         } else {
@@ -107,9 +107,9 @@ public class SourceFetcher {
                     int a = arg0.getUrl().lastIndexOf("?");
                     int b = arg0.getUrl().lastIndexOf("/");
                     if(a > b){
-                        arg0.setFileName(arg0.getUrl().substring(a + 1,b));
+                        arg0.setFileName(arg0.getUrl().substring(b + 1,a));
                     }else{
-                        arg0.setFileName(arg0.getUrl().substring(a + 1));
+                        arg0.setFileName(arg0.getUrl().substring(b + 1));
                     }
                 }
                 for (String l : ILLEGAL_STRINGS) {
