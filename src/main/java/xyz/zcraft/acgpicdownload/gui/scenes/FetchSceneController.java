@@ -73,6 +73,8 @@ public class FetchSceneController implements Initializable {
 
     private boolean downloading;
     private DownloadManager dm;
+    @javafx.fxml.FXML
+    private MFXButton backBtn;
 
     @javafx.fxml.FXML
     public void fetchBtnOnAction() {
@@ -273,5 +275,21 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     public void delCompletedBtnOnAction() {
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
+    }
+
+    @javafx.fxml.FXML
+    public void backBtnOnAction() {
+        TranslateTransition tt = new TranslateTransition();
+        tt.setNode(mainPane);
+        tt.setAutoReverse(true);
+        tt.setRate(0.01);
+        tt.setDuration(Duration.millis(5));
+        tt.setInterpolator(Interpolator.EASE_BOTH);
+        tt.setFromY(0);
+        tt.setToY(mainPane.getHeight());
+        mainPane.setVisible(true);
+        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
+        tt.play();
+        gui.welcomeSceneController.playAnimation();
     }
 }
