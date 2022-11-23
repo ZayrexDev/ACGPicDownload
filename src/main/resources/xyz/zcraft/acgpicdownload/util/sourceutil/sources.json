@@ -58,7 +58,8 @@
       "limit": {
         "type": "int",
         "min": 1,
-        "max": 100
+        "max": 100,
+        "value": 10
       },
       "tag":{
         "type": "string"
@@ -80,28 +81,8 @@
       "limit": {
         "type": "int",
         "min": 1,
-        "max": 100
-      },
-      "tag": {
-        "type": "string"
-      },
-      "page": {
-        "type": "int",
-        "min": 1
-      }
-    },
-    "picUrl": "file_url"
-  },
-  {
-    "name": "konachan_safe",
-    "description": "Picture from Konachan (SFW) (konachan.net)",
-    "returnType": "json",
-    "url": "https://konachan.net/post.json?{limit=$limit}{&tag=$tag}{&page=$page}",
-    "defaultArgs": {
-      "limit": {
-        "type": "int",
-        "min": 1,
-        "max": 100
+        "max": 100,
+        "value": 10
       },
       "tag": {
         "type": "string"
