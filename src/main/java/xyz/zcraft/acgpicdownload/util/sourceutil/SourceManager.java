@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class SourceManager {
@@ -76,7 +75,7 @@ public class SourceManager {
                 verifySource(s);
                 s.setArguments(parseArguments(s.getDefaultArgs()));
                 sources.add(s);
-            } catch (SourceConfigException e) {
+            } catch (SourceConfigException|JSONException e) {
                 System.err.println("Failed to parse source " + s.getName() + " : " + e);
                 Main.logError(e);
             }
@@ -113,7 +112,7 @@ public class SourceManager {
         return null;
     }
 
-    public static ArrayList<Argument<?>> parseArguments(JSONObject args) throws SourceConfigException{
+    public static ArrayList<Argument<?>> parseArguments(JSONObject args) throws SourceConfigException, JSONException{
         ArrayList<Argument<?>> t = new ArrayList<>();
         if(args == null){
             return t;
