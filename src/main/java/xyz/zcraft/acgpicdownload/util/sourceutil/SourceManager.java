@@ -153,7 +153,11 @@ public class SourceManager {
                                 tmp.add(String.valueOf(arg0));
                             }
                         });
-                        t = new LimitedStringArgument(name, tmp);
+                        LimitedStringArgument lsa = new LimitedStringArgument(name, tmp);
+                        if(arg.containsKey("value")){
+                            lsa.set(arg.getString("value"));
+                        }
+                        t = lsa;
                     }
                 } else {
                     t = new StringArgument(name);

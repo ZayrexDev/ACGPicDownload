@@ -27,7 +27,7 @@ public class Source {
     @JSONField(name = "returnType")
     private String returnType;
 
-    private ArrayList<Argument<?>> arguments;
+    private ArrayList<Argument<? extends Object>> arguments;
 
     public Source() {}
 

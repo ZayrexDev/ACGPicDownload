@@ -2,7 +2,7 @@ package xyz.zcraft.acgpicdownload.util.sourceutil.argument;
 
 import java.util.Set;
 
-public class LimitedStringArgument extends Argument<String> {
+public class LimitedStringArgument extends StringArgument {
     private Set<String> vaildValues;
 
 

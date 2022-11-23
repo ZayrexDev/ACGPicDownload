@@ -1,6 +1,6 @@
 package xyz.zcraft.acgpicdownload.util.sourceutil.argument;
 
-public class LimitedIntegerArgument extends Argument<Integer> {
+public class LimitedIntegerArgument extends IntegerArgument {
     private IntegerLimit limit;
 
     @Override

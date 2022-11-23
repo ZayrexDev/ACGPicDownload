@@ -45,7 +45,7 @@ public class FetchUtil {
             args.forEach((t, o) -> {
                 String[] value = {};
 
-                if (args.containsKey(t)) {
+                if (args.containsKey(t) && args.get(t) != null) {
                     value = String.valueOf(args.get(t)).split("&");
                 }
 
@@ -285,6 +285,10 @@ public class FetchUtil {
         }
 
         JSONObject temp = new JSONObject();
+
+        for (String k : s.getDefaultArgs().keySet()) {
+            temp.put(k, s.getDefaultArgs().get(k));
+        }
 
         for (Argument<?> a : s.getArguments()) {
             temp.put(a.getName(), a.getValue());

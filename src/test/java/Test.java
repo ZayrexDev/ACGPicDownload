@@ -10,8 +10,6 @@ public class Test {
     public static void main(String[] args) throws JSONException, IOException {
         SourceManager.readConfig();
         Source source = SourceManager.getSources().get(0);
-        System.out.println(source.getArguments());
-        System.out.println(source.getDefaultArgs());
-        Main.main("-m".split(" "));
+        Main.main("-m --arg num=1".split(" "));
     }
 }

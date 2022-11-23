@@ -1,6 +1,6 @@
 package xyz.zcraft.acgpicdownload.util.sourceutil.argument;
 
-public abstract class Argument<T> {
+public abstract class Argument<T extends Object> {
     public Argument(String name) {
         this.name = name;
     }
