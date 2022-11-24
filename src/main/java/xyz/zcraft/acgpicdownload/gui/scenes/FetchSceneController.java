@@ -20,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
@@ -374,8 +375,12 @@ public class FetchSceneController implements Initializable {
 
     @javafx.fxml.FXML
     public void selectDirBtnOnAction() {
-        FileChooser fc = new FileChooser();
+        DirectoryChooser fc = new DirectoryChooser();
         fc.setTitle("选择目录");
-        outputDirField.setText(fc.showSaveDialog(gui.mainStage).getAbsolutePath());
+        File showDialog = fc.showDialog(gui.mainStage);
+        if(showDialog!= null){
+            outputDirField.setText(showDialog.getAbsolutePath());
+        }
+
     }
 }
