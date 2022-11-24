@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane fx:id="mainPane" prefHeight="438.0" prefWidth="767.0" style="-fx-background-radius: 10 10 0 0;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController">
+   <children>
+      <VBox layoutX="235.0" layoutY="92.0" prefHeight="372.0" prefWidth="558.0" spacing="5.0" style="-fx-background-color: #ffffff88;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox spacing="5.0">
+               <children>
+                  <MFXButton fx:id="backBtn" maxHeight="1.7976931348623157E308" onAction="#backBtnOnAction" text="返回" HBox.hgrow="ALWAYS" />
+                  <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="抓取图片" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <VBox spacing="8.0">
+               <children>
+                  <HBox prefHeight="0.0" prefWidth="600.0" spacing="5.0">
+                     <children>
+                        <MFXFilterComboBox fx:id="sourcesComboBox" editable="false" floatMode="BORDER" floatingText="下载源" maxWidth="1.7976931348623157E308" minHeight="-Infinity" onAction="#onSourceSelected" prefHeight="25.0" prefWidth="519.0" HBox.hgrow="ALWAYS" />
+                        <MFXButton fx:id="sourceUpdateBtn" maxHeight="1.7976931348623157E308" onAction="#sourceUpdateBtnOnAction" prefHeight="34.0" prefWidth="55.0" text="刷新" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+                  <MFXScrollPane minHeight="50.0" prefHeight="50.0" prefWidth="746.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <HBox fx:id="argumentsPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="10.0" />
+                     </content>
+                  </MFXScrollPane>
+                  <VBox>
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="0.0" prefWidth="746.0" spacing="10.0">
+                           <children>
+                              <HBox alignment="CENTER" spacing="10.0">
+                                 <children>
+                                    <Label text="抓取次数" />
+                                    <MFXSlider fx:id="timesSlider" alternativeUnitIncrement="1.0" max="10.0" min="1.0" prefHeight="22.0" prefWidth="100.0" value="1.0" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" spacing="10.0">
+                                 <children>
+                                    <MFXTextField fx:id="proxyField" floatMode="BORDER" floatingText="使用代理" minHeight="30.0" prefHeight="30.0" prefWidth="250.0" promptText="若为空，则不使用" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" spacing="10.0">
+                           <children>
+                              <MFXTextField fx:id="outputDirField" floatMode="BORDER" floatingText="保存目录" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="250.0" />
+                              <MFXButton fx:id="selectDirBtn" onAction="#selectDirBtnOnAction" text="选择目录"/>
+                              <MFXToggleButton fx:id="multiThreadToggle" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="24.0" prefWidth="125.0" text="多线程下载" />
+                              <MFXToggleButton fx:id="fullResultToggle" text="下载完整结果" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <MFXButton fx:id="fetchBtn" disable="true" maxWidth="1.7976931348623157E308" onAction="#fetchBtnOnAction" text="开始抓取" HBox.hgrow="ALWAYS">
+                           <effect>
+                              <DropShadow height="5.0" radius="2.0" width="5.0" />
+                           </effect>
+                        </MFXButton>
+                        <MFXButton fx:id="downloadBtn" disable="true" maxWidth="1.7976931348623157E308" onAction="#downloadBtnOnAction" text="开始下载" HBox.hgrow="ALWAYS">
+                           <effect>
+                              <DropShadow height="5.0" radius="2.0" width="5.0" />
+                           </effect>
+                        </MFXButton>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+            <HBox alignment="CENTER" prefHeight="0.0" prefWidth="579.0" spacing="10.0" VBox.vgrow="NEVER">
+               <children>
+                  <MFXButton fx:id="delCompletedBtn" maxWidth="1.7976931348623157E308" onAction="#delCompletedBtnOnAction" text="删除已完成">
+                     <effect>
+                        <DropShadow height="5.0" radius="2.0" width="5.0" />
+                     </effect>
+                  </MFXButton>
+                  <MFXProgressBar fx:id="progressBar" progress="0.0" />
+                  <Label fx:id="statusLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="250.0" text="创建:0 下载中:0 已完成:0 失败:0 0kb/s" HBox.hgrow="NEVER" />
+               </children>
+            </HBox>
+            <MFXScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+               <content>
+                  <MFXTableView fx:id="dataTable" footerVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+               </content>
+            </MFXScrollPane>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+      <AnchorPane fx:id="loadingPane" layoutX="20.0" layoutY="20.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ffffffb8;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane layoutY="171.1999969482422" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="150.0">
+               <children>
+                  <Label fx:id="operationLabel" text="正在加载" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+                  <MFXProgressBar layoutY="52.0" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

@@ -1,0 +1,20 @@
+*{
+	-mfx-main: black;
+	-mfx-main-color: -mfx-main;
+	-mfx-main-color-hover: rgb(0, 0, 0, 0.2);
+	-mfx-main-color-pressed: rgb(0, 0, 0, 0.3);
+}
+
+.mfx-progress-bar .bar1,
+.mfx-progress-bar .bar2 {
+	-fx-fill: -mfx-main;
+}
+
+.mfx-ripple-generator {
+	-mfx-ripple-color: rgba(0, 0, 0, 0.5);
+}
+
+.mfx-combo-box-cell {
+	-mfx-hover: rgb(0, 0, 0, 0.1);
+	-mfx-selected: rgb(0, 0, 0, 0.3);
+}

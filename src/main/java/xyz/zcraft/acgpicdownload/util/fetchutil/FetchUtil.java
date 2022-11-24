@@ -6,7 +6,7 @@ import org.jsoup.HttpStatusException;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.exceptions.SourceNotFoundException;
 import xyz.zcraft.acgpicdownload.exceptions.UnsupportedReturnTypeException;
-import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.*;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -45,7 +46,7 @@ public class FetchUtil {
             args.forEach((t, o) -> {
                 String[] value = {};
 
-                if (args.containsKey(t) && args.get(t) != null) {
+                if (args.containsKey(t) && args.get(t) != null && !String.valueOf(args.get(t)).isEmpty()) {
                     value = String.valueOf(args.get(t)).split("&");
                 }
 
@@ -136,6 +137,77 @@ public class FetchUtil {
         }
 
         startMonitoring(rs, tpe, enableConsoleProgressBar, logger);
+    }
+
+    public static void startDownloadWithResults(DownloadManager dm, ArrayList<DownloadResult> r, String outputDir, Logger logger,
+                                                boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate) {
+        File outDir = new File(outputDir);
+        if (!outDir.exists() && !outDir.mkdirs()) {
+            logger.err("Can't create directory");
+            return;
+        }
+        ThreadPoolExecutor tpe;
+        if (maxThread == -1) {
+            tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        } else {
+            tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
+        }
+        dm.setTpe(tpe);
+        for (DownloadResult downloadResult : r) {
+            tpe.execute(() -> {
+                try {
+                    new DownloadUtil(1).download(downloadResult.getResult(), outDir, downloadResult, saveFullResult);
+                } catch (Exception e) {
+                    Main.logError(e);
+                    downloadResult.setStatus(DownloadStatus.FAILED);
+                    downloadResult.setErrorMessage(e.toString());
+                }
+            });
+        }
+
+        startMonitoring(r.toArray(new DownloadResult[]{}), tpe, enableConsoleProgressBar, logger, onUpdate);
+    }
+
+    public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
+                                       boolean enableConsoleProgressBar, Logger logger, Runnable onUpdate) {
+        DownloadManager manager = new DownloadManager(result, tpe);
+        Thread t = new Thread(() -> {
+            int lastLength = 0;
+            while (enableConsoleProgressBar && tpe.getCompletedTaskCount() != result.length) {
+                String m = manager.toString();
+                if (Main.isDebug()) {
+                    m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
+                            + tpe.getPoolSize() + " Done:" + tpe.getCompletedTaskCount();
+                }
+                logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))));
+                lastLength = m.length();
+                onUpdate.run();
+
+                try {
+                    // noinspection BusyWait
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Main.logError(e);
+                    e.printStackTrace();
+                }
+            }
+            String m = manager.toString();
+            if (Main.isDebug() && tpe != null) {
+                m += "  Queue:" + tpe.getQueue().size() + " Active:" + tpe.getActiveCount() + " Pool Size:"
+                        + tpe.getPoolSize();
+            }
+            logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))).concat("\n"));
+            logger.info("Done");
+            onUpdate.run();
+
+            if (tpe != null) {
+                tpe.shutdown();
+            }
+
+            printResult(result, logger);
+        });
+        t.setPriority(5);
+        t.start();
     }
 
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
@@ -234,6 +306,64 @@ public class FetchUtil {
                     logger.printr("Error: rate limit exceeded \n");
                 } else {
                     logger.printr("Error occurred:" + e.getMessage());
+                }
+            }
+            i++;
+        }
+
+        sb = new StringBuilder();
+        sb.append("Fetching ").append(times).append("/").append(times);
+        if (failed != 0) {
+            sb.append(" Failed:").append(failed);
+        }
+        logger.printr(sb.toString());
+        printTaskBar(sb.toString(), 1, "\n", lastLength, logger);
+
+        return r;
+    }
+
+    public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar,
+            String proxyHost, int proxyPort, ExceptionHandler exceptionHandler) {
+        logger.info("Fetching pictures from " + s.getUrl() + " ...");
+
+        ArrayList<Result> r = new ArrayList<>();
+
+        int failed = 0;
+        int lastLength = 0;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Fetching 0/").append(times);
+        logger.printr(sb.toString());
+        lastLength = printTaskBar(sb.toString(), 0, "", lastLength, logger);
+
+        for (int i = 0; i < times;) {
+            if (times > 1 && enableConsoleProgressBar) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    Main.logError(e);
+                    e.printStackTrace();
+                }
+                sb = new StringBuilder();
+                sb.append("Fetching ").append(i).append("/").append(times);
+                if (failed != 0) {
+                    sb.append(" Failed:").append(failed);
+                }
+                logger.printr(sb.toString());
+                lastLength = printTaskBar(sb.toString(), (double) i / (double) times, "", lastLength, logger);
+            }
+            try {
+                r.addAll(fetchResult(s, proxyHost, proxyPort));
+            } catch (Exception e) {
+                Main.logError(e);
+                failed++;
+                if (e instanceof HttpStatusException && ((HttpStatusException) e).getStatusCode() == 429) {
+                    logger.printr("Error: rate limit exceeded \n");
+                } else {
+                    logger.printr("Error occurred:" + e.getMessage());
+                }
+                if(exceptionHandler!=null){
+                    exceptionHandler.handle(e);
                 }
             }
             i++;

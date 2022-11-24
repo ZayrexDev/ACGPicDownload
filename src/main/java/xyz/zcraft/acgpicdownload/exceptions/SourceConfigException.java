@@ -1,6 +1,6 @@
 package xyz.zcraft.acgpicdownload.exceptions;
 
-public class SourceConfigException extends Exception {
+public class SourceConfigException extends RuntimeException {
     public SourceConfigException() {
     }
 

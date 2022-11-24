@@ -2,9 +2,11 @@ package xyz.zcraft.acgpicdownload;
 
 import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.Schedule;
+import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
 
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,7 +15,8 @@ import java.util.List;
 
 public class Main {
     private static boolean debug = false;
-    public static PrintWriter out;
+    public static PrintWriter debugOut;
+    public static PrintStream log;
     public static PrintWriter err;
     public static boolean isDebug() {
         return debug;
@@ -22,7 +25,7 @@ public class Main {
     public static void debugOn() {
         Main.debug = true;
         try {
-            out = new PrintWriter("debug.log");
+            debugOut = new PrintWriter("debug.log");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -54,10 +57,11 @@ public class Main {
 
     public static void main(String[] args) {
         ArrayList<String> argList = new ArrayList<>(List.of(args));
+        try {
+            log = new PrintStream("out.log");
+        } catch (FileNotFoundException ignored) {}
         if (argList.size() == 0) {
-            Fetch f = new Fetch();
-            f.enableConsoleProgressBar = true;
-            f.main(argList, new Logger("Fetch", System.out));
+            GUI.main(args);
         } else if (argList.get(0).equalsIgnoreCase("fetch")) {
             argList.remove(0);
             Fetch f = new Fetch();
@@ -67,10 +71,6 @@ public class Main {
             argList.remove(0);
             Schedule s = new Schedule();
             s.main(argList);
-        } else {
-            Fetch f = new Fetch();
-            f.enableConsoleProgressBar = true;
-            f.main(argList, new Logger("Fetch", System.out));
         }
     }
 }
