@@ -3,6 +3,7 @@ package xyz.zcraft.acgpicdownload.commands;
 import com.alibaba.fastjson2.JSONException;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.exceptions.SourceNotFoundException;
+import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
@@ -234,7 +235,14 @@ public class Fetch {
 
         FetchUtil.replaceArgument(s, arguments);
 
-        ArrayList<Result> r = FetchUtil.fetch(s, times, logger, enableConsoleProgressBar, proxyHost, proxyPort);
+        ArrayList<Result> r = FetchUtil.fetch(
+            s,
+            times,
+            logger,
+            enableConsoleProgressBar,
+            proxyHost,
+            proxyPort
+        );
         if (r.size() == 0) {
             logger.info("No pictures were found!");
             return;

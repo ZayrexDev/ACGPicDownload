@@ -28,6 +28,7 @@ import xyz.zcraft.acgpicdownload.gui.argpanes.ArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedStringArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.StringArgumentPane;
+import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
@@ -284,7 +285,20 @@ public class FetchSceneController implements Initializable {
             }
 
             FetchUtil.replaceArgument(s, args);
-            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out, Main.log), true, proxyHost, proxyPort);
+            ArrayList<Result> r1 = FetchUtil.fetch(
+                s,
+                (int) timesSlider.getValue(),
+                new Logger("GUI", System.out, Main.log),
+                true,
+                proxyHost,
+                proxyPort,
+                    new ExceptionHandler() {
+                        @Override
+                        public void handle(Exception e) {
+                            gui.showError(e);
+                        }
+                    }
+                );
             LinkedList<DownloadResult> drs = new LinkedList<>();
             for (Result result : r1) {
                 DownloadResult dr = new DownloadResult();
