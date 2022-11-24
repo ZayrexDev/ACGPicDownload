@@ -15,6 +15,11 @@ public class ConfigManager {
 
     public static void readConfig() throws IOException {
         File f = new File("config.json");
+        if (!f.exists()) {
+            f.createNewFile();
+            config = new JSONObject();
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = new BufferedReader(new FileReader(f));
 

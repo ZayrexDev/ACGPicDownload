@@ -185,7 +185,6 @@ public class FetchSceneController implements Initializable {
             ConfigManager.readConfig();
             restoreConfig();
         } catch (IOException e) {
-            gui.showError(e);
             Main.logError(e);
         }
     }
