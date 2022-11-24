@@ -12,6 +12,7 @@ import xyz.zcraft.acgpicdownload.gui.scenes.ErrorPaneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.WelcomeSceneController;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 public class GUI extends Application {
     public FetchSceneController fetchSceneController;
@@ -35,7 +36,7 @@ public class GUI extends Application {
 
         stage.setTitle("ACGPicDownload");
 
-        FXMLLoader loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"));
+        FXMLLoader loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"), ResourceBundleUtil.getResource());
         welcomePane = loader.load();
         welcomeSceneController = loader.getController();
         welcomeSceneController.setGui(gui);
