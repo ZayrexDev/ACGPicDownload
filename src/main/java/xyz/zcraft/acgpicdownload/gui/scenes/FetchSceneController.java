@@ -21,7 +21,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
@@ -44,9 +43,12 @@ import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument
 import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
 import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.*;
 
 public class FetchSceneController implements Initializable {
@@ -225,6 +227,14 @@ public class FetchSceneController implements Initializable {
 
         dataTable.setItems(data);
 
+        dataTable.getSelectionModel().setAllowsMultipleSelection(false);
+        dataTable.getSelectionModel().selectionProperty().addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
+            List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
+            if (selectedValues.size() > 0) {
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
+            }
+        });
+
         data.clear();
     }
 
@@ -271,6 +281,7 @@ public class FetchSceneController implements Initializable {
             try {
                 s = (Source) sourcesComboBox.getSelectedItem().clone();
             } catch (CloneNotSupportedException ignored) {
+                return;
             }
 
             LinkedList<Argument<?>> args = new LinkedList<>();
@@ -381,6 +392,5 @@ public class FetchSceneController implements Initializable {
         if(showDialog!= null){
             outputDirField.setText(showDialog.getAbsolutePath());
         }
-
     }
 }
