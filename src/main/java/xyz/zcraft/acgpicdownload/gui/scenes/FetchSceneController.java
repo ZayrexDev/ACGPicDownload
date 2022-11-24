@@ -1,5 +1,6 @@
 package xyz.zcraft.acgpicdownload.gui.scenes;
 
+import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.collections.TransformableList;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
@@ -23,6 +24,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.argpanes.ArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane;
@@ -178,6 +180,14 @@ public class FetchSceneController implements Initializable {
         data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size() == 0));
 
         proxyField.textProperty().addListener(this::verifyProxy);
+
+        try {
+            ConfigManager.readConfig();
+            restoreConfig();
+        } catch (IOException e) {
+            gui.showError(e);
+            Main.logError(e);
+        }
     }
 
     private void initTable() {
@@ -265,7 +275,7 @@ public class FetchSceneController implements Initializable {
             LinkedList<Argument<?>> args = new LinkedList<>();
 
             for (ArgumentPane<?> argument : arguments) {
-                args.add(argument.getValue());
+                args.add(argument.getArgument());
             }
 
             FetchUtil.replaceArgument(s, args);
@@ -273,6 +283,7 @@ public class FetchSceneController implements Initializable {
                 @Override
                 public void handle(Exception e) {
                     gui.showError(e);
+                    Main.logError(e);
                 }
             });
             LinkedList<DownloadResult> drs = new LinkedList<>();
@@ -328,6 +339,7 @@ public class FetchSceneController implements Initializable {
                 sources.addAll(SourceManager.getSources());
             } catch (Exception e) {
                 gui.showError(e);
+                Main.logError(e);
             }
             ft.play();
             ft.setOnFinished((e) -> loadingPane.setVisible(false));
@@ -357,8 +369,10 @@ public class FetchSceneController implements Initializable {
                     arguments.add(pane);
                 }
             }
+            restoreSourceConfig();
         } catch (IOException e) {
             gui.showError(e);
+            Main.logError(e);
         }
     }
 
@@ -398,6 +412,72 @@ public class FetchSceneController implements Initializable {
             proxyHost = null;
             proxyPort = 0;
             proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
+        }
+    }
+
+    public void saveConfig() {
+        JSONObject obj = ConfigManager.getConfig();
+        obj.put("times", timesSlider.getValue());
+        obj.put("proxy", proxyField.getText());
+        obj.put("output", outputDirField.getText());
+        obj.put("threadCount", threadCountSlider.getValue());
+        obj.put("full", fullResultToggle.isSelected());
+
+        JSONObject sourceObj = Objects.requireNonNullElse(obj.getJSONObject("sources"), new JSONObject());
+        if (sourcesComboBox.getSelectedItem() != null) {
+            JSONObject sourceCfg = new JSONObject();
+            for (ArgumentPane<?> argPane : arguments) {
+                sourceCfg.put(argPane.getName(), argPane.getArgument().getValue());
+            }
+            sourceObj.put(sourcesComboBox.getSelectedItem().getName(), sourceCfg);
+        }
+        obj.put("sources", sourceObj);
+
+        try {
+            ConfigManager.saveConfig();
+        } catch (IOException e) {
+            gui.showError(e);
+            Main.logError(e);
+        }
+    }
+
+    public void restoreConfig() {
+        JSONObject json = ConfigManager.getConfig();
+        if (json != null) {
+            timesSlider.setValue(Objects.requireNonNullElse(json.getInteger("times"), 1));
+            proxyField.setText(Objects.requireNonNullElse(json.getString("proxy"), ""));
+            outputDirField.setText(Objects.requireNonNullElse(json.getString("output"), ""));
+            threadCountSlider.setValue(Objects.requireNonNullElse(json.getInteger("threadCount"), 1));
+            fullResultToggle.setSelected(json.getBooleanValue("full"));
+        }
+    }
+
+    public void restoreSourceConfig() {
+        JSONObject json = ConfigManager.getConfig();
+        if (json == null) return;
+        json = json.getJSONObject("sources");
+        if (json == null) return;
+        String name = sourcesComboBox.getSelectedItem().getName();
+        json = json.getJSONObject(name);
+        if (json == null) return;
+        for (ArgumentPane<?> argumentPane : arguments) {
+            Object t = json.get(argumentPane.getArgument().getName());
+            if (t == null) continue;
+            Argument<?> argument = argumentPane.getArgument();
+            if (argument instanceof LimitedStringArgument arg) {
+                if (t instanceof String v) {
+                    arg.set(v);
+                }
+            } else if (argument instanceof StringArgument arg) {
+                if (t instanceof String v) {
+                    arg.set(v);
+                }
+            } else if (argument instanceof LimitedIntegerArgument arg) {
+                if (t instanceof Integer v) {
+                    arg.set(v);
+                }
+            }
+            argumentPane.update();
         }
     }
 }

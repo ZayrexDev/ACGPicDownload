@@ -74,7 +74,12 @@ public class IntegerArgumentPane implements ArgumentPane<Integer> {
     }
 
     @Override
-    public Argument<Integer> getValue() {
+    public Argument<Integer> getArgument() {
         return null;
+    }
+
+    @Override
+    public void update() {
+
     }
 }

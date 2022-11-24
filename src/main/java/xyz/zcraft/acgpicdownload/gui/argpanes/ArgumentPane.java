@@ -7,5 +7,7 @@ public interface ArgumentPane<T> {
 
     String getName();
 
-    Argument<T> getValue();
+    Argument<T> getArgument();
+
+    void update();
 }

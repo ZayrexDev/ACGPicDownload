@@ -81,12 +81,16 @@ public class LimitedIntegerArgumentPane implements ArgumentPane<Integer> {
 
     @Override
     public String getName() {
-        return null;
+        return arg.getName();
     }
 
     @Override
-    public Argument<Integer> getValue() {
+    public Argument<Integer> getArgument() {
         arg.set((int) argSlider.getValue());
         return arg;
+    }
+
+    public void update() {
+        argSlider.setValue(arg.getValue());
     }
 }

@@ -3,6 +3,7 @@
 <?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <AnchorPane fx:id="mainPane" prefHeight="438.0" prefWidth="767.0" style="-fx-background-radius: 10 10 0 0;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController">
@@ -33,11 +34,19 @@
                                    prefHeight="34.0" prefWidth="55.0" text="刷新" HBox.hgrow="ALWAYS"/>
                      </children>
                   </HBox>
+                  <HBox alignment="CENTER_RIGHT">
+                     <children>
+                        <MFXButton buttonType="RAISED" onAction="#saveConfig" text="保存为默认设定"/>
+                     </children>
+                  </HBox>
                   <MFXScrollPane>
                      <content>
                         <HBox fx:id="argumentsPane" alignment="CENTER" maxHeight="1.7976931348623157E308"
                               maxWidth="1.7976931348623157E308" spacing="10.0"/>
                      </content>
+                     <effect>
+                        <DropShadow height="6.0" radius="2.5" width="6.0"/>
+                     </effect>
                   </MFXScrollPane>
                   <VBox>
                      <children>
