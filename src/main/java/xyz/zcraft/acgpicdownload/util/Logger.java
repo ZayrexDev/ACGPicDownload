@@ -8,15 +8,15 @@ public class Logger {
     private final String name;
     private final Logger parentLogger;
 
-    private final PrintStream out;
+    private final PrintStream[] out;
 
-    public Logger(String name, Logger parentLogger, PrintStream out) {
+    public Logger(String name, Logger parentLogger, PrintStream... out) {
         this.name = name;
         this.parentLogger = parentLogger;
         this.out = out;
     }
 
-    public Logger(String name, PrintStream out) {
+    public Logger(String name, PrintStream... out) {
         this.name = name;
         this.out = out;
         parentLogger = null;
@@ -38,15 +38,19 @@ public class Logger {
     }
 
     public void info(String message) {
-        out.println(getOutputName() + message);
-        out.flush();
+        for (PrintStream t : out) {
+            t.println(getOutputName() + message);
+            t.flush();
+        }
     }
 
     public void printr(String str) {
-        out.print("\r");
-        out.print(getOutputName());
-        out.print(str);
-        out.flush();
+        for (PrintStream t : out) {
+            t.print("\r");
+            t.print(getOutputName());
+            t.print(str);
+            t.flush();
+        }
     }
 
     public void err(String message) {
@@ -54,14 +58,18 @@ public class Logger {
     }
 
     public void printf(String format, String... arg) {
-        out.print(getOutputName());
-        out.printf(format, (Object[]) arg);
-        out.flush();
+        for (PrintStream t : out) {
+            t.print(getOutputName());
+            t.printf(format, (Object[]) arg);
+            t.flush();
+        }
     }
 
     public void printlnf(String format, String... arg) {
         printf(format, arg);
-        out.println();
-        out.flush();
+        for (PrintStream t : out) {
+            t.println();
+            t.flush();
+        }
     }
 }

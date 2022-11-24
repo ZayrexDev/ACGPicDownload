@@ -1,12 +1,14 @@
 package xyz.zcraft.acgpicdownload.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import xyz.zcraft.acgpicdownload.gui.scenes.ErrorPaneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController;
 import xyz.zcraft.acgpicdownload.gui.scenes.WelcomeSceneController;
@@ -90,5 +92,15 @@ public class GUI extends Application {
 
     public void openFetchPane() {
         fetchSceneController.show();
+    }
+
+    public void showError(Exception e){
+        ErrorPaneController epc = ErrorPaneController.getInstance();
+        Platform.runLater(() -> {
+            gui.fill(epc.getErrorPane());
+            gui.mainPane.getChildren().addAll(epc.getErrorPane());
+            epc.setErrorMessage(e.toString());
+            epc.show();
+        });
     }
 }

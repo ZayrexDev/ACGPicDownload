@@ -9,6 +9,8 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -17,8 +19,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.argpanes.ArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane;
@@ -72,12 +76,15 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     private MFXToggleButton multiThreadToggle;
     @javafx.fxml.FXML
+    private MFXToggleButton fullResultToggle;
+    @javafx.fxml.FXML
     private MFXButton delCompletedBtn;
     @javafx.fxml.FXML
     private MFXProgressBar progressBar;
     @javafx.fxml.FXML
     private Label statusLabel;
-
+    @javafx.fxml.FXML
+    private MFXTextField proxyField;
     private boolean downloading;
     private DownloadManager dm;
     @javafx.fxml.FXML
@@ -89,7 +96,16 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;
-        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out), false, true, -1, () -> Platform.runLater(this::updateStatus));
+        FetchUtil.startDownloadWithResults(
+            dm,
+            new ArrayList<>(data),
+            Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(),
+            new Logger("GUI", System.out, Main.log),
+            fullResultToggle.isSelected(),
+            true,
+            -1,
+            () -> Platform.runLater(this::updateStatus)
+        );
         downloading = false;
     }
 
@@ -130,6 +146,9 @@ public class FetchSceneController implements Initializable {
         tt.play();
     }
 
+    private String proxyHost;
+    private int proxyPort;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         mainPane.setVisible(false);
@@ -152,6 +171,38 @@ public class FetchSceneController implements Initializable {
 
         fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
         data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size() == 0));
+
+        proxyField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.isEmpty()) {
+                    String[] str = newValue.split(":");
+                    if (str.length == 2) {
+                        proxyHost = str[0];
+                        try {
+                            proxyPort = Integer.parseInt(str[1]);
+                        } catch (NumberFormatException ignored) {
+                            proxyHost = null;
+                            proxyPort = 0;
+                            proxyField.setTextFill(Color.RED);
+                            return;
+                        }
+                    }
+                    if (proxyHost != null && proxyPort != 0) {
+                        System.getProperties().put("proxySet", "true");
+                        System.getProperties().put("proxyHost", proxyHost);
+                        System.getProperties().put("proxyPort", String.valueOf(proxyPort));
+                        proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
+                    } else {
+                        proxyField.setTextFill(Color.RED);
+                    }
+                } else {
+                    proxyHost = null;
+                    proxyPort = 0;
+                    proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
+                }
+            }
+        });
     }
 
     private void initTable() {
@@ -224,9 +275,7 @@ public class FetchSceneController implements Initializable {
             Source s = null;
             try {
                 s = (Source) sourcesComboBox.getSelectedItem().clone();
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (CloneNotSupportedException ignored) {}
 
             LinkedList<Argument<?>> args = new LinkedList<>();
 
@@ -235,7 +284,7 @@ public class FetchSceneController implements Initializable {
             }
 
             FetchUtil.replaceArgument(s, args);
-            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out), true, null, 0);
+            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out, Main.log), true, proxyHost, proxyPort);
             LinkedList<DownloadResult> drs = new LinkedList<>();
             for (Result result : r1) {
                 DownloadResult dr = new DownloadResult();
@@ -287,9 +336,8 @@ public class FetchSceneController implements Initializable {
                 SourceManager.readConfig();
                 sources.clear();
                 sources.addAll(SourceManager.getSources());
-            } catch (IOException e) {
-                //TODO Handle exception
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                gui.showError(e);
             }
             ft.play();
             ft.setOnFinished((e) -> loadingPane.setVisible(false));
@@ -320,8 +368,7 @@ public class FetchSceneController implements Initializable {
                 }
             }
         } catch (IOException e) {
-            //TODO Handle exceptions
-            throw new RuntimeException(e);
+            gui.showError(e);
         }
     }
 }

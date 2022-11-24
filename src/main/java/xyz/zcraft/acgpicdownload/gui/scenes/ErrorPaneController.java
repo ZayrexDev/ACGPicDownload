@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
+import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -21,7 +22,7 @@ public class ErrorPaneController {
     private MFXButton errorOkBtn;
 
     public static ErrorPaneController getInstance() {
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(WelcomeSceneController.class.getResource("WelcomePane.fxml")));
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")));
         try {
             loader.load();
         } catch (IOException e) {
@@ -40,7 +41,7 @@ public class ErrorPaneController {
         ft.setFromValue(1);
         ft.setToValue(0);
         ft.setAutoReverse(false);
-        ft.setRate(0.001);
+        ft.setRate(0.05);
         ft.setDuration(Duration.millis(5));
         ft.setOnFinished(actionEvent -> Platform.runLater(() -> errorPane.setVisible(false)));
 
@@ -53,7 +54,7 @@ public class ErrorPaneController {
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.setAutoReverse(false);
-        ft.setRate(0.001);
+        ft.setRate(0.05);
         ft.setDuration(Duration.millis(5));
 
         errorPane.setVisible(true);
