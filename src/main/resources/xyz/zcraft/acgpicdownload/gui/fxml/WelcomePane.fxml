@@ -13,7 +13,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <children>
-            <Label text="%gui.welcome.greet">
+            <Label fx:id="welcomeLabel" text="%gui.welcome.greet">
                <font>
                   <Font size="20.0"/>
                </font>
@@ -21,8 +21,7 @@
             <Separator prefWidth="200.0" style="-fx-background-color: black;"/>
             <Label text="%gui.welcome.greetSub"/>
             <MFXButton fx:id="fetchBtn" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
-                       onAction="#fetchBtnOnAction" text="%gui.welcome.fetch" textAlignment="RIGHT"
-                       VBox.vgrow="ALWAYS"/>
+                       onAction="#fetchBtnOnAction" text="%gui.fetch.title" textAlignment="RIGHT" VBox.vgrow="ALWAYS"/>
          </children>
       </VBox>
    </children>
