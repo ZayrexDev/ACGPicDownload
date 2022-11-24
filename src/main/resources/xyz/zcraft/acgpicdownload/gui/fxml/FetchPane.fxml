@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainPane" prefHeight="438.0" prefWidth="767.0" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController">
+<AnchorPane fx:id="mainPane" prefHeight="438.0" prefWidth="767.0" style="-fx-background-radius: 10 10 0 0;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController">
    <children>
       <VBox layoutX="235.0" layoutY="92.0" prefHeight="372.0" prefWidth="558.0" spacing="5.0" style="-fx-background-color: #ffffff88;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
