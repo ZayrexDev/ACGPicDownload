@@ -67,6 +67,8 @@ public class GUI extends Application {
             mainPaneController.getBackground().setFitHeight(stage.getHeight());
         });
 
+        stage.setWidth(840);
+
         fill(mainPane, welcomePane);
 
         stage.show();

@@ -1,13 +1,12 @@
 package xyz.zcraft.acgpicdownload.util.sourceutil;
 
-import java.util.ArrayList;
-
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
-
 import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
 
-public class Source {
+import java.util.ArrayList;
+
+public class Source implements Cloneable {
     @JSONField(name = "name")
     private String name;
     @JSONField(name = "description")
@@ -21,15 +20,21 @@ public class Source {
     @JSONField(name = "sourceKey")
     private String sourceKey = "";
 
+    private ArrayList<Argument<?>> arguments;
+
     @JSONField(name = "defaultArgs")
     private JSONObject defaultArgs = new JSONObject();
 
     @JSONField(name = "returnType")
     private String returnType;
 
-    private ArrayList<Argument<? extends Object>> arguments;
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
-    public Source() {}
+    public Source() {
+    }
 
     public Source(String name, String description, String url, String nameRule, String picUrl, String sourceKey, JSONObject defaultArgs, String returnType) {
         this.name = name;

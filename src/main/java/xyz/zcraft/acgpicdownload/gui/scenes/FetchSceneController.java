@@ -16,9 +16,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.gui.GUI;
+import xyz.zcraft.acgpicdownload.gui.argpanes.ArgumentPane;
+import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane;
+import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedStringArgumentPane;
+import xyz.zcraft.acgpicdownload.gui.argpanes.StringArgumentPane;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
@@ -27,6 +32,10 @@ import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
 import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,8 +72,6 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     private MFXToggleButton multiThreadToggle;
     @javafx.fxml.FXML
-    private MFXTextField argumentField;
-    @javafx.fxml.FXML
     private MFXButton delCompletedBtn;
     @javafx.fxml.FXML
     private MFXProgressBar progressBar;
@@ -75,58 +82,9 @@ public class FetchSceneController implements Initializable {
     private DownloadManager dm;
     @javafx.fxml.FXML
     private MFXButton backBtn;
-
+    private final LinkedList<ArgumentPane<?>> arguments = new LinkedList<>();
     @javafx.fxml.FXML
-    public void fetchBtnOnAction() {
-        loadingPane.setVisible(true);
-        operationLabel.setText("抓取中");
-        ft = new FadeTransition();
-        ft.setNode(loadingPane);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        ft.setAutoReverse(false);
-        ft.setRate(0.05);
-        ft.setDuration(Duration.millis(5));
-        ft.play();
-        new Thread(() -> {
-            LinkedList<DownloadResult> r = new LinkedList<>();
-            Source s = sourcesComboBox.getSelectedItem();
-            HashMap<String, String> arg = new HashMap<>();
-            if (argumentField.getText() != null && !argumentField.getText().trim().equalsIgnoreCase(" ")) {
-                String[] t = argumentField.getText().split(" ");
-                for (String str : t) {
-                    int i = str.indexOf("=");
-                    if (i == -1) {
-                        continue;
-                    }
-                    String key = str.substring(0, i);
-                    String value = str.substring(i + 1);
-                    if (value.startsWith("\"") && value.endsWith("\"")) {
-                        value = value.substring(1, value.length() - 1);
-                    }
-                    arg.put(key, value);
-                }
-            }
-            FetchUtil.replaceArgument(s, arg);
-            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out), true, null, 0);
-            LinkedList<DownloadResult> drs = new LinkedList<>();
-            for (Result result : r1) {
-                DownloadResult dr = new DownloadResult();
-                dr.setResult(result);
-                r.add(dr);
-                drs.add(dr);
-            }
-            dm = new DownloadManager(drs.toArray(new DownloadResult[]{}));
-
-            Platform.runLater(() -> {
-                ft.setFromValue(1);
-                ft.setToValue(0);
-                data.addAll(r);
-                ft.setOnFinished((e) -> loadingPane.setVisible(false));
-                ft.play();
-            });
-        }).start();
-    }
+    private HBox argumentsPane;
 
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
@@ -249,27 +207,52 @@ public class FetchSceneController implements Initializable {
         updateSource();
     }
 
-    private void updateSource() {
-        sourcesComboBox.getItems().clear();
-
+    @javafx.fxml.FXML
+    public void fetchBtnOnAction() {
         loadingPane.setVisible(true);
+        operationLabel.setText("抓取中");
+        ft = new FadeTransition();
+        ft.setNode(loadingPane);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.setAutoReverse(false);
+        ft.setRate(0.05);
+        ft.setDuration(Duration.millis(5));
         ft.play();
-
         new Thread(() -> {
+            LinkedList<DownloadResult> r = new LinkedList<>();
+            Source s = null;
             try {
-                SourceManager.readConfig();
-                sources.clear();
-                sources.addAll(SourceManager.getSources());
-                Thread.sleep(2000);
-            } catch (IOException | InterruptedException e) {
+                s = (Source) sourcesComboBox.getSelectedItem().clone();
+            } catch (CloneNotSupportedException e) {
                 throw new RuntimeException(e);
             }
-            ft.play();
-            ft.setOnFinished((e) -> loadingPane.setVisible(false));
-        }).start();
 
-        ft.setFromValue(1);
-        ft.setToValue(0);
+            LinkedList<Argument<?>> args = new LinkedList<>();
+
+            for (ArgumentPane<?> argument : arguments) {
+                args.add(argument.getValue());
+            }
+
+            FetchUtil.replaceArgument(s, args);
+            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out), true, null, 0);
+            LinkedList<DownloadResult> drs = new LinkedList<>();
+            for (Result result : r1) {
+                DownloadResult dr = new DownloadResult();
+                dr.setResult(result);
+                r.add(dr);
+                drs.add(dr);
+            }
+            dm = new DownloadManager(drs.toArray(new DownloadResult[]{}));
+
+            Platform.runLater(() -> {
+                ft.setFromValue(1);
+                ft.setToValue(0);
+                data.addAll(r);
+                ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                ft.play();
+            });
+        }).start();
     }
 
     @javafx.fxml.FXML
@@ -291,5 +274,54 @@ public class FetchSceneController implements Initializable {
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
         tt.play();
         gui.welcomeSceneController.playAnimation();
+    }
+
+    private void updateSource() {
+        sourcesComboBox.getItems().clear();
+
+        loadingPane.setVisible(true);
+        ft.play();
+
+        new Thread(() -> {
+            try {
+                SourceManager.readConfig();
+                sources.clear();
+                sources.addAll(SourceManager.getSources());
+            } catch (IOException e) {
+                //TODO Handle exception
+                throw new RuntimeException(e);
+            }
+            ft.play();
+            ft.setOnFinished((e) -> loadingPane.setVisible(false));
+        }).start();
+
+        ft.setFromValue(1);
+        ft.setToValue(0);
+    }
+
+    @javafx.fxml.FXML
+    public void onSourceSelected() {
+        try {
+            argumentsPane.getChildren().clear();
+            arguments.clear();
+            for (Argument<?> argument : sourcesComboBox.getSelectedItem().getArguments()) {
+                if (argument instanceof LimitedStringArgument arg) {
+                    LimitedStringArgumentPane pane = LimitedStringArgumentPane.getInstance(arg);
+                    argumentsPane.getChildren().add(pane.getPane());
+                    arguments.add(pane);
+                } else if (argument instanceof StringArgument arg) {
+                    StringArgumentPane pane = StringArgumentPane.getInstance(arg);
+                    argumentsPane.getChildren().add(pane.getPane());
+                    arguments.add(pane);
+                } else if (argument instanceof LimitedIntegerArgument arg) {
+                    LimitedIntegerArgumentPane pane = LimitedIntegerArgumentPane.getInstance(arg);
+                    argumentsPane.getChildren().add(pane.getPane());
+                    arguments.add(pane);
+                }
+            }
+        } catch (IOException e) {
+            //TODO Handle exceptions
+            throw new RuntimeException(e);
+        }
     }
 }

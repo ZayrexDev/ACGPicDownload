@@ -45,7 +45,7 @@ public class FetchUtil {
             args.forEach((t, o) -> {
                 String[] value = {};
 
-                if (args.containsKey(t) && args.get(t) != null) {
+                if (args.containsKey(t) && args.get(t) != null && !String.valueOf(args.get(t)).isEmpty()) {
                     value = String.valueOf(args.get(t)).split("&");
                 }
 
