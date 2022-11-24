@@ -40,3 +40,7 @@ build/
 
 
 /out/
+/error.log
+/out.log
+/sources.json
+/src/main/resources/META-INF/

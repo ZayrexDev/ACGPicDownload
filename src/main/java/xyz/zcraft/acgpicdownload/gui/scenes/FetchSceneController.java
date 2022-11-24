@@ -9,7 +9,6 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -80,8 +79,6 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     private MFXTextField outputDirField;
     @javafx.fxml.FXML
-    private MFXToggleButton multiThreadToggle;
-    @javafx.fxml.FXML
     private MFXToggleButton fullResultToggle;
     @javafx.fxml.FXML
     private MFXButton delCompletedBtn;
@@ -101,11 +98,22 @@ public class FetchSceneController implements Initializable {
     private int proxyPort;
     @javafx.fxml.FXML
     private MFXButton selectDirBtn;
+    @javafx.fxml.FXML
+    private MFXSlider threadCountSlider;
 
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;
-        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out, Main.log), fullResultToggle.isSelected(), true, -1, () -> Platform.runLater(this::updateStatus));
+        FetchUtil.startDownloadWithResults(
+                dm,
+                new ArrayList<>(data),
+                Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(),
+                new Logger("GUI", System.out, Main.log),
+                fullResultToggle.isSelected(),
+                true,
+                (int) threadCountSlider.getValue(),
+                () -> Platform.runLater(this::updateStatus)
+        );
         downloading = false;
     }
 
@@ -169,37 +177,7 @@ public class FetchSceneController implements Initializable {
         fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
         data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size() == 0));
 
-        proxyField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.isEmpty()) {
-                    String[] str = newValue.split(":");
-                    if (str.length == 2) {
-                        proxyHost = str[0];
-                        try {
-                            proxyPort = Integer.parseInt(str[1]);
-                        } catch (NumberFormatException ignored) {
-                            proxyHost = null;
-                            proxyPort = 0;
-                            proxyField.setTextFill(Color.RED);
-                            return;
-                        }
-                    }
-                    if (proxyHost != null && proxyPort != 0) {
-                        System.getProperties().put("proxySet", "true");
-                        System.getProperties().put("proxyHost", proxyHost);
-                        System.getProperties().put("proxyPort", String.valueOf(proxyPort));
-                        proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
-                    } else {
-                        proxyField.setTextFill(Color.RED);
-                    }
-                } else {
-                    proxyHost = null;
-                    proxyPort = 0;
-                    proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
-                }
-            }
-        });
+        proxyField.textProperty().addListener(this::verifyProxy);
     }
 
     private void initTable() {
@@ -277,7 +255,7 @@ public class FetchSceneController implements Initializable {
         ft.play();
         new Thread(() -> {
             LinkedList<DownloadResult> r = new LinkedList<>();
-            Source s = null;
+            Source s;
             try {
                 s = (Source) sourcesComboBox.getSelectedItem().clone();
             } catch (CloneNotSupportedException ignored) {
@@ -389,8 +367,37 @@ public class FetchSceneController implements Initializable {
         DirectoryChooser fc = new DirectoryChooser();
         fc.setTitle("选择目录");
         File showDialog = fc.showDialog(gui.mainStage);
-        if(showDialog!= null){
+        if (showDialog != null) {
             outputDirField.setText(showDialog.getAbsolutePath());
+        }
+    }
+
+    private void verifyProxy(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        if (!newValue.isEmpty()) {
+            String[] str = newValue.split(":");
+            if (str.length == 2) {
+                proxyHost = str[0];
+                try {
+                    proxyPort = Integer.parseInt(str[1]);
+                } catch (NumberFormatException ignored) {
+                    proxyHost = null;
+                    proxyPort = 0;
+                    proxyField.setTextFill(Color.RED);
+                    return;
+                }
+            }
+            if (proxyHost != null && proxyPort != 0) {
+                System.getProperties().put("proxySet", "true");
+                System.getProperties().put("proxyHost", proxyHost);
+                System.getProperties().put("proxyPort", String.valueOf(proxyPort));
+                proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
+            } else {
+                proxyField.setTextFill(Color.RED);
+            }
+        } else {
+            proxyHost = null;
+            proxyPort = 0;
+            proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
         }
     }
 }
