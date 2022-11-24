@@ -41,12 +41,12 @@ public class GUI extends Application {
         welcomeSceneController = loader.getController();
         welcomeSceneController.setGui(gui);
 
-        loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"));
+        loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
         fetchPane = loader.load();
         fetchSceneController = loader.getController();
         fetchSceneController.setGui(gui);
 
-        loader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"));
+        loader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"), ResourceBundleUtil.getResource());
         mainPane = loader.load();
         mainPaneController = loader.getController();
         mainPaneController.setGui(gui);
