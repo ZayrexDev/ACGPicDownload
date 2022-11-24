@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
-<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
-<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
-<?import io.github.palexdev.materialfx.controls.MFXSlider?>
-<?import io.github.palexdev.materialfx.controls.MFXTableView?>
-<?import io.github.palexdev.materialfx.controls.MFXTextField?>
-<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+<?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane fx:id="mainPane" prefHeight="438.0" prefWidth="767.0" style="-fx-background-radius: 10 10 0 0;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.FetchSceneController">
    <children>
       <VBox layoutX="235.0" layoutY="92.0" prefHeight="372.0" prefWidth="558.0" spacing="5.0" style="-fx-background-color: #ffffff88;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -65,6 +54,7 @@
                         <HBox alignment="CENTER" spacing="10.0">
                            <children>
                               <MFXTextField fx:id="outputDirField" floatMode="BORDER" floatingText="保存目录" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="250.0" />
+                              <MFXButton fx:id="selectDirBtn" onAction="#selectDirBtnOnAction" text="选择目录"/>
                               <MFXToggleButton fx:id="multiThreadToggle" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="24.0" prefWidth="125.0" text="多线程下载" />
                               <MFXToggleButton fx:id="fullResultToggle" text="下载完整结果" />
                            </children>

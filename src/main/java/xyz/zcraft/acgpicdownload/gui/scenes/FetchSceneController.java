@@ -20,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
@@ -48,6 +49,7 @@ import java.net.URL;
 import java.util.*;
 
 public class FetchSceneController implements Initializable {
+    private final LinkedList<ArgumentPane<?>> arguments = new LinkedList<>();
     TranslateTransition tt = new TranslateTransition();
     TransformableList<Source> sourceTransformableList;
     FadeTransition ft = new FadeTransition();
@@ -90,23 +92,17 @@ public class FetchSceneController implements Initializable {
     private DownloadManager dm;
     @javafx.fxml.FXML
     private MFXButton backBtn;
-    private final LinkedList<ArgumentPane<?>> arguments = new LinkedList<>();
     @javafx.fxml.FXML
     private HBox argumentsPane;
+    private String proxyHost;
+    private int proxyPort;
+    @javafx.fxml.FXML
+    private MFXButton selectDirBtn;
 
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;
-        FetchUtil.startDownloadWithResults(
-            dm,
-            new ArrayList<>(data),
-            Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(),
-            new Logger("GUI", System.out, Main.log),
-            fullResultToggle.isSelected(),
-            true,
-            -1,
-            () -> Platform.runLater(this::updateStatus)
-        );
+        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out, Main.log), fullResultToggle.isSelected(), true, -1, () -> Platform.runLater(this::updateStatus));
         downloading = false;
     }
 
@@ -146,9 +142,6 @@ public class FetchSceneController implements Initializable {
         mainPane.setVisible(true);
         tt.play();
     }
-
-    private String proxyHost;
-    private int proxyPort;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -276,7 +269,8 @@ public class FetchSceneController implements Initializable {
             Source s = null;
             try {
                 s = (Source) sourcesComboBox.getSelectedItem().clone();
-            } catch (CloneNotSupportedException ignored) {}
+            } catch (CloneNotSupportedException ignored) {
+            }
 
             LinkedList<Argument<?>> args = new LinkedList<>();
 
@@ -285,20 +279,12 @@ public class FetchSceneController implements Initializable {
             }
 
             FetchUtil.replaceArgument(s, args);
-            ArrayList<Result> r1 = FetchUtil.fetch(
-                s,
-                (int) timesSlider.getValue(),
-                new Logger("GUI", System.out, Main.log),
-                true,
-                proxyHost,
-                proxyPort,
-                    new ExceptionHandler() {
-                        @Override
-                        public void handle(Exception e) {
-                            gui.showError(e);
-                        }
-                    }
-                );
+            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out, Main.log), true, proxyHost, proxyPort, new ExceptionHandler() {
+                @Override
+                public void handle(Exception e) {
+                    gui.showError(e);
+                }
+            });
             LinkedList<DownloadResult> drs = new LinkedList<>();
             for (Result result : r1) {
                 DownloadResult dr = new DownloadResult();
@@ -384,5 +370,12 @@ public class FetchSceneController implements Initializable {
         } catch (IOException e) {
             gui.showError(e);
         }
+    }
+
+    @javafx.fxml.FXML
+    public void selectDirBtnOnAction() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("选择目录");
+        outputDirField.setText(fc.showSaveDialog(gui.mainStage).getAbsolutePath());
     }
 }
