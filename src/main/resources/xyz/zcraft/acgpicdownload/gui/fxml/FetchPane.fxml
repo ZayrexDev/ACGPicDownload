@@ -80,7 +80,7 @@
                                          onAction="#selectDirBtnOnAction" text="%gui.fetch.selectDir"/>
                               <Separator maxHeight="30.0" minHeight="30.0" orientation="VERTICAL" prefHeight="30.0"/>
                               <Label text="%gui.fetch.threadCount"/>
-                              <MFXSlider fx:id="threadCountSlider" alternativeUnitIncrement="1.0" max="20.0" min="1.0"
+                              <MFXSlider fx:id="threadCountSlider" alternativeUnitIncrement="1.0" max="50.0" min="1.0"
                                          minorTicksCount="1" value="5.0"/>
                               <Separator maxHeight="30.0" minHeight="30.0" orientation="VERTICAL" prefHeight="30.0"/>
                               <MFXToggleButton fx:id="fullResultToggle" text="%gui.fetch.fullResult"/>
@@ -109,7 +109,7 @@
                              text="%gui.fetch.deleteCompleted"/>
                   <MFXProgressBar fx:id="progressBar" progress="0.0"/>
                   <Label fx:id="statusLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                         prefHeight="26.0" prefWidth="250.0" text="创建:0 下载中:0 已完成:0 失败:0 0kb/s"
+                         prefHeight="26.0" prefWidth="250.0" text="..."
                          HBox.hgrow="NEVER"/>
                </children>
             </HBox>

@@ -5,6 +5,7 @@ import io.github.palexdev.materialfx.collections.TransformableList;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
+import io.github.palexdev.materialfx.font.MFXFontIcon;
 import io.github.palexdev.materialfx.utils.StringUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -17,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -32,6 +34,7 @@ import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedStringArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.StringArgumentPane;
 import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
 import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
@@ -126,10 +129,14 @@ public class FetchSceneController implements Initializable {
 
         progressBar.setProgress(dm.getPercentComplete());
         if (downloading) {
-            String sb = "创建:" + dm.getCreated() + " 下载中:" + dm.getStarted() + " 已完成:" + dm.getCompleted() + " 失败:" + dm.getFailed() + " " + dm.getSpeed();
+            String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + dm.getCreated() +
+                        " " + ResourceBundleUtil.getString("cli.download.status.started") + dm.getStarted() +
+                        " " + ResourceBundleUtil.getString("cli.download.status.completed") + dm.getCompleted() +
+                        " " + ResourceBundleUtil.getString("cli.download.status.failed") + dm.getFailed() +
+                        " " + dm.getSpeed();
             Platform.runLater(() -> statusLabel.setText(sb));
         } else {
-            Platform.runLater(() -> statusLabel.setText("完成！"));
+            Platform.runLater(() -> statusLabel.setText(ResourceBundleUtil.getString("cli.download.status.completed")));
         }
 
         dataTable.update();
@@ -187,6 +194,8 @@ public class FetchSceneController implements Initializable {
         } catch (IOException e) {
             Main.logError(e);
         }
+
+
     }
 
     private void initTable() {
@@ -253,7 +262,7 @@ public class FetchSceneController implements Initializable {
     @javafx.fxml.FXML
     public void fetchBtnOnAction() {
         loadingPane.setVisible(true);
-        operationLabel.setText("抓取中");
+        operationLabel.setText(ResourceBundleUtil.getString("gui.fetch.loading.fetch"));
         ft = new FadeTransition();
         ft.setNode(loadingPane);
         ft.setFromValue(0);
@@ -328,6 +337,7 @@ public class FetchSceneController implements Initializable {
     private void updateSource() {
         sourcesComboBox.getItems().clear();
 
+        operationLabel.setText(ResourceBundleUtil.getString("gui.fetch.loading.readSource"));
         loadingPane.setVisible(true);
         ft.play();
 
@@ -446,7 +456,7 @@ public class FetchSceneController implements Initializable {
             timesSlider.setValue(Objects.requireNonNullElse(json.getInteger("times"), 1));
             proxyField.setText(Objects.requireNonNullElse(json.getString("proxy"), ""));
             outputDirField.setText(Objects.requireNonNullElse(json.getString("output"), ""));
-            threadCountSlider.setValue(Objects.requireNonNullElse(json.getInteger("threadCount"), 1));
+            threadCountSlider.setValue(Objects.requireNonNullElse(json.getInteger("threadCount"), 10));
             fullResultToggle.setSelected(json.getBooleanValue("full"));
         }
     }
