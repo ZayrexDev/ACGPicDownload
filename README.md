@@ -25,4 +25,10 @@ GUI:
 
 # 如何使用
 
-请在[wiki](https://github.com/zxzxy/ACGPicDownload/wiki)查看使用教程~
+- 在[Releases](https://github.com/zxzxy/ACGPicDownload/releases)下载最新版本
+
+>如果你的设备已经安装了Java17+，那么可以下载 `ACGPicDownload.jar` 并直接使用命令行运行，或在 Windows 上下载 `ACGPicDownload.win.exe` 并直接运行
+
+>如果并没有Java17+安装，那么可以在[这里](https://adoptium.net/zh-CN/temurin/archive)下载安装Java17以上的版本，或者如果你是Windows，则可以下载 `ACGPicDownload.withjdk.7z`, 里面自带JDK17
+
+- 请在[wiki](https://github.com/zxzxy/ACGPicDownload/wiki)查看详细使用教程~
