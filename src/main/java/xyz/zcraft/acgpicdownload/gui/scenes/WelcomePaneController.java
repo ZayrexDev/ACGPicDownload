@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
-public class WelcomeSceneController implements Initializable {
+public class WelcomePaneController implements Initializable {
     TranslateTransition tt = new TranslateTransition();
     @javafx.fxml.FXML
     private VBox controls;

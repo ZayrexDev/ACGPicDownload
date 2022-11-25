@@ -16,7 +16,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -57,7 +56,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 
-public class FetchSceneController implements Initializable {
+public class FetchPaneController implements Initializable {
     private final LinkedList<ArgumentPane<?>> arguments = new LinkedList<>();
     TranslateTransition tt = new TranslateTransition();
     TransformableList<Source> sourceTransformableList;
@@ -109,19 +108,11 @@ public class FetchSceneController implements Initializable {
     private MFXSlider threadCountSlider;
     @javafx.fxml.FXML
     private MFXButton updateFromGithubBtn;
+
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;
-        FetchUtil.startDownloadWithResults(
-                dm,
-                new ArrayList<>(data),
-                Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(),
-                new Logger("GUI", System.out, Main.log),
-                fullResultToggle.isSelected(),
-                true,
-                (int) threadCountSlider.getValue(),
-                () -> Platform.runLater(this::updateStatus)
-        );
+        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out, Main.log), fullResultToggle.isSelected(), true, (int) threadCountSlider.getValue(), () -> Platform.runLater(this::updateStatus));
         downloading = false;
     }
 
@@ -132,11 +123,7 @@ public class FetchSceneController implements Initializable {
 
         progressBar.setProgress(dm.getPercentComplete());
         if (downloading) {
-            String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + dm.getCreated() +
-                        " " + ResourceBundleUtil.getString("cli.download.status.started") + dm.getStarted() +
-                        " " + ResourceBundleUtil.getString("cli.download.status.completed") + dm.getCompleted() +
-                        " " + ResourceBundleUtil.getString("cli.download.status.failed") + dm.getFailed() +
-                        " " + dm.getSpeed();
+            String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + dm.getCreated() + " " + ResourceBundleUtil.getString("cli.download.status.started") + dm.getStarted() + " " + ResourceBundleUtil.getString("cli.download.status.completed") + dm.getCompleted() + " " + ResourceBundleUtil.getString("cli.download.status.failed") + dm.getFailed() + " " + dm.getSpeed();
             Platform.runLater(() -> statusLabel.setText(sb));
         } else {
             Platform.runLater(() -> statusLabel.setText(ResourceBundleUtil.getString("cli.download.status.completed")));
@@ -226,10 +213,7 @@ public class FetchSceneController implements Initializable {
 
         dataTable.getTableColumns().addAll(List.of(titleColumn, linkColumn, statusColumn));
 
-        dataTable.getFilters().addAll(List.of(new StringFilter<>(ResourceBundleUtil.getString(
-                "gui.fetch.table.column.fileName"), arg0 -> arg0.getResult().getFileName()), new StringFilter<>(
-                        ResourceBundleUtil.getString("gui.fetch.table.column.link"), arg0 -> arg0.getResult().getUrl()), new StringFilter<>(ResourceBundleUtil
-                        .getString("gui.fetch.table.column.status"), DownloadResult::getStatusString)));
+        dataTable.getFilters().addAll(List.of(new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.fileName"), arg0 -> arg0.getResult().getFileName()), new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.link"), arg0 -> arg0.getResult().getUrl()), new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.status"), DownloadResult::getStatusString)));
 
         dataTable.setItems(data);
 
@@ -273,30 +257,27 @@ public class FetchSceneController implements Initializable {
     }
 
     @javafx.fxml.FXML
-    public void sourceUpdateBtnOnAction(ActionEvent e) {
+    public void sourceUpdateBtnOnAction() {
         updateSource();
     }
 
-    public void updateFromGithub(){
+    public void updateFromGithub() {
         ft.setFromValue(0);
         ft.setToValue(1);
         operationLabel.setText(ResourceBundleUtil.getString("gui.fetch.updateFromGithub"));
         loadingPane.setVisible(true);
         ft.play();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    SourceManager.updateFromGithub();
-                } catch (IOException e) {
-                    Main.logError(e);
-                    gui.showError(e);
-                } finally {
-                    ft.setFromValue(1);
-                    ft.setToValue(0);
-                    ft.play();
-                    ft.setOnFinished((e) -> loadingPane.setVisible(false));
-                }
+        new Thread(() -> {
+            try {
+                SourceManager.updateFromGithub();
+            } catch (IOException e) {
+                Main.logError(e);
+                gui.showError(e);
+            } finally {
+                ft.setFromValue(1);
+                ft.setToValue(0);
+                ft.play();
+                ft.setOnFinished((e) -> loadingPane.setVisible(false));
             }
         }).start();
     }
@@ -359,8 +340,7 @@ public class FetchSceneController implements Initializable {
     public void delCompletedBtnOnAction() {
         int a = data.size();
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
-        Notice.showSuccess(String.format(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted"),
-                a - data.size()), gui.mainPane);
+        Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")), a - data.size()), gui.mainPane);
     }
 
     @javafx.fxml.FXML
@@ -376,7 +356,7 @@ public class FetchSceneController implements Initializable {
         mainPane.setVisible(true);
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
         tt.play();
-        gui.welcomeSceneController.playAnimation();
+        gui.welcomePaneController.playAnimation();
     }
 
     private void updateSource() {
@@ -409,6 +389,9 @@ public class FetchSceneController implements Initializable {
         try {
             argumentsPane.getChildren().clear();
             arguments.clear();
+            if (sourcesComboBox.getSelectedItem() == null) {
+                return;
+            }
             for (Argument<?> argument : sourcesComboBox.getSelectedItem().getArguments()) {
                 if (argument instanceof LimitedStringArgument arg) {
                     LimitedStringArgumentPane pane = LimitedStringArgumentPane.getInstance(arg);
@@ -430,10 +413,12 @@ public class FetchSceneController implements Initializable {
             Main.logError(e);
         }
     }
+
     @javafx.fxml.FXML
-    public void updateFromGithubBtnOnAction(){
+    public void updateFromGithubBtnOnAction() {
         updateFromGithub();
     }
+
     @javafx.fxml.FXML
     public void selectDirBtnOnAction() {
         DirectoryChooser fc = new DirectoryChooser();
@@ -475,10 +460,10 @@ public class FetchSceneController implements Initializable {
 
     public void saveConfig() {
         JSONObject obj = ConfigManager.getConfig();
-        obj.put("times", (int)timesSlider.getValue());
+        obj.put("times", (int) timesSlider.getValue());
         obj.put("proxy", proxyField.getText());
         obj.put("output", outputDirField.getText());
-        obj.put("threadCount", (int)threadCountSlider.getValue());
+        obj.put("threadCount", (int) threadCountSlider.getValue());
         obj.put("full", fullResultToggle.isSelected());
         if (sourcesComboBox.getSelectedItem() != null) {
             obj.put("source", sourcesComboBox.getSelectedItem().getName());
@@ -496,7 +481,7 @@ public class FetchSceneController implements Initializable {
 
         try {
             ConfigManager.saveConfig();
-            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"),gui.mainPane);
+            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"), gui.mainPane);
         } catch (IOException e) {
             gui.showError(e);
             Main.logError(e);
@@ -513,10 +498,10 @@ public class FetchSceneController implements Initializable {
             fullResultToggle.setSelected(json.getBooleanValue("full"));
 
             String name = json.getString("source");
-            if(name != null){
+            if (name != null) {
                 ObservableList<Source> items = sourcesComboBox.getItems();
-                for(Source i : items){
-                    if(i.getName().equals(name)){
+                for (Source i : items) {
+                    if (i.getName().equals(name)) {
                         sourcesComboBox.getSelectionModel().selectItem(i);
                         break;
                     }
