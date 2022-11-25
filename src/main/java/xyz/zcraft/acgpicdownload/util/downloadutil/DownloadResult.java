@@ -1,5 +1,6 @@
 package xyz.zcraft.acgpicdownload.util.downloadutil;
 
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 
 public class DownloadResult {
@@ -62,15 +63,15 @@ public class DownloadResult {
 
     public String getStatusString() {
         if (status == DownloadStatus.CREATED) {
-            return "已创建";
+            return ResourceBundleUtil.getString("cli.download.status.created");
         } else if (status == DownloadStatus.COMPLETED) {
-            return "已完成";
+            return ResourceBundleUtil.getString("cli.download.status.completed");
         } else if (status == DownloadStatus.FAILED) {
-            return "失败";
+            return ResourceBundleUtil.getString("cli.download.status.failed");
         } else if (status == DownloadStatus.STARTED) {
-            return "下载中";
+            return ResourceBundleUtil.getString("cli.download.status.started");
         } else {
-            return "未知";
+            return "?";
         }
     }
 }

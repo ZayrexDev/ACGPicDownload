@@ -33,7 +33,7 @@
                                            prefWidth="519.0" HBox.hgrow="ALWAYS"/>
                         <MFXButton fx:id="sourceUpdateBtn" buttonType="RAISED" depthLevel="LEVEL1"
                                    maxHeight="1.7976931348623157E308" onAction="#sourceUpdateBtnOnAction"
-                                   prefHeight="34.0" prefWidth="55.0" text="%gui.fetch.refresh" HBox.hgrow="ALWAYS"/>
+                                   prefHeight="34.0" prefWidth="55.0" text="" HBox.hgrow="ALWAYS"/>
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT">

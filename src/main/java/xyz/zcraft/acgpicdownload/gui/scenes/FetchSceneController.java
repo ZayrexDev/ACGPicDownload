@@ -196,14 +196,15 @@ public class FetchSceneController implements Initializable {
         }
 
 
+        sourceUpdateBtn.setGraphic(new MFXFontIcon("mfx-sync"));
     }
 
     private void initTable() {
         data = FXCollections.observableArrayList(new DownloadResult());
 
-        MFXTableColumn<DownloadResult> titleColumn = new MFXTableColumn<>("文件名", true);
-        MFXTableColumn<DownloadResult> linkColumn = new MFXTableColumn<>("下载链接", true);
-        MFXTableColumn<DownloadResult> statusColumn = new MFXTableColumn<>("状态", true);
+        MFXTableColumn<DownloadResult> titleColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.fetch.table.column.fileName"), true);
+        MFXTableColumn<DownloadResult> linkColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.fetch.table.column.link"), true);
+        MFXTableColumn<DownloadResult> statusColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.fetch.table.column.status"), true);
 
         titleColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getFileName()));
         linkColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
@@ -219,7 +220,10 @@ public class FetchSceneController implements Initializable {
 
         dataTable.getTableColumns().addAll(List.of(titleColumn, linkColumn, statusColumn));
 
-        dataTable.getFilters().addAll(List.of(new StringFilter<>("文件名", arg0 -> arg0.getResult().getFileName()), new StringFilter<>("下载链接", arg0 -> arg0.getResult().getUrl()), new StringFilter<>("状态", DownloadResult::getStatusString)));
+        dataTable.getFilters().addAll(List.of(new StringFilter<>(ResourceBundleUtil.getString(
+                "gui.fetch.table.column.fileName"), arg0 -> arg0.getResult().getFileName()), new StringFilter<>(
+                        ResourceBundleUtil.getString("gui.fetch.table.column.link"), arg0 -> arg0.getResult().getUrl()), new StringFilter<>(ResourceBundleUtil
+                        .getString("gui.fetch.table.column.status"), DownloadResult::getStatusString)));
 
         dataTable.setItems(data);
 
