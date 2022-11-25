@@ -468,6 +468,8 @@ public class FetchSceneController implements Initializable {
             gui.showError(e);
             Main.logError(e);
         }
+
+
     }
 
     public void restoreConfig() {
