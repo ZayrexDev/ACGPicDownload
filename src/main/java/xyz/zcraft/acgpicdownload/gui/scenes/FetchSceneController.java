@@ -239,6 +239,7 @@ public class FetchSceneController implements Initializable {
             if (selectedValues.size() > 0) {
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
             }
+            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
         });
 
         data.clear();
