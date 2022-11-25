@@ -107,7 +107,8 @@ public class FetchSceneController implements Initializable {
     private MFXButton selectDirBtn;
     @javafx.fxml.FXML
     private MFXSlider threadCountSlider;
-
+    @javafx.fxml.FXML
+    private MFXButton updateFromGithubBtn;
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;
@@ -278,6 +279,8 @@ public class FetchSceneController implements Initializable {
     public void updateFromGithub(){
         ft.setFromValue(0);
         ft.setToValue(1);
+        operationLabel.setText(ResourceBundleUtil.getString("gui.fetch.updateFromGithub"));
+        loadingPane.setVisible(true);
         ft.play();
         new Thread(new Runnable() {
             @Override
@@ -355,8 +358,8 @@ public class FetchSceneController implements Initializable {
     public void delCompletedBtnOnAction() {
         int a = data.size();
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
-        Notice.getInstance(String.format(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted"),
-                a - data.size()), gui.mainPane).show();
+        Notice.showSuccess(String.format(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted"),
+                a - data.size()), gui.mainPane);
     }
 
     @javafx.fxml.FXML
@@ -426,7 +429,10 @@ public class FetchSceneController implements Initializable {
             Main.logError(e);
         }
     }
-
+    @javafx.fxml.FXML
+    public void updateFromGithubBtnOnAction(){
+        updateFromGithub();
+    }
     @javafx.fxml.FXML
     public void selectDirBtnOnAction() {
         DirectoryChooser fc = new DirectoryChooser();
@@ -489,13 +495,11 @@ public class FetchSceneController implements Initializable {
 
         try {
             ConfigManager.saveConfig();
-            Notice.getInstance(ResourceBundleUtil.getString("gui.fetch.notice.saved"),gui.mainPane).show();
+            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"),gui.mainPane);
         } catch (IOException e) {
             gui.showError(e);
             Main.logError(e);
         }
-
-
     }
 
     public void restoreConfig() {
