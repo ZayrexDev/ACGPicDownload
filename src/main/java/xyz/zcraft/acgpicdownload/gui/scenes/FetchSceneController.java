@@ -1,5 +1,6 @@
 package xyz.zcraft.acgpicdownload.gui.scenes;
 
+import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.collections.TransformableList;
 import io.github.palexdev.materialfx.controls.*;
@@ -257,6 +258,13 @@ public class FetchSceneController implements Initializable {
         sourceTransformableList = sourcesComboBox.getFilterList();
 
         sourcesComboBox.setFilterFunction(s -> source -> StringUtils.containsIgnoreCase(converter.toString(source), s));
+
+        try {
+            SourceManager.readConfig();
+            sources.addAll(SourceManager.getSources());
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @javafx.fxml.FXML
@@ -434,11 +442,14 @@ public class FetchSceneController implements Initializable {
 
     public void saveConfig() {
         JSONObject obj = ConfigManager.getConfig();
-        obj.put("times", timesSlider.getValue());
+        obj.put("times", (int)timesSlider.getValue());
         obj.put("proxy", proxyField.getText());
         obj.put("output", outputDirField.getText());
-        obj.put("threadCount", threadCountSlider.getValue());
+        obj.put("threadCount", (int)threadCountSlider.getValue());
         obj.put("full", fullResultToggle.isSelected());
+        if (sourcesComboBox.getSelectedItem() != null) {
+            obj.put("source", sourcesComboBox.getSelectedItem().getName());
+        }
 
         JSONObject sourceObj = Objects.requireNonNullElse(obj.getJSONObject("sources"), new JSONObject());
         if (sourcesComboBox.getSelectedItem() != null) {
@@ -467,6 +478,17 @@ public class FetchSceneController implements Initializable {
             outputDirField.setText(Objects.requireNonNullElse(json.getString("output"), ""));
             threadCountSlider.setValue(Objects.requireNonNullElse(json.getInteger("threadCount"), 10));
             fullResultToggle.setSelected(json.getBooleanValue("full"));
+
+            String name = json.getString("source");
+            if(name != null){
+                ObservableList<Source> items = sourcesComboBox.getItems();
+                for(Source i : items){
+                    if(i.getName().equals(name)){
+                        sourcesComboBox.getSelectionModel().selectItem(i);
+                        break;
+                    }
+                }
+            }
         }
     }
 
