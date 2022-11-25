@@ -65,8 +65,17 @@ public class LimitedStringArgumentPane implements ArgumentPane<String> {
     }
 
     @Override
-    public Argument<String> getValue() {
-        arg.set(argCombo.getValue());
+    public Argument<String> getArgument() {
+        if (argCombo.getValue() == null) {
+            arg.set(arg.getValue());
+        } else {
+            arg.set(argCombo.getValue());
+        }
+
         return arg;
+    }
+
+    public void update() {
+        argCombo.getSelectionModel().selectItem(arg.getValue());
     }
 }

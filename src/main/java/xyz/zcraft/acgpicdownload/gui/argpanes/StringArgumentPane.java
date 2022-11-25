@@ -63,8 +63,12 @@ public class StringArgumentPane implements ArgumentPane<String> {
     }
 
     @Override
-    public Argument<String> getValue() {
+    public Argument<String> getArgument() {
         arg.set(argField.getText());
         return arg;
+    }
+
+    public void update() {
+        argField.setText(arg.getValue());
     }
 }
