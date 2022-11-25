@@ -28,6 +28,7 @@ import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
+import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.argpanes.ArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane;
 import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedStringArgumentPane;
@@ -319,7 +320,10 @@ public class FetchSceneController implements Initializable {
 
     @javafx.fxml.FXML
     public void delCompletedBtnOnAction() {
+        int a = data.size();
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
+        Notice.getInstance(String.format(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted"),
+                a - data.size()), gui.mainPane).show();
     }
 
     @javafx.fxml.FXML
@@ -448,6 +452,7 @@ public class FetchSceneController implements Initializable {
 
         try {
             ConfigManager.saveConfig();
+            Notice.getInstance(ResourceBundleUtil.getString("gui.fetch.notice.saved"),gui.mainPane).show();
         } catch (IOException e) {
             gui.showError(e);
             Main.logError(e);
