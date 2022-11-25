@@ -17,6 +17,39 @@ public class DownloadUtil {
         this.maxRetryCount = maxRetryCount;
     }
 
+    public static void download(File file, String link) throws IOException {
+        InputStream is = null;
+        FileOutputStream fos = null;
+        try {
+            URL url = new URL(link);
+
+            is = url.openStream();
+
+            fos = new FileOutputStream(file);
+
+            byte[] buffer = new byte[10240];
+            int byteRead;
+
+            while ((byteRead = is.read(buffer)) != -1) {
+                fos.write(buffer, 0, byteRead);
+            }
+
+            is.close();
+            fos.close();
+        } catch (IOException e) {
+            Main.logError(e);
+            if (is != null) {
+                is.close();
+            }
+            if (fos != null) {
+                fos.close();
+            }
+            if (file.exists()){
+                file.delete();
+            }
+        }
+    }
+
     public void download(Result r, File toDic, DownloadResult d, boolean saveFullResult) throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;

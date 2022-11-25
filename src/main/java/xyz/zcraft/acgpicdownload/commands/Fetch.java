@@ -3,7 +3,6 @@ package xyz.zcraft.acgpicdownload.commands;
 import com.alibaba.fastjson2.JSONException;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.exceptions.SourceNotFoundException;
-import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
@@ -18,10 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 public class Fetch {
-
     private final LinkedList<Argument<? extends Object>> arguments = new LinkedList<>();
     public boolean enableConsoleProgressBar = false;
     private String sourceName;

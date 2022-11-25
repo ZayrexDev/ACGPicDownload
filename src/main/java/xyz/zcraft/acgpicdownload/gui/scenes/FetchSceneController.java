@@ -16,10 +16,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -199,6 +199,9 @@ public class FetchSceneController implements Initializable {
 
 
         sourceUpdateBtn.setGraphic(new MFXFontIcon("mfx-sync"));
+        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        delCompletedBtn.setGraphic(new MFXFontIcon("mfx-delete"));
+        selectDirBtn.setGraphic(new MFXFontIcon("mfx-folder"));
     }
 
     private void initTable() {
@@ -268,8 +271,30 @@ public class FetchSceneController implements Initializable {
     }
 
     @javafx.fxml.FXML
-    public void sourceUpdateBtnOnAction() {
+    public void sourceUpdateBtnOnAction(ActionEvent e) {
         updateSource();
+    }
+
+    public void updateFromGithub(){
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.play();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SourceManager.updateFromGithub();
+                } catch (IOException e) {
+                    Main.logError(e);
+                    gui.showError(e);
+                } finally {
+                    ft.setFromValue(1);
+                    ft.setToValue(0);
+                    ft.play();
+                    ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                }
+            }
+        }).start();
     }
 
     @javafx.fxml.FXML
@@ -352,7 +377,8 @@ public class FetchSceneController implements Initializable {
 
     private void updateSource() {
         sourcesComboBox.getItems().clear();
-
+        ft.setFromValue(0);
+        ft.setToValue(1);
         operationLabel.setText(ResourceBundleUtil.getString("gui.fetch.loading.readSource"));
         loadingPane.setVisible(true);
         ft.play();

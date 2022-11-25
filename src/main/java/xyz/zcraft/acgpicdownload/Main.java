@@ -4,8 +4,6 @@ import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.Schedule;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
-import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.PrintWriter;

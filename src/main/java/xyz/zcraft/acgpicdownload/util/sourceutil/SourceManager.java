@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.exceptions.SourceConfigException;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadUtil;
 import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
 import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerArgument;
 import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerLimit;
@@ -25,8 +26,16 @@ public class SourceManager {
     private static final ArrayList<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
     private static ArrayList<Source> sources;
 
+    private static final String GITHUB_LINK = "https://raw.githubusercontent.com/zxzxy/ACGPicDownload/master/src/main/resources/xyz/zcraft/acgpicdownload/util/sourceutil/sources.json";
+
     public static void readConfig() throws IOException, JSONException {
         sources = parse(readStringFromConfig());
+    }
+
+    public static void updateFromGithub() throws IOException{
+        File f = new File("sources.json");
+        if(f.exists()) f.delete();
+        DownloadUtil.download(f, GITHUB_LINK);
     }
 
     private static String readStringFromConfig() throws IOException {
