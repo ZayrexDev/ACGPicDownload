@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONException;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.exceptions.SourceNotFoundException;
 import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
@@ -13,13 +14,10 @@ import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Fetch {
-    private final LinkedList<Argument<? extends Object>> arguments = new LinkedList<>();
+    private final LinkedList<Argument<?>> arguments = new LinkedList<>();
     public boolean enableConsoleProgressBar = false;
     private String sourceName;
     private String outputDir = new File("").getAbsolutePath();
@@ -29,7 +27,7 @@ public class Fetch {
     private int proxyPort;
     private int times = 1;
     private boolean saveFullResult = false;
-    private HashMap<String, String> argumentsTmp = new HashMap<>();
+    private final HashMap<String, String> argumentsTmp = new HashMap<>();
 
     public static void usage(Logger logger) {
         logger.info(
@@ -55,7 +53,7 @@ public class Fetch {
                         sourceName = args.get(i + 1);
                         i += 1;
                     } else {
-                        logger.err("Please provide a source name.");
+                        logger.err(ResourceBundleUtil.getString("cli.fetch.err.sourceNameInvalid"));
                         return false;
                     }
                 }
@@ -64,7 +62,7 @@ public class Fetch {
                         outputDir = args.get(i + 1);
                         i += 1;
                     } else {
-                        logger.err("Please provide a output path.");
+                        logger.err(ResourceBundleUtil.getString("cli.fetch.err.pathInvalid"));
                         return false;
                     }
                 }
@@ -81,7 +79,7 @@ public class Fetch {
                         }
                         i += 1;
                     } else {
-                        logger.err("Please provide arguments.");
+                        logger.err(ResourceBundleUtil.getString("cli.fetch.err.noArg"));
                         return false;
                     }
                 }
@@ -91,7 +89,7 @@ public class Fetch {
                     try {
                         FetchUtil.listSources(logger);
                     } catch (IOException e) {
-                        logger.err("Error:Cannot read source.json");
+                        logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotReadSource"));
                         Main.logError(e);
                     }
                     return false;
@@ -109,7 +107,7 @@ public class Fetch {
                         } catch (NumberFormatException ignored) {
                         }
                     }
-                    logger.err("Please enter a number");
+                    logger.err(ResourceBundleUtil.getString("cli.fetch.err.numberInvalid"));
                     return false;
                 }
                 case "-p", "--proxy" -> {
@@ -125,7 +123,7 @@ public class Fetch {
                             }
                         }
                     }
-                    logger.err("Please provide a vaild proxy");
+                    logger.err(ResourceBundleUtil.getString("cli.fetch.err.proxyInvalid"));
                     return false;
                 }
                 case "-m", "--max-thread" -> {
@@ -142,7 +140,7 @@ public class Fetch {
                     break;
                 }
                 default -> {
-                    logger.err("Unknown argument " + args.get(i) + " . Please use -h to see usage.");
+                    logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotParseArgFull"));
                     return false;
                 }
             }
@@ -153,12 +151,12 @@ public class Fetch {
             try {
                 sources = FetchUtil.getSourcesConfig();
             } catch (IOException e) {
-                logger.err("Error:Cannot read source.json");
+                logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotReadSource"));
                 Main.logError(e);
                 return false;
             }
             if (sources == null || sources.size() == 0) {
-                logger.err("No available sources");
+                logger.err(ResourceBundleUtil.getString("cli.fetch.err.noSourceFound"));
                 return false;
             } else {
                 sourceName = sources.get(0).getName();
@@ -176,18 +174,17 @@ public class Fetch {
         try {
             s = FetchUtil.getSourceByName(sourceName);
         } catch (IOException e) {
-            logger.err("Could read sources.json");
+            logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotReadSource"));
             return null;
         } catch (JSONException e) {
-            logger.err("Could not parse sources.json");
+            logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotParseSource"));
             return null;
         } catch (SourceNotFoundException e) {
-            logger.err("Could not find source " + sourceName);
+            logger.err(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.err.sourceNotFound")), sourceName));
             return null;
         }
         if (s == null) {
-            logger.err("Could not find source named " + sourceName
-                    + ". Please check your sources.json file. To get all sources, use \"--list-sources\"");
+            logger.err(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.err.sourceNotFoundFull")), sourceName));
             return null;
         }
         return s;
@@ -226,7 +223,7 @@ public class Fetch {
             }
         } catch (Exception e) {
             Main.logError(e);
-            logger.err("Can't parse arguments :" + e);
+            logger.err(ResourceBundleUtil.getString("fetch.err.cannotParseArg") + " : " + e);
             return;
         }
 
@@ -241,10 +238,10 @@ public class Fetch {
             proxyPort
         );
         if (r.size() == 0) {
-            logger.info("No pictures were found!");
+            logger.info(ResourceBundleUtil.getString("cli.fetch.info.noPicGot"));
             return;
         } else {
-            logger.info("Got " + r.size() + " pictures!");
+            logger.info(String.format(ResourceBundleUtil.getString("cli.fetch.info.gotPic"), r.size()));
         }
 
         FetchUtil.startDownload(r, outputDir, logger, saveFullResult, enableConsoleProgressBar, maxThread);
