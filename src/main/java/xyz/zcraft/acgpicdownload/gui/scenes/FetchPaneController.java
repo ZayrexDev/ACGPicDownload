@@ -222,8 +222,9 @@ public class FetchPaneController implements Initializable {
             List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
             if (selectedValues.size() > 0) {
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
+                dataTable.getSelectionModel().clearSelection();
+                Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
             }
-            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
         });
 
         data.clear();
