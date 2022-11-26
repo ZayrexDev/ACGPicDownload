@@ -5,7 +5,10 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
@@ -20,6 +23,8 @@ public class ErrorPaneController {
     private TextArea errorArea;
     @javafx.fxml.FXML
     private MFXButton errorOkBtn;
+    @javafx.fxml.FXML
+    private ImageView bg;
 
     public static ErrorPaneController getInstance() {
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")));
@@ -48,7 +53,15 @@ public class ErrorPaneController {
         ft.play();
     }
 
+    public void setBlur(Image img){
+        bg.setImage(img);
+    }
+
     public void show() {
+        bg.fitWidthProperty().bind(errorPane.widthProperty());
+        bg.fitHeightProperty().bind(errorPane.heightProperty());
+        bg.setViewport(new Rectangle2D(0, 0, errorPane.getWidth(), errorPane.getHeight()));
+
         FadeTransition ft = new FadeTransition();
         ft.setNode(errorPane);
         ft.setFromValue(0);

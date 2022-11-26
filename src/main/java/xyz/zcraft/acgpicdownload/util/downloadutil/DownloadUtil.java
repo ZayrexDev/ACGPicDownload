@@ -36,8 +36,7 @@ public class DownloadUtil {
 
             is.close();
             fos.close();
-        } catch (IOException e) {
-            Main.logError(e);
+        } finally{
             if (is != null) {
                 is.close();
             }

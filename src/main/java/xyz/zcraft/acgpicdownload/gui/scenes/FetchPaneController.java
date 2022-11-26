@@ -271,6 +271,7 @@ public class FetchPaneController implements Initializable {
             try {
                 SourceManager.updateFromGithub();
             } catch (IOException e) {
+                // Notice.showError(ResourceBundleUtil.getString("gui.fetch.notice.cannotUpdateGithub"), gui.mainPane);
                 Main.logError(e);
                 gui.showError(e);
             } finally {

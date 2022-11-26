@@ -34,12 +34,14 @@ public class WelcomePaneController implements Initializable {
     public void playAnimation() {
         tt.setFromX(0 - controls.getWidth());
         tt.setToX(0);
+        controls.setVisible(true);
         tt.play();
     }
 
     public void hide() {
         tt.setFromX(0);
         tt.setToX(0 - controls.getWidth());
+        tt.setOnFinished((e)->controls.setVisible(false));
         tt.play();
     }
 

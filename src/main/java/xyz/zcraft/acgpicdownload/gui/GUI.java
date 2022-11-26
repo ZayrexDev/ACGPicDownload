@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -17,6 +18,8 @@ import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class GUI extends Application {
     public FetchPaneController fetchPaneController;
@@ -131,10 +134,15 @@ public class GUI extends Application {
 
     public void showError(Exception e){
         ErrorPaneController epc = ErrorPaneController.getInstance();
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        pw.flush();
         Platform.runLater(() -> {
             gui.fill(epc.getErrorPane());
             gui.mainPane.getChildren().addAll(epc.getErrorPane());
-            epc.setErrorMessage(e.toString());
+            epc.setErrorMessage(sw.toString());
+            epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
             epc.show();
         });
     }

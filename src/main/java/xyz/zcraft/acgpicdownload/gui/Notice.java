@@ -4,6 +4,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -73,8 +74,12 @@ public class Notice {
         AnchorPane.setTopAnchor(p, 10.0);
         AnchorPane.setLeftAnchor(p, d);
         AnchorPane.setRightAnchor(p, d);
-        parent.getChildren().addAll(p);
-
+        Platform.runLater(() -> {
+            parent.getChildren().addAll(p);
+            p.setVisible(true);
+            p.setTranslateY(-100);
+            p.setOpacity(0);
+        });
         p.setVisible(true);
         p.setTranslateY(-100);
         p.setOpacity(0);
@@ -106,11 +111,14 @@ public class Notice {
         AnchorPane.setTopAnchor(p, 10.0);
         AnchorPane.setLeftAnchor(p, d);
         AnchorPane.setRightAnchor(p, d);
-        parent.getChildren().addAll(p);
 
-        p.setVisible(true);
-        p.setTranslateY(-100);
-        p.setOpacity(0);
+        Platform.runLater(()->{
+            parent.getChildren().addAll(p);
+            p.setVisible(true);
+            p.setTranslateY(-100);
+            p.setOpacity(0);
+        });
+
         KeyValue kv1 = new KeyValue(p.translateYProperty(), 0, Interpolator.EASE_OUT);
         KeyValue kv2 = new KeyValue(p.opacityProperty(), 1, Interpolator.EASE_OUT);
         KeyFrame kf1 = new KeyFrame(Duration.millis(200), kv1, kv2);
