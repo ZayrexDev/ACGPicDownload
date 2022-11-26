@@ -82,7 +82,7 @@ public class FetchUtil {
     public static void listSources(Logger logger) throws IOException, JSONException {
         ArrayList<Source> sources = getSourcesConfig();
         if (sources == null) {
-            logger.info("No sources found");
+            logger.info(ResourceBundleUtil.getString("cli.fetch.err.noSourceFound"));
         } else {
             int a = 0;
             int b = 0;
@@ -111,7 +111,7 @@ public class FetchUtil {
                                      boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
-            logger.err("Can't create directory");
+            logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
             return;
         }
         ThreadPoolExecutor tpe;
@@ -145,7 +145,7 @@ public class FetchUtil {
                                                 boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
-            logger.err("Can't create directory");
+            logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
             return;
         }
         ThreadPoolExecutor tpe;
@@ -199,7 +199,7 @@ public class FetchUtil {
                         + tpe.getPoolSize();
             }
             logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))).concat("\n"));
-            logger.info("Done");
+            logger.info(ResourceBundleUtil.getString("cli.download.status.completed"));
             onUpdate.run();
 
             if (tpe != null) {
@@ -240,7 +240,7 @@ public class FetchUtil {
                         + tpe.getPoolSize();
             }
             logger.printr(m.concat(" ".repeat(Math.max(0, lastLength - m.length()))).concat("\n"));
-            logger.info("Done");
+            logger.info(ResourceBundleUtil.getString("cli.download.status.completed"));
 
             if (tpe != null) {
                 tpe.shutdown();
@@ -264,7 +264,7 @@ public class FetchUtil {
         }
 
         if (!mapFailed.isEmpty()) {
-            logger.info("Failed:");
+            logger.info(ResourceBundleUtil.getString("cli.download.status.failed") + ":");
             mapFailed.forEach((s, s2) -> logger.info(s + " : " + s2));
         }
     }
@@ -346,9 +346,10 @@ public class FetchUtil {
                     e.printStackTrace();
                 }
                 sb = new StringBuilder();
-                sb.append("Fetching ").append(i).append("/").append(times);
+                sb = new StringBuilder();
+                sb.append(ResourceBundleUtil.getString("cli.fetch")).append(" ").append(i).append("/").append(times);
                 if (failed != 0) {
-                    sb.append(" Failed:").append(failed);
+                    sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ").append(failed);
                 }
                 logger.printr(sb.toString());
                 lastLength = printTaskBar(sb.toString(), (double) i / (double) times, "", lastLength, logger);
@@ -359,9 +360,9 @@ public class FetchUtil {
                 Main.logError(e);
                 failed++;
                 if (e instanceof HttpStatusException && ((HttpStatusException) e).getStatusCode() == 429) {
-                    logger.printr("Error: rate limit exceeded \n");
+                    logger.printr(ResourceBundleUtil.getString("cli.fetch.err.rateLimit") + " \n");
                 } else {
-                    logger.printr("Error occurred:" + e.getMessage());
+                    logger.printr(ResourceBundleUtil.getString("cli.fetch.err") + ":" + e.getMessage());
                 }
                 if(exceptionHandler!=null){
                     exceptionHandler.handle(e);
@@ -371,9 +372,9 @@ public class FetchUtil {
         }
 
         sb = new StringBuilder();
-        sb.append("Fetching ").append(times).append("/").append(times);
+        sb.append(ResourceBundleUtil.getString("cli.fetch")).append(" ").append(times).append("/").append(times);
         if (failed != 0) {
-            sb.append(" Failed:").append(failed);
+            sb.append(ResourceBundleUtil.getString("cli.download.status.failed")).append(":").append(failed);
         }
         logger.printr(sb.toString());
         printTaskBar(sb.toString(), 1, "\n", lastLength, logger);

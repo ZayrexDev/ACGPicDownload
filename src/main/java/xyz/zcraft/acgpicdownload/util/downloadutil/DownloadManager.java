@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
     private static final DecimalFormat df2 = new DecimalFormat("#.##");
@@ -168,13 +170,16 @@ public class DownloadManager {
         StringBuilder sb = new StringBuilder();
 
         for (String error2 : error) {
-            sb.append("Error:").append(error2).append("\n");
+            sb.append(ResourceBundleUtil.getString("cli.fetch.err")).append(":").append(error2).append("\n");
         }
 
         error.clear();
 
         int mtf = 8;
-        sb.append(timesGot > mtf ? "W:" : "Wait:").append(created).append(timesGot > mtf ? " S:" : " Start:").append(started).append(timesGot > mtf ? " D:" : " Done:").append(completed).append(timesGot > mtf ? " F:" : " Fail:").append(failed).append(" |");
+        sb.append(timesGot > mtf ? "W" : ResourceBundleUtil.getString("cli.download.status.created")).append(":").append(created).append(" ").append(timesGot > mtf ? "S" : ResourceBundleUtil.getString("cli.download.status.started"))
+                .append(":").append(started).append(" ").append(timesGot > mtf ? "D" : ResourceBundleUtil.getString("cli.download.status.completed")).append(":").append(completed)
+                .append(" ").append(timesGot > mtf ? "F" : ResourceBundleUtil.getString("cli.download.status.failed"))
+                .append(":").append(failed).append(" |");
 
         int a = (int) (PROGRESS_BAR_SIZE * p);
         if (a < 0) {

@@ -7,7 +7,7 @@ public class ResourceBundleUtil {
     private static final ResourceBundle BUNDLE;
 
     static {
-        BUNDLE = ResourceBundle.getBundle("xyz.zcraft.acgpicdownload.languages.String", Locale.ENGLISH);
+        BUNDLE = ResourceBundle.getBundle("xyz.zcraft.acgpicdownload.languages.String", Locale.getDefault());
     }
 
     public static String getString(String key) {
