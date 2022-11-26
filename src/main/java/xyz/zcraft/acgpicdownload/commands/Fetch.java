@@ -14,13 +14,10 @@ import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Fetch {
-    private final LinkedList<Argument<? extends Object>> arguments = new LinkedList<>();
+    private final LinkedList<Argument<?>> arguments = new LinkedList<>();
     public boolean enableConsoleProgressBar = false;
     private String sourceName;
     private String outputDir = new File("").getAbsolutePath();
@@ -30,7 +27,7 @@ public class Fetch {
     private int proxyPort;
     private int times = 1;
     private boolean saveFullResult = false;
-    private HashMap<String, String> argumentsTmp = new HashMap<>();
+    private final HashMap<String, String> argumentsTmp = new HashMap<>();
 
     public static void usage(Logger logger) {
         logger.info(
@@ -183,11 +180,11 @@ public class Fetch {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotParseSource"));
             return null;
         } catch (SourceNotFoundException e) {
-            logger.err(String.format(ResourceBundleUtil.getString("cli.fetch.err.sourceNotFound"),sourceName));
+            logger.err(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.err.sourceNotFound")), sourceName));
             return null;
         }
         if (s == null) {
-            logger.err(String.format(ResourceBundleUtil.getString("cli.fetch.err.sourceNotFoundFull"), sourceName));
+            logger.err(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.err.sourceNotFoundFull")), sourceName));
             return null;
         }
         return s;
