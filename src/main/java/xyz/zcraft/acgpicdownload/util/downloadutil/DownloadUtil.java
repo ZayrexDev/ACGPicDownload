@@ -5,8 +5,12 @@ import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.Proxy.Type;
 import java.nio.charset.StandardCharsets;
 
 public class DownloadUtil {
@@ -17,14 +21,20 @@ public class DownloadUtil {
         this.maxRetryCount = maxRetryCount;
     }
 
-    public static void download(File file, String link) throws IOException {
+    public static void download(File file, String link, String referer) throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
         try {
             URL url = new URL(link);
+            HttpURLConnection c = (HttpURLConnection) url.openConnection();
 
-            is = url.openStream();
+            if(referer != null){
+                c.setRequestProperty("Referer", referer);
+            }
 
+            is = c.getInputStream();
+
+            file.createNewFile();
             fos = new FileOutputStream(file);
 
             byte[] buffer = new byte[10240];
@@ -36,20 +46,17 @@ public class DownloadUtil {
 
             is.close();
             fos.close();
-        } finally{
+        }finally{
             if (is != null) {
                 is.close();
             }
             if (fos != null) {
                 fos.close();
             }
-            if (file.exists()){
-                file.delete();
-            }
         }
     }
 
-    public void download(Result r, File toDic, DownloadResult d, boolean saveFullResult) throws IOException {
+    public void download(Result r, File toDic, DownloadResult d, boolean saveFullResult, String referer) throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
         BufferedOutputStream jsonos = null;
@@ -66,6 +73,10 @@ public class DownloadUtil {
 
             URL url = new URL(r.getUrl());
             URLConnection c = url.openConnection();
+
+            if (referer != null) {
+                c.setRequestProperty("referer", referer);
+            }
 
             if (d != null) {
                 d.setTotalSize(c.getContentLengthLong());
@@ -129,7 +140,7 @@ public class DownloadUtil {
                 }
                 throw e;
             } else {
-                download(r, toDic, d, saveFullResult);
+                download(r, toDic, d, saveFullResult, referer);
             }
         }
     }
