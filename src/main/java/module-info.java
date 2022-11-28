@@ -6,7 +6,7 @@ module xyz.zcraft.acgpicdownload {
     requires transitive javafx.graphics;
     requires transitive MaterialFX;
 
-    opens xyz.zcraft.acgpicdownload to javafx.controls, javafx.base, javafx.graphics, javafx.fxml;
+    opens xyz.zcraft.acgpicdownload to javafx.controls, javafx.base, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
     exports xyz.zcraft.acgpicdownload;
     exports xyz.zcraft.acgpicdownload.gui;
     opens xyz.zcraft.acgpicdownload.gui to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;
@@ -19,6 +19,5 @@ module xyz.zcraft.acgpicdownload {
     opens xyz.zcraft.acgpicdownload.util.sourceutil.argument to javafx.base, javafx.controls, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
     exports xyz.zcraft.acgpicdownload.util.sourceutil.argument;
     opens xyz.zcraft.acgpicdownload.util.pixivutils to javafx.base, javafx.controls, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
-    exports xyz.zcraft.acgpicdownload.util.pixivutils
-            to javafx.base, javafx.controls, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
+    exports xyz.zcraft.acgpicdownload.util.pixivutils;
 }
