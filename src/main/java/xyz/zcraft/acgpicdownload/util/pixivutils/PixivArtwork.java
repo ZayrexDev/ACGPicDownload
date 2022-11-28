@@ -4,11 +4,6 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
 
-enum From {
-    Follow,
-    Recommend
-}
-
 public class PixivArtwork {
     @JSONField(name = "id")
     private String id;
@@ -60,6 +55,16 @@ public class PixivArtwork {
     private String profileImageUrl;
     @JSONField(name = "aiType")
     private int aiType;
+
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     private From from;
 
@@ -173,6 +178,14 @@ public class PixivArtwork {
 
     public JSONArray getTags() {
         return tags;
+    }
+
+    public String getTagsString() {
+        StringBuilder sb = new StringBuilder();
+        for (Object tag : tags) {
+            sb.append(tag);
+        }
+        return sb.toString();
     }
 
     public void setTags(JSONArray tags) {

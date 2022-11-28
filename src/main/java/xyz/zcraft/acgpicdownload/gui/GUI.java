@@ -9,10 +9,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import xyz.zcraft.acgpicdownload.gui.scenes.ErrorPaneController;
-import xyz.zcraft.acgpicdownload.gui.scenes.FetchPaneController;
-import xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController;
-import xyz.zcraft.acgpicdownload.gui.scenes.WelcomePaneController;
+import xyz.zcraft.acgpicdownload.gui.controllers.*;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import javax.imageio.ImageIO;
@@ -25,10 +22,15 @@ public class GUI extends Application {
     public FetchPaneController fetchPaneController;
     public WelcomePaneController welcomePaneController;
     public MainPaneController mainPaneController;
+    public PixivMenuPaneController pixivMenuPaneController;
+
+    public SettingsPaneController settingsPaneController;
     public Stage mainStage;
     public Pane mainPane;
+    public Pane settingsPane;
     public Pane fetchPane;
     public Pane welcomePane;
+    public Pane pixivMenuPane;
 
     public GUI gui;
 
@@ -61,8 +63,6 @@ public class GUI extends Application {
         stage.setWidth(800);
         stage.setHeight(stage.getWidth() / rate + 29);
         stage.setResizable(false);
-//        stage.widthProperty().addListener(observable -> stage.setHeight(stage.getWidth() / rate));
-//        stage.heightProperty().addListener(observable -> stage.setWidth(stage.getHeight() * rate));
 
         stage.show();
 
@@ -77,6 +77,9 @@ public class GUI extends Application {
             welcomePaneController = loader.getController();
             welcomePaneController.setGui(gui);
 
+            fill(welcomePane);
+            Platform.runLater(() -> mainPane.getChildren().add(welcomePane));
+
             mainPaneController.setProgress(0.3);
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
@@ -88,15 +91,24 @@ public class GUI extends Application {
             fetchPaneController = loader.getController();
             fetchPaneController.setGui(gui);
 
+            Platform.runLater(() -> mainPane.getChildren().add(fetchPane));
+
             mainPaneController.setProgress(0.6);
 
-            fill(welcomePane);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
+            try {
+                pixivMenuPane = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            pixivMenuPaneController = loader.getController();
+            pixivMenuPaneController.setGui(gui);
 
-            welcomePane.setVisible(false);
+            Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPane));
 
             mainPaneController.setProgress(0.9);
 
-            Platform.runLater(() -> mainPane.getChildren().addAll(welcomePane, fetchPane));
+            welcomePane.setVisible(false);
 
             try {
                 Thread.sleep(200);
@@ -113,6 +125,10 @@ public class GUI extends Application {
 
         initThread.setPriority(1);
         initThread.start();
+    }
+
+    public void openPixivMenuPane() {
+        pixivMenuPaneController.show();
     }
 
     public void fill(Node node) {
@@ -145,5 +161,9 @@ public class GUI extends Application {
             epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
             epc.show();
         });
+    }
+
+    public SettingsPaneController getSettingsPaneController() {
+        return settingsPaneController;
     }
 }

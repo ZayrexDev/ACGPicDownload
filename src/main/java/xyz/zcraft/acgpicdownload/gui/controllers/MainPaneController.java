@@ -1,8 +1,9 @@
-package xyz.zcraft.acgpicdownload.gui.scenes;
+package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXProgressBar;
 import javafx.animation.FadeTransition;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -82,6 +83,8 @@ public class MainPaneController implements Initializable {
         background.fitHeightProperty().bind(mainPane.heightProperty());
         blurImg.fitWidthProperty().bind(mainPane.widthProperty());
         blurImg.fitHeightProperty().bind(mainPane.heightProperty());
+        blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
+        background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
 
         WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
         blurImg.setImage(snapshot);

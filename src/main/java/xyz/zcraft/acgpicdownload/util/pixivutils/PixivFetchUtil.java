@@ -28,19 +28,18 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
 
-        String jsonString = c.get().body().ownText();
+        return parseArtworks(c.get().body().ownText());
+    }
 
+    public static LinkedList<PixivArtwork> parseArtworks(String jsonString) {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
-
-        JSONObject body = JSONObject.parse(jsonString).getJSONObject("body");
-
-        JSONArray illust = body.getJSONObject("thumbnails").getJSONArray("illust");
+        JSONArray illust = JSONObject.parse(jsonString).getJSONObject("body").getJSONObject("thumbnails").getJSONArray("illust");
 
         for (int i = 0; i < illust.size(); i++) {
             artworks.add(illust.getObject(i, PixivArtwork.class));
         }
 
-        classifyArtwork(artworks, body.getJSONObject("page"));
+        classifyArtwork(artworks, JSONObject.parse(jsonString).getJSONObject("body").getJSONObject("page"));
 
         return artworks;
     }
@@ -108,7 +107,7 @@ public class PixivFetchUtil {
             followIDs.add(o.toString());
         }
 
-        for (Object o : pageJson.getJSONObject("recommended").getJSONArray("ids")) {
+        for (Object o : pageJson.getJSONObject("recommend").getJSONArray("ids")) {
             recommendIDs.add(o.toString());
         }
 
@@ -132,7 +131,25 @@ public class PixivFetchUtil {
                 artwork.setFrom(From.Follow);
             } else if (recommendIDs.contains(id)) {
                 artwork.setFrom(From.Recommend);
+            } else {
+                artwork.setFrom(From.Other);
             }
         }
+    }
+
+    public static List<PixivArtwork> selectArtworks(List<PixivArtwork> orig, int limit, boolean follow, boolean recommend, boolean other) {
+        LinkedList<PixivArtwork> art = new LinkedList<>();
+        for (PixivArtwork artwork : orig) {
+            if (limit < art.size()) {
+                From from = artwork.getFrom();
+                if (from == null && other) art.add(artwork);
+                if (from == From.Follow && follow) art.add(artwork);
+                if (from == From.Recommend && recommend) art.add(artwork);
+            } else {
+                break;
+            }
+        }
+
+        return art;
     }
 }

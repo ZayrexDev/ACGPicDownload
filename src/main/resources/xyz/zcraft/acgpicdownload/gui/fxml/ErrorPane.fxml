@@ -6,26 +6,31 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.effect.BoxBlur?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-<AnchorPane fx:id="errorPane" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.ErrorPaneController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="errorPane" stylesheets="@../default.css"
+            xmlns="http://javafx.com/javafx/19"
+            fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.ErrorPaneController">
    <children>
-      <ImageView fx:id="bg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <ImageView fx:id="bg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"
+                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                 AnchorPane.topAnchor="0.0">
          <effect>
-            <BoxBlur />
+            <BoxBlur/>
          </effect>
       </ImageView>
-      <VBox prefHeight="197.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #eeeeeeca#eeeeeeca;" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+      <VBox prefHeight="197.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #eeeeeeca#eeeeeeca;"
+            AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+            AnchorPane.topAnchor="100.0">
          <children>
             <Label text="错误：">
                <font>
-                  <Font size="20.0" />
+                  <Font size="20.0"/>
                </font>
             </Label>
-            <TextArea fx:id="errorArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
-            <MFXButton fx:id="errorOkBtn" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" onAction="#errorOkBtnOnAction" text="好叭" />
+            <TextArea fx:id="errorArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true"/>
+            <MFXButton fx:id="errorOkBtn" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308"
+                       onAction="#errorOkBtnOnAction" text="好叭"/>
          </children>
          <padding>
             <Insets bottom="10.0" left="100.0" right="100.0" top="10.0" />

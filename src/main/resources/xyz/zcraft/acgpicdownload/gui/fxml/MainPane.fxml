@@ -9,7 +9,8 @@
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="1.7976931348623157E308"
             maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../default.css"
-            xmlns="http://javafx.com/javafx/19" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController">
+            xmlns="http://javafx.com/javafx/19"
+            fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.MainPaneController">
     <children>
         <ImageView fx:id="background" fitHeight="360.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true"
                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"

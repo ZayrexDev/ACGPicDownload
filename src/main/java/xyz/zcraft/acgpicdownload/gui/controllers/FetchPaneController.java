@@ -1,4 +1,4 @@
-package xyz.zcraft.acgpicdownload.gui.scenes;
+package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
@@ -141,6 +141,7 @@ public class FetchPaneController implements Initializable {
     }
 
     public void show() {
+        tt.stop();
         AnchorPane.setTopAnchor(mainPane, 0d);
         AnchorPane.setBottomAnchor(mainPane, 0d);
         AnchorPane.setLeftAnchor(mainPane, 0d);
@@ -148,6 +149,7 @@ public class FetchPaneController implements Initializable {
         mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
         mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
         tt.setFromY(mainPane.getHeight());
+        tt.setOnFinished(null);
         tt.setToY(0);
         mainPane.setVisible(true);
         tt.play();
@@ -184,7 +186,6 @@ public class FetchPaneController implements Initializable {
         } catch (IOException e) {
             Main.logError(e);
         }
-
 
         sourceUpdateBtn.setGraphic(new MFXFontIcon("mfx-sync"));
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
@@ -347,7 +348,7 @@ public class FetchPaneController implements Initializable {
 
     @javafx.fxml.FXML
     public void backBtnOnAction() {
-        TranslateTransition tt = new TranslateTransition();
+        tt.stop();
         tt.setNode(mainPane);
         tt.setAutoReverse(true);
         tt.setRate(0.01);

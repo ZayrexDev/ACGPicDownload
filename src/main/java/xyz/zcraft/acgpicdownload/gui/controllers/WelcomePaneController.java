@@ -1,4 +1,4 @@
-package xyz.zcraft.acgpicdownload.gui.scenes;
+package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.animation.Interpolator;
@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 
 public class WelcomePaneController implements Initializable {
     TranslateTransition tt = new TranslateTransition();
+    TranslateTransition ttP = new TranslateTransition();
     @javafx.fxml.FXML
     private VBox controls;
     @javafx.fxml.FXML
@@ -22,6 +23,8 @@ public class WelcomePaneController implements Initializable {
     private GUI gui;
     @javafx.fxml.FXML
     private Label welcomeLabel;
+    @javafx.fxml.FXML
+    private VBox pixivPane;
 
     public GUI getGui() {
         return gui;
@@ -32,37 +35,41 @@ public class WelcomePaneController implements Initializable {
     }
 
     public void playAnimation() {
+        tt.stop();
         tt.setFromX(0 - controls.getWidth());
         tt.setToX(0);
+        tt.setOnFinished(null);
         controls.setVisible(true);
         tt.play();
     }
 
-    public void hide() {
+    public void hideMain() {
+        tt.stop();
         tt.setFromX(0);
         tt.setToX(0 - controls.getWidth());
-        tt.setOnFinished((e)->controls.setVisible(false));
+        tt.setOnFinished((e) -> controls.setVisible(false));
         tt.play();
     }
 
     @javafx.fxml.FXML
     public void fetchBtnOnAction() {
-        hide();
+        hideMain();
         gui.openFetchPane();
-    }
-
-    @Deprecated
-    public void galleryBtnOnAction() {
-        hide();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         tt.setNode(controls);
-        tt.setAutoReverse(true);
+        tt.setAutoReverse(false);
         tt.setRate(0.008);
         tt.setDuration(Duration.millis(3));
         tt.setInterpolator(Interpolator.EASE_BOTH);
+
+        ttP.setNode(pixivPane);
+        ttP.setAutoReverse(false);
+        ttP.setRate(0.008);
+        ttP.setDuration(Duration.millis(3));
+        ttP.setInterpolator(Interpolator.EASE_BOTH);
 
         Calendar c = Calendar.getInstance();
         int i = c.get(Calendar.HOUR_OF_DAY);
@@ -75,5 +82,36 @@ public class WelcomePaneController implements Initializable {
         } else if (20 < i || i < 7) {
             welcomeLabel.setText(resourceBundle.getString("gui.welcome.greet.night"));
         }
+    }
+
+    public void pixivMenuBtnOnAction() {
+        closePixivPane();
+        gui.openPixivMenuPane();
+    }
+
+    public void pixivDownloadBtnOnAction() {
+    }
+
+    public void openPixivPane() {
+        hideMain();
+        ttP.stop();
+        ttP.setFromX(0 - pixivPane.getWidth());
+        ttP.setToX(0);
+        ttP.setOnFinished(null);
+        pixivPane.setVisible(true);
+        ttP.play();
+    }
+
+    public void pixivBackBtnOnAction() {
+        playAnimation();
+        closePixivPane();
+    }
+
+    private void closePixivPane() {
+        ttP.stop();
+        ttP.setFromX(0);
+        ttP.setToX(0 - pixivPane.getWidth());
+        ttP.setOnFinished((e) -> pixivPane.setVisible(false));
+        ttP.play();
     }
 }

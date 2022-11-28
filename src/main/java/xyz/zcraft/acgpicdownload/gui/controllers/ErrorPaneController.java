@@ -1,4 +1,4 @@
-package xyz.zcraft.acgpicdownload.gui.scenes;
+package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.animation.FadeTransition;
