@@ -112,7 +112,7 @@ public class FetchPaneController implements Initializable {
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;
-        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out, Main.log), fullResultToggle.isSelected(), true, (int) threadCountSlider.getValue(), () -> Platform.runLater(this::updateStatus));
+        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out, Main.log), fullResultToggle.isSelected(), true, (int) threadCountSlider.getValue(), () -> Platform.runLater(this::updateStatus),true);
         downloading = false;
     }
 

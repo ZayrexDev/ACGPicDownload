@@ -44,3 +44,4 @@ build/
 /out.log
 /sources.json
 /src/main/resources/META-INF/
+/config.json

@@ -41,8 +41,8 @@ public class FetchUtil {
         int r;
 
         while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
-            String[] a = {orig.substring(l, r)};
-            boolean[] have = {false};
+            String[] a = { orig.substring(l, r) };
+            boolean[] have = { false };
 
             String str = a[0];
             args.forEach((t, o) -> {
@@ -108,7 +108,7 @@ public class FetchUtil {
     }
 
     public static void startDownload(ArrayList<Result> r, String outputDir, Logger logger,
-                                     boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
+            boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
@@ -141,8 +141,10 @@ public class FetchUtil {
         startMonitoring(rs, tpe, enableConsoleProgressBar, logger);
     }
 
-    public static void startDownloadWithResults(DownloadManager dm, ArrayList<DownloadResult> r, String outputDir, Logger logger,
-                                                boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate) {
+    public static void startDownloadWithResults(DownloadManager dm, ArrayList<DownloadResult> r, String outputDir,
+            Logger logger,
+            boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate,
+            boolean monitor) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
@@ -156,22 +158,28 @@ public class FetchUtil {
         }
         dm.setTpe(tpe);
         for (DownloadResult downloadResult : r) {
-            tpe.execute(() -> {
-                try {
-                    new DownloadUtil(1).download(downloadResult.getResult(), outDir, downloadResult, saveFullResult);
-                } catch (Exception e) {
-                    Main.logError(e);
-                    downloadResult.setStatus(DownloadStatus.FAILED);
-                    downloadResult.setErrorMessage(e.toString());
-                }
-            });
+            if (downloadResult.getStatus().equals(DownloadStatus.CREATED) || downloadResult.getStatus()
+                    .equals(DownloadStatus.FAILED)) {
+                tpe.execute(() -> {
+                    try {
+                        new DownloadUtil(1).download(downloadResult.getResult(), outDir, downloadResult,
+                                saveFullResult);
+                    } catch (Exception e) {
+                        Main.logError(e);
+                        downloadResult.setStatus(DownloadStatus.FAILED);
+                        downloadResult.setErrorMessage(e.toString());
+                    }
+                });
+            }
         }
 
-        startMonitoring(r.toArray(new DownloadResult[]{}), tpe, enableConsoleProgressBar, logger, onUpdate);
+        if(monitor){
+            startMonitoring(r.toArray(new DownloadResult[] {}), tpe, enableConsoleProgressBar, logger, onUpdate);
+        }
     }
 
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
-                                       boolean enableConsoleProgressBar, Logger logger, Runnable onUpdate) {
+            boolean enableConsoleProgressBar, Logger logger, Runnable onUpdate) {
         DownloadManager manager = new DownloadManager(result, tpe);
         Thread t = new Thread(() -> {
             int lastLength = 0;
@@ -213,7 +221,7 @@ public class FetchUtil {
     }
 
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
-                                       boolean enableConsoleProgressBar, Logger logger) {
+            boolean enableConsoleProgressBar, Logger logger) {
         DownloadManager manager = new DownloadManager(result);
         Thread t = new Thread(() -> {
             int lastLength = 0;
@@ -270,8 +278,9 @@ public class FetchUtil {
     }
 
     public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar,
-                                          String proxyHost, int proxyPort) {
-        logger.info(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.info.fetch")), s.getUrl()));
+            String proxyHost, int proxyPort) {
+        logger.info(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.info.fetch")),
+                s.getUrl()));
 
         ArrayList<Result> r = new ArrayList<>();
 
@@ -283,7 +292,7 @@ public class FetchUtil {
         logger.printr(sb.toString());
         lastLength = printTaskBar(sb.toString(), 0, "", lastLength, logger);
 
-        for (int i = 0; i < times; ) {
+        for (int i = 0; i < times;) {
             if (times > 1 && enableConsoleProgressBar) {
                 try {
                     Thread.sleep(2000);
@@ -294,7 +303,8 @@ public class FetchUtil {
                 sb = new StringBuilder();
                 sb.append(ResourceBundleUtil.getString("cli.fetch")).append(" ").append(i).append("/").append(times);
                 if (failed != 0) {
-                    sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ").append(failed);
+                    sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ")
+                            .append(failed);
                 }
                 logger.printr(sb.toString());
                 lastLength = printTaskBar(sb.toString(), (double) i / (double) times, "", lastLength, logger);
@@ -316,7 +326,8 @@ public class FetchUtil {
         sb = new StringBuilder();
         sb.append(ResourceBundleUtil.getString("cli.fetch")).append(" ").append(times).append("/").append(times);
         if (failed != 0) {
-            sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ").append(failed);
+            sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ")
+                    .append(failed);
         }
         logger.printr(sb.toString());
 
@@ -325,7 +336,8 @@ public class FetchUtil {
 
     public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar,
             String proxyHost, int proxyPort, ExceptionHandler exceptionHandler) {
-        logger.info(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.info.fetch")), s.getUrl()));
+        logger.info(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.info.fetch")),
+                s.getUrl()));
 
         ArrayList<Result> r = new ArrayList<>();
 
@@ -349,7 +361,8 @@ public class FetchUtil {
                 sb = new StringBuilder();
                 sb.append(ResourceBundleUtil.getString("cli.fetch")).append(" ").append(i).append("/").append(times);
                 if (failed != 0) {
-                    sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ").append(failed);
+                    sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ")
+                            .append(failed);
                 }
                 logger.printr(sb.toString());
                 lastLength = printTaskBar(sb.toString(), (double) i / (double) times, "", lastLength, logger);
@@ -364,7 +377,7 @@ public class FetchUtil {
                 } else {
                     logger.printr(ResourceBundleUtil.getString("cli.fetch.err") + ":" + e.getMessage());
                 }
-                if(exceptionHandler!=null){
+                if (exceptionHandler != null) {
                     exceptionHandler.handle(e);
                 }
             }
@@ -387,7 +400,7 @@ public class FetchUtil {
         int a = (int) (PROGRESS_BAR_LENGTH * progress);
         int b = PROGRESS_BAR_LENGTH - a;
         sb.append(" |").append("=".repeat(Math.min(
-                        PROGRESS_BAR_LENGTH, a))).append(" ".repeat(Math.max(0, b)))
+                PROGRESS_BAR_LENGTH, a))).append(" ".repeat(Math.max(0, b)))
                 .append("|");
         if (progress > 1 || progress < 0) {
             sb.append("...");
