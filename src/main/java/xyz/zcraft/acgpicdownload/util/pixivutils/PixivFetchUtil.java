@@ -146,7 +146,7 @@ public class PixivFetchUtil {
         for (PixivArtwork artwork : orig) {
             if (limit > art.size()) {
                 From from = artwork.getFrom();
-                if (from == null && other) art.add(artwork);
+                if (from == From.Other && other) art.add(artwork);
                 if (from == From.Follow && follow) art.add(artwork);
                 if (from == From.Recommend && recommend) art.add(artwork);
             } else {

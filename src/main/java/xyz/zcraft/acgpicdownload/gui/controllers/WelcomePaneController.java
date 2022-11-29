@@ -90,6 +90,8 @@ public class WelcomePaneController implements Initializable {
     }
 
     public void pixivDownloadBtnOnAction() {
+        closePixivPane();
+        gui.openPixivDownloadPane();
     }
 
     public void openPixivPane() {

@@ -21,10 +21,13 @@ import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.io.IOException;
 import java.net.URL;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +50,8 @@ public class PixivMenuPaneController implements Initializable {
     private AnchorPane loadingPane;
     @javafx.fxml.FXML
     private Label operationLabel;
+    @javafx.fxml.FXML
+    private Label subOperationLabel;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
@@ -165,6 +170,17 @@ public class PixivMenuPaneController implements Initializable {
 
         dataTable.setItems(data);
 
+        dataTable.getSelectionModel().selectionProperty()
+                .addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
+                    List<PixivArtwork> selectedValues = dataTable.getSelectionModel().getSelectedValues();
+                    if (selectedValues.size() > 0) {
+                        Toolkit.getDefaultToolkit().getSystemClipboard()
+                                .setContents(new StringSelection(PixivFetchUtil.getArtworkPageUrl(selectedValues.get(0))), null);
+                        dataTable.getSelectionModel().clearSelection();
+                        Notice.showSuccess(ResourceBundleUtil.getString(""), gui.mainPane); //TODO LANG
+                    }
+                });
+
         dataTable.getSelectionModel().setAllowsMultipleSelection(false);
 
         data.clear();
@@ -182,6 +198,7 @@ public class PixivMenuPaneController implements Initializable {
 
         new Thread(()->{
             try {
+                Platform.runLater(() -> subOperationLabel.setText("...")); //TODO LANG
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.selectArtworks(
                         PixivFetchUtil.fetchMenu(cookieField.getText(),
                                 Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"),
@@ -197,6 +214,9 @@ public class PixivMenuPaneController implements Initializable {
                     List<PixivArtwork> temp2Artworks = new LinkedList<>();
                     temp.addAll(pixivArtworks);
                     for(int i = 0;i<relatedDepthSlider.getValue();i++){
+                        final int finalI = i;
+                        Platform.runLater(() -> subOperationLabel.setText((finalI + 1) + " / " + relatedDepthSlider
+                                .getValue())); // TODO LANG
                         temp2Artworks.clear();
                         for (PixivArtwork temp2 : temp) {
                             List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
@@ -213,15 +233,15 @@ public class PixivMenuPaneController implements Initializable {
                 }
                 Platform.runLater(()->data.addAll(pixivArtworks));
                 Notice.showSuccess(String.valueOf(pixivArtworks.size()), gui.mainPane); //TODO LANG
-
-                ft.stop();
-                ft.setFromValue(1);
-                ft.setToValue(0);
-                ft.setOnFinished((e)->loadingPane.setVisible(false));
-                ft.play();
             } catch (IOException e) {
                 Main.logError(e);
                 gui.showError(e);
+            } finally {
+                ft.stop();
+                ft.setFromValue(1);
+                ft.setToValue(0);
+                ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                ft.play();
             }
         }).start();
     }
@@ -291,5 +311,11 @@ public class PixivMenuPaneController implements Initializable {
     }
 
     public void sendToDownloadBtnOnAction() {
+        for (PixivArtwork data : data) {
+            gui.pixivDownloadPaneController.getData().add(new PixivDownload(data));
+        }
+        data.clear();
+
+        Notice.showSuccess("", gui.mainPane); //TODO LANG
     }
 }

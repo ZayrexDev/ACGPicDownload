@@ -6,11 +6,8 @@ import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.Proxy.Type;
 import java.nio.charset.StandardCharsets;
 
 public class DownloadUtil {

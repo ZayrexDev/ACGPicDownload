@@ -453,8 +453,6 @@ public class FetchPaneController implements Initializable {
         }
     }
 
-
-
     public void saveConfig() {
         JSONObject obj = ConfigManager.getConfig();
         obj = obj.getJSONObject("fetch");

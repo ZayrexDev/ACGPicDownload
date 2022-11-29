@@ -9,9 +9,9 @@ public enum From {
     @Override
     public String toString() {
         if (this == Follow) {
-            return "Follow";
+            return "Follow"; //TODO LANG
         } else if (this == Recommend) {
-            return "Follow";
+            return "Recommend";
         } else if (this == Related) {
             return "Related";
         } else {

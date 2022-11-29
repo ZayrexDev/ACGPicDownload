@@ -24,6 +24,7 @@ public class GUI extends Application {
     public MainPaneController mainPaneController;
     public PixivMenuPaneController pixivMenuPaneController;
     public SettingsPaneController settingsPaneController;
+    public PixivDownloadPaneController pixivDownloadPaneController;
 
     public Stage mainStage;
     public Pane mainPane;
@@ -31,6 +32,7 @@ public class GUI extends Application {
     public Pane fetchPane;
     public Pane welcomePane;
     public Pane pixivMenuPane;
+    public Pane pixivDownloadPane;
 
     public GUI gui;
 
@@ -106,7 +108,19 @@ public class GUI extends Application {
 
             Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPane));
 
-            mainPaneController.setProgress(0.6);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),
+                    ResourceBundleUtil.getResource());
+            try {
+                pixivDownloadPane = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            pixivDownloadPaneController = loader.getController();
+            pixivDownloadPaneController.setGui(gui);
+
+            Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPane));
+
+            mainPaneController.setProgress(0.8);
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
             try {
@@ -119,7 +133,7 @@ public class GUI extends Application {
 
             Platform.runLater(() -> mainPane.getChildren().add(settingsPane));
 
-            mainPaneController.setProgress(0.8);
+            mainPaneController.setProgress(0.9);
 
             welcomePane.setVisible(false);
 
@@ -159,6 +173,10 @@ public class GUI extends Application {
 
     public void openFetchPane() {
         fetchPaneController.show();
+    }
+
+    public void openPixivDownloadPane() {
+        pixivDownloadPaneController.show();
     }
 
     public void showError(Exception e){

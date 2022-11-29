@@ -4,11 +4,11 @@ import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 
 public class DownloadResult {
-    private long totalSize;
-    private DownloadStatus status = DownloadStatus.CREATED;
-    private long sizeDownloaded = 0;
-    private String errorMessage;
-    private Result result;
+    protected long totalSize;
+    protected DownloadStatus status = DownloadStatus.CREATED;
+    protected long sizeDownloaded = 0;
+    protected String errorMessage;
+    protected Result result;
 
     public DownloadResult() {
     }
