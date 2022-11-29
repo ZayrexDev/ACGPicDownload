@@ -337,7 +337,7 @@ public class FetchPaneController implements Initializable {
                             gui.showError(e);
                             Main.logError(e);
                         }
-                    });
+                      });
             LinkedList<DownloadResult> drs = new LinkedList<>();
             for (Result result : r1) {
                 DownloadResult dr = new DownloadResult();
@@ -345,7 +345,8 @@ public class FetchPaneController implements Initializable {
                 r.add(dr);
                 drs.add(dr);
             }
-            dm = new DownloadManager(drs.toArray(new DownloadResult[] {}));
+
+            dm = new DownloadManager(drs.toArray(new DownloadResult[]{}));
 
             Platform.runLater(() -> {
                 ft.setFromValue(1);

@@ -15,12 +15,16 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
+import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
+import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownloadUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.awt.*;
@@ -48,19 +52,38 @@ public class PixivDownloadPaneController implements Initializable {
     private MFXSlider threadCountSlider;
 
     public void startDownload() {
+        PixivDownloadUtil.startDownload(
+                data,
+                outputDirField.getText(),
+                new Logger("GUI", System.out, Main.log),
+                (int) threadCountSlider.getValue(),
+                this::updateStatus,
+                gui.pixivMenuPaneController.getCookie(),
+                ConfigManager.getConfig().getString("proxyHost"),
+                ConfigManager.getConfig().getInteger("proxyPort")
+        );
+    }
 
+    private void updateStatus() {
+        dataTable.update();
     }
 
     public void delCompleted() {
         int a = data.size();
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
         Notice.showSuccess(
-                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")),
-                        a - data.size()),
-                gui.mainPane);
+                String.format(
+                        Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")),
+                        a - data.size()
+                ),
+                gui.mainPane
+        );
     }
 
     public void delSelected() {
+        int a = data.size();
+        data.removeAll(dataTable.getSelectionModel().getSelectedValues());
+        Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")), a - data.size()), gui.mainPane);
     }
 
     public GUI getGui() {

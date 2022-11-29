@@ -1,9 +1,12 @@
 package xyz.zcraft.acgpicdownload;
 
+import io.github.palexdev.materialfx.i18n.I18N;
+import io.github.palexdev.materialfx.i18n.Language;
 import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.Schedule;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
+
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -12,9 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import io.github.palexdev.materialfx.i18n.I18N;
-import io.github.palexdev.materialfx.i18n.Language;
 
 public class Main {
     private static boolean debug = false;
@@ -53,6 +53,7 @@ public class Main {
             } catch (FileNotFoundException ignored) {
             }
         }
+        e.printStackTrace();
         err.print("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]");
         e.printStackTrace(err);
         err.flush();

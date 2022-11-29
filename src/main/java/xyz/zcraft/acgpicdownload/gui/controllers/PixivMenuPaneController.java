@@ -65,6 +65,10 @@ public class PixivMenuPaneController implements Initializable {
     @javafx.fxml.FXML
     private MFXTextField cookieField;
 
+    public String getCookie() {
+        return cookieField.getText();
+    }
+
     @javafx.fxml.FXML
     public void backBtnOnAction() {
         hide();
@@ -196,7 +200,11 @@ public class PixivMenuPaneController implements Initializable {
 
         new Thread(() -> {
             try {
-                Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain")));
+                Platform.runLater(() -> {
+                    operationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
+                    subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
+                });
+
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.selectArtworks(
                         PixivFetchUtil.fetchMenu(
                                 cookieField.getText(),
@@ -214,10 +222,12 @@ public class PixivMenuPaneController implements Initializable {
                     List<PixivArtwork> temp = new LinkedList<>(pixivArtworks);
                     for (int i = 0; i < relatedDepthSlider.getValue(); i++) {
                         final int finalI = i;
-                        Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " " + (finalI + 1) + " / " + relatedDepthSlider
-                                .getValue()));
+                        Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " " + (finalI + 1) + " / " + (int) relatedDepthSlider.getValue()));
                         temp2Artworks.clear();
-                        for (PixivArtwork temp2 : temp) {
+                        for (int j = 0, tempSize = temp.size(); j < tempSize; j++) {
+                            int finalJ = j;
+                            Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " " + (finalI + 1) + " / " + (int) relatedDepthSlider.getValue() + " | " + (finalJ + 1) + " / " + temp.size()));
+                            PixivArtwork temp2 = temp.get(j);
                             List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
                                     cookieField.getText(),
                                     Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"), null),

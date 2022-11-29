@@ -112,6 +112,7 @@ public class SettingsPaneController implements Initializable {
                 }
             }
             if (proxyHost != null && proxyPort != 0) {
+                System.out.println("Proxy set");
                 System.getProperties().put("proxySet", "true");
                 System.getProperties().put("proxyHost", proxyHost);
                 System.getProperties().put("proxyPort", String.valueOf(proxyPort));
