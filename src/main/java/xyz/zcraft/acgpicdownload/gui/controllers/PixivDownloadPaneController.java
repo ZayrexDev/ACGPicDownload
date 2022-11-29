@@ -1,8 +1,6 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXTableColumn;
-import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -15,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -26,6 +25,7 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +40,12 @@ public class PixivDownloadPaneController implements Initializable {
     @FXML
     private AnchorPane mainPane;
     private ObservableList<PixivDownload> data;
+    @FXML
+    private MFXTextField outputDirField;
+    @FXML
+    private MFXButton selectDirBtn;
+    @FXML
+    private MFXSlider threadCountSlider;
 
     public void startDownload() {
 
@@ -176,5 +182,17 @@ public class PixivDownloadPaneController implements Initializable {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        selectDirBtn.setText("");
+        selectDirBtn.setGraphic(new MFXFontIcon("mfx-folder"));
+    }
+
+    @javafx.fxml.FXML
+    public void selectDirBtnOnAction() {
+        DirectoryChooser fc = new DirectoryChooser();
+        fc.setTitle("...");
+        File showDialog = fc.showDialog(gui.mainStage);
+        if (showDialog != null) {
+            outputDirField.setText(showDialog.getAbsolutePath());
+        }
     }
 }
