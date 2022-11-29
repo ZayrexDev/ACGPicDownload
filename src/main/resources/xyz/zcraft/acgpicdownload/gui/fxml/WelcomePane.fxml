@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="600.0" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.WelcomePaneController">
    <children>
       <VBox fx:id="controls" prefHeight="333.0" prefWidth="178.0" spacing="5.0" style="-fx-background-color: #ffffff88; -fx-background-radius: 10;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -24,7 +21,8 @@
             <Label text="%gui.welcome.greetSub" />
             <MFXButton fx:id="fetchBtn" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" onAction="#fetchBtnOnAction" text="%gui.fetch.title" textAlignment="RIGHT" VBox.vgrow="ALWAYS" />
             <MFXButton alignment="CENTER_RIGHT" layoutX="20.0" layoutY="80.0" maxWidth="1.7976931348623157E308" onAction="#openPixivPane" text="%gui.welcome.pixiv.title" textAlignment="RIGHT" />
-            <MFXButton alignment="CENTER_RIGHT" layoutX="20.0" layoutY="111.0" maxWidth="1.7976931348623157E308" onAction="#openSettingsPane" textAlignment="RIGHT" />
+            <MFXButton alignment="CENTER_RIGHT" layoutX="20.0" layoutY="111.0" maxWidth="1.7976931348623157E308"
+                       onAction="#openSettingsPane" text="%gui.settings.title" textAlignment="RIGHT"/>
          </children>
       </VBox>
       <VBox fx:id="pixivPane" layoutX="10.0" layoutY="10.0" prefHeight="333.0" prefWidth="178.0" spacing="5.0" style="-fx-background-color: #ffffff88; -fx-background-radius: 10;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">

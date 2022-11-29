@@ -1,14 +1,11 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
-
+import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
+import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -26,23 +23,29 @@ import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
-public class PixivDownloadPaneController implements Initializable{
+public class PixivDownloadPaneController implements Initializable {
+    public MFXButton backBtn;
+    GUI gui;
+    TranslateTransition tt = new TranslateTransition();
     @FXML
     private MFXTableView<PixivDownload> dataTable;
     @FXML
     private AnchorPane mainPane;
     private ObservableList<PixivDownload> data;
-    GUI gui;
-    TranslateTransition tt = new TranslateTransition();
 
-    public void startDownload(){
+    public void startDownload() {
 
     }
 
-    public void delCompleted(){
+    public void delCompleted() {
         int a = data.size();
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
         Notice.showSuccess(
@@ -51,7 +54,8 @@ public class PixivDownloadPaneController implements Initializable{
                 gui.mainPane);
     }
 
-    public void delSelected(){}
+    public void delSelected() {
+    }
 
     public GUI getGui() {
         return gui;
@@ -97,7 +101,7 @@ public class PixivDownloadPaneController implements Initializable{
         MFXTableColumn<PixivDownload> tagColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
         MFXTableColumn<PixivDownload> idColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true); // TODO LANG
+                ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
         MFXTableColumn<PixivDownload> statusColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.status"), true);
 
@@ -130,7 +134,7 @@ public class PixivDownloadPaneController implements Initializable{
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.tag"),
                         o -> o.getArtwork()
                                 .getTagsString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.id"), // TODO LANG
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.id"),
                         o -> o.getArtwork().getId()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.status"),
                         o -> o.getStatus().toString())));
@@ -146,7 +150,7 @@ public class PixivDownloadPaneController implements Initializable{
                                         new StringSelection(PixivFetchUtil.getArtworkPageUrl(selectedValues.get(0).getArtwork())),
                                         null);
                         dataTable.getSelectionModel().clearSelection();
-                        Notice.showSuccess(ResourceBundleUtil.getString(""), gui.mainPane); // TODO LANG
+                        Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
                     }
                 });
 
@@ -169,5 +173,8 @@ public class PixivDownloadPaneController implements Initializable{
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
         initTable();
+
+        backBtn.setText("");
+        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
     }
 }

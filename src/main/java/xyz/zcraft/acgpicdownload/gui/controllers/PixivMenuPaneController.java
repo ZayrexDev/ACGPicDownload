@@ -24,10 +24,10 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
-import java.io.IOException;
-import java.net.URL;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +36,7 @@ import java.util.ResourceBundle;
 public class PixivMenuPaneController implements Initializable {
     GUI gui;
     TranslateTransition tt = new TranslateTransition();
+    FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     private MFXSlider maxCountSlider;
     @javafx.fxml.FXML
@@ -63,7 +64,6 @@ public class PixivMenuPaneController implements Initializable {
     private ObservableList<PixivArtwork> data;
     @javafx.fxml.FXML
     private MFXTextField cookieField;
-
 
     @javafx.fxml.FXML
     public void backBtnOnAction() {
@@ -134,15 +134,13 @@ public class PixivMenuPaneController implements Initializable {
         cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
     }
 
-    FadeTransition ft = new FadeTransition();
-
     private void initTable() {
         data = FXCollections.observableArrayList(new PixivArtwork());
 
-        MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), true);
-        MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"), true);
-        MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), true);
-        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), true); //TODO LANG
+        MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.title"), true);
+        MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.from"), true);
+        MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
+        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
@@ -177,7 +175,7 @@ public class PixivMenuPaneController implements Initializable {
                         Toolkit.getDefaultToolkit().getSystemClipboard()
                                 .setContents(new StringSelection(PixivFetchUtil.getArtworkPageUrl(selectedValues.get(0))), null);
                         dataTable.getSelectionModel().clearSelection();
-                        Notice.showSuccess(ResourceBundleUtil.getString(""), gui.mainPane); //TODO LANG
+                        Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
                     }
                 });
 
@@ -189,16 +187,16 @@ public class PixivMenuPaneController implements Initializable {
 
     public void fetchBtnOnAction() {
         loadingPane.setVisible(true);
-        //operationLabel.setText(ResourceBundleUtil.getString("")); //TODO LANG
+        operationLabel.setText(ResourceBundleUtil.getString(""));
         ft.stop();
         ft.setFromValue(0);
         ft.setToValue(1);
         ft.setOnFinished(null);
         ft.play();
 
-        new Thread(()->{
+        new Thread(() -> {
             try {
-                Platform.runLater(() -> subOperationLabel.setText("...")); //TODO LANG
+                Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain")));
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.selectArtworks(
                         PixivFetchUtil.fetchMenu(cookieField.getText(),
                                 Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"),
@@ -209,14 +207,14 @@ public class PixivMenuPaneController implements Initializable {
                         fromRecToggle.isSelected(),
                         fromOtherToggle.isSelected());
 
-                if(relatedDepthSlider.getValue() > 0){
+                if (relatedDepthSlider.getValue() > 0) {
                     List<PixivArtwork> temp = new LinkedList<>();
                     List<PixivArtwork> temp2Artworks = new LinkedList<>();
                     temp.addAll(pixivArtworks);
-                    for(int i = 0;i<relatedDepthSlider.getValue();i++){
+                    for (int i = 0; i < relatedDepthSlider.getValue(); i++) {
                         final int finalI = i;
-                        Platform.runLater(() -> subOperationLabel.setText((finalI + 1) + " / " + relatedDepthSlider
-                                .getValue())); // TODO LANG
+                        Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " " + (finalI + 1) + " / " + relatedDepthSlider
+                                .getValue()));
                         temp2Artworks.clear();
                         for (PixivArtwork temp2 : temp) {
                             List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
@@ -231,8 +229,8 @@ public class PixivMenuPaneController implements Initializable {
                         pixivArtworks.addAll(temp2Artworks);
                     }
                 }
-                Platform.runLater(()->data.addAll(pixivArtworks));
-                Notice.showSuccess(String.valueOf(pixivArtworks.size()), gui.mainPane); //TODO LANG
+                Platform.runLater(() -> data.addAll(pixivArtworks));
+                Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetched")), pixivArtworks.size()), gui.mainPane);
             } catch (IOException e) {
                 Main.logError(e);
                 gui.showError(e);
@@ -316,6 +314,6 @@ public class PixivMenuPaneController implements Initializable {
         }
         data.clear();
 
-        Notice.showSuccess("", gui.mainPane); //TODO LANG
+        Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.menu.notice.sent"), gui.mainPane);
     }
 }

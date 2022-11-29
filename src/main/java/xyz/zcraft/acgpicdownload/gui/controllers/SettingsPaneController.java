@@ -1,13 +1,9 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import com.alibaba.fastjson2.JSONObject;
-
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -21,6 +17,10 @@ import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class SettingsPaneController implements Initializable {
     @javafx.fxml.FXML
@@ -92,6 +92,9 @@ public class SettingsPaneController implements Initializable {
 
         proxyField.textProperty().addListener(this::verifyProxy);
         restoreConfig();
+
+        backBtn.setText("");
+        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
     }
 
     private void verifyProxy(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -141,7 +144,9 @@ public class SettingsPaneController implements Initializable {
 
     public void restoreConfig() {
         JSONObject json = ConfigManager.getConfig();
-        proxyField.setText(json.getString("proxyHost") + ":" + json.getInteger("proxyPort"));
+        if (proxyHost != null && proxyPort != 0) {
+            proxyField.setText(json.getString("proxyHost") + ":" + json.getInteger("proxyPort"));
+        }
     }
 
     public GUI getGui() {
