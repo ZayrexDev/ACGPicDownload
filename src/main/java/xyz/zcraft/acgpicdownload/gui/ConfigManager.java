@@ -10,7 +10,16 @@ public class ConfigManager {
     private static JSONObject config;
 
     public static JSONObject getConfig() {
-        return config;
+        return Objects.requireNonNull(config);
+    }
+
+    public static Object getValue(String key, Object defaultValue) {
+        return Objects.requireNonNullElse(config.get(key), defaultValue);
+    }
+
+    public static Object getSubValue(String sub, String key, Object defaultValue) {
+        if(config.getJSONObject("sub") == null) return defaultValue;
+        return Objects.requireNonNullElse(config.getJSONObject("sub").get(key), defaultValue);
     }
 
     public static void readConfig() throws IOException {

@@ -54,6 +54,7 @@ public class PixivMenuPaneController implements Initializable {
     @javafx.fxml.FXML
     private MFXTextField cookieField;
 
+
     @javafx.fxml.FXML
     public void backBtnOnAction() {
         hide();
@@ -107,6 +108,8 @@ public class PixivMenuPaneController implements Initializable {
         tt.setRate(0.01);
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
+
+        initTable();
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));

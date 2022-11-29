@@ -102,6 +102,11 @@ public class WelcomePaneController implements Initializable {
         ttP.play();
     }
 
+    public void openSettingsPane(){
+        hideMain();
+        gui.openSettingsPane();
+    }
+
     public void pixivBackBtnOnAction() {
         playAnimation();
         closePixivPane();

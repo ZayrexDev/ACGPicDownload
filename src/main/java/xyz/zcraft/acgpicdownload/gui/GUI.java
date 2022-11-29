@@ -23,8 +23,8 @@ public class GUI extends Application {
     public WelcomePaneController welcomePaneController;
     public MainPaneController mainPaneController;
     public PixivMenuPaneController pixivMenuPaneController;
-
     public SettingsPaneController settingsPaneController;
+
     public Stage mainStage;
     public Pane mainPane;
     public Pane settingsPane;
@@ -80,7 +80,7 @@ public class GUI extends Application {
             fill(welcomePane);
             Platform.runLater(() -> mainPane.getChildren().add(welcomePane));
 
-            mainPaneController.setProgress(0.3);
+            mainPaneController.setProgress(0.2);
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
             try {
@@ -93,7 +93,7 @@ public class GUI extends Application {
 
             Platform.runLater(() -> mainPane.getChildren().add(fetchPane));
 
-            mainPaneController.setProgress(0.6);
+            mainPaneController.setProgress(0.4);
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
             try {
@@ -106,7 +106,20 @@ public class GUI extends Application {
 
             Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPane));
 
-            mainPaneController.setProgress(0.9);
+            mainPaneController.setProgress(0.6);
+
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
+            try {
+                settingsPane = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            settingsPaneController = loader.getController();
+            settingsPaneController.setGui(gui);
+
+            Platform.runLater(() -> mainPane.getChildren().add(settingsPane));
+
+            mainPaneController.setProgress(0.8);
 
             welcomePane.setVisible(false);
 
@@ -165,5 +178,9 @@ public class GUI extends Application {
 
     public SettingsPaneController getSettingsPaneController() {
         return settingsPaneController;
+    }
+
+    public void openSettingsPane() {
+        settingsPaneController.show();
     }
 }
