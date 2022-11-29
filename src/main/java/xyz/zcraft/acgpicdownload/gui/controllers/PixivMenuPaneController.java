@@ -198,19 +198,20 @@ public class PixivMenuPaneController implements Initializable {
             try {
                 Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain")));
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.selectArtworks(
-                        PixivFetchUtil.fetchMenu(cookieField.getText(),
-                                Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"),
-                                        null),
-                                gui.getSettingsPaneController().getProxyPort()),
+                        PixivFetchUtil.fetchMenu(
+                                cookieField.getText(),
+                                ConfigManager.getConfig().getString("proxyHost"),
+                                Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0)
+                        ),
                         (int) maxCountSlider.getValue(),
                         fromFollowToggle.isSelected(),
                         fromRecToggle.isSelected(),
-                        fromOtherToggle.isSelected());
+                        fromOtherToggle.isSelected()
+                );
 
                 if (relatedDepthSlider.getValue() > 0) {
-                    List<PixivArtwork> temp = new LinkedList<>();
                     List<PixivArtwork> temp2Artworks = new LinkedList<>();
-                    temp.addAll(pixivArtworks);
+                    List<PixivArtwork> temp = new LinkedList<>(pixivArtworks);
                     for (int i = 0; i < relatedDepthSlider.getValue(); i++) {
                         final int finalI = i;
                         Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " " + (finalI + 1) + " / " + relatedDepthSlider
@@ -242,62 +243,6 @@ public class PixivMenuPaneController implements Initializable {
                 ft.play();
             }
         }).start();
-    }
-
-    public MFXSlider getMaxCountSlider() {
-        return maxCountSlider;
-    }
-
-    public void setMaxCountSlider(MFXSlider maxCountSlider) {
-        this.maxCountSlider = maxCountSlider;
-    }
-
-    public MFXSlider getRelatedDepthSlider() {
-        return relatedDepthSlider;
-    }
-
-    public void setRelatedDepthSlider(MFXSlider relatedDepthSlider) {
-        this.relatedDepthSlider = relatedDepthSlider;
-    }
-
-    public MFXToggleButton getFromFollowToggle() {
-        return fromFollowToggle;
-    }
-
-    public void setFromFollowToggle(MFXToggleButton fromFollowToggle) {
-        this.fromFollowToggle = fromFollowToggle;
-    }
-
-    public MFXToggleButton getFromRecToggle() {
-        return fromRecToggle;
-    }
-
-    public void setFromRecToggle(MFXToggleButton fromRecToggle) {
-        this.fromRecToggle = fromRecToggle;
-    }
-
-    public MFXToggleButton getFromOtherToggle() {
-        return fromOtherToggle;
-    }
-
-    public void setFromOtherToggle(MFXToggleButton fromOtherToggle) {
-        this.fromOtherToggle = fromOtherToggle;
-    }
-
-    public AnchorPane getLoadingPane() {
-        return loadingPane;
-    }
-
-    public void setLoadingPane(AnchorPane loadingPane) {
-        this.loadingPane = loadingPane;
-    }
-
-    public Label getOperationLabel() {
-        return operationLabel;
-    }
-
-    public void setOperationLabel(Label operationLabel) {
-        this.operationLabel = operationLabel;
     }
 
     public GUI getGui() {
