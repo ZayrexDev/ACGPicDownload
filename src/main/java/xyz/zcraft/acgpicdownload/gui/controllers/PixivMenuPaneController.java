@@ -4,6 +4,7 @@ import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -15,14 +16,18 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
+import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PixivMenuPaneController implements Initializable {
@@ -109,6 +114,13 @@ public class PixivMenuPaneController implements Initializable {
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
+        ft.setNode(loadingPane);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.setAutoReverse(false);
+        ft.setRate(0.05);
+        ft.setDuration(Duration.millis(5));
+
         initTable();
 
         backBtn.setText("");
@@ -117,31 +129,38 @@ public class PixivMenuPaneController implements Initializable {
         cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
     }
 
+    FadeTransition ft = new FadeTransition();
+
     private void initTable() {
         data = FXCollections.observableArrayList(new PixivArtwork());
 
         MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), true);
         MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"), true);
         MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), true);
+        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), true); //TODO LANG
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTagsString));
+        idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
 
         titleColumn.setAlignment(Pos.CENTER);
         fromColumn.setAlignment(Pos.CENTER);
         tagColumn.setAlignment(Pos.CENTER);
+        idColumn.setAlignment(Pos.CENTER);
 
-        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.5).get());
+        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
         fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
         tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
+        idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
 
-        dataTable.getTableColumns().addAll(List.of(titleColumn, fromColumn, tagColumn));
+        dataTable.getTableColumns().addAll(List.of(titleColumn, fromColumn, tagColumn, idColumn));
 
         dataTable.getFilters().addAll(List.of(
-                new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.fileName"), PixivArtwork::getTitle),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.link"), o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.status"), PixivArtwork::getTagsString))
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"), o -> o.getFrom().toString()),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), PixivArtwork::getTagsString),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId))
         );
 
         dataTable.setItems(data);
@@ -153,20 +172,58 @@ public class PixivMenuPaneController implements Initializable {
 
 
     public void fetchBtnOnAction() {
-        try {
-            List<PixivArtwork> pixivArtworks = PixivFetchUtil.selectArtworks(
-                    PixivFetchUtil.fetchMenu(cookieField.getText(), gui.getSettingsPaneController().getProxyHost(), gui.getSettingsPaneController().getProxyPort()),
-                    (int) maxCountSlider.getValue(),
-                    fromFollowToggle.isSelected(),
-                    fromRecToggle.isSelected(),
-                    fromOtherToggle.isSelected()
-            );
+        loadingPane.setVisible(true);
+        //operationLabel.setText(ResourceBundleUtil.getString("")); //TODO LANG
+        ft.stop();
+        ft.setFromValue(0);
+        ft.setToValue(1);
+        ft.setOnFinished(null);
+        ft.play();
 
-            data.addAll(pixivArtworks);
-        } catch (IOException e) {
-            Main.logError(e);
-            gui.showError(e);
-        }
+        new Thread(()->{
+            try {
+                List<PixivArtwork> pixivArtworks = PixivFetchUtil.selectArtworks(
+                        PixivFetchUtil.fetchMenu(cookieField.getText(),
+                                Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"),
+                                        null),
+                                gui.getSettingsPaneController().getProxyPort()),
+                        (int) maxCountSlider.getValue(),
+                        fromFollowToggle.isSelected(),
+                        fromRecToggle.isSelected(),
+                        fromOtherToggle.isSelected());
+
+                if(relatedDepthSlider.getValue() > 0){
+                    List<PixivArtwork> temp = new LinkedList<>();
+                    List<PixivArtwork> temp2Artworks = new LinkedList<>();
+                    temp.addAll(pixivArtworks);
+                    for(int i = 0;i<relatedDepthSlider.getValue();i++){
+                        temp2Artworks.clear();
+                        for (PixivArtwork temp2 : temp) {
+                            List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
+                                    cookieField.getText(),
+                                    Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"), null),
+                                    Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0)
+                            );
+                            temp2Artworks.addAll(related);
+                        }
+                        temp.clear();
+                        temp.addAll(temp2Artworks);
+                        pixivArtworks.addAll(temp2Artworks);
+                    }
+                }
+                Platform.runLater(()->data.addAll(pixivArtworks));
+                Notice.showSuccess(String.valueOf(pixivArtworks.size()), gui.mainPane); //TODO LANG
+
+                ft.stop();
+                ft.setFromValue(1);
+                ft.setToValue(0);
+                ft.setOnFinished((e)->loadingPane.setVisible(false));
+                ft.play();
+            } catch (IOException e) {
+                Main.logError(e);
+                gui.showError(e);
+            }
+        }).start();
     }
 
     public MFXSlider getMaxCountSlider() {

@@ -181,9 +181,11 @@ public class PixivArtwork {
     }
 
     public String getTagsString() {
+        if(tags == null) return null;
         StringBuilder sb = new StringBuilder();
         for (Object tag : tags) {
             sb.append(tag);
+            sb.append(",");
         }
         return sb.toString();
     }

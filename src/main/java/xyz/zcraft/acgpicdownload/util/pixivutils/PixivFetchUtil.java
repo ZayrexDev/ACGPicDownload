@@ -66,6 +66,7 @@ public class PixivFetchUtil {
                 .method(Method.GET)
                 .cookies(cookie)
                 .timeout(10 * 1000);
+
         if (proxyHost != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
@@ -77,7 +78,10 @@ public class PixivFetchUtil {
         JSONArray illusts = JSONObject.parse(jsonString).getJSONObject("body").getJSONArray("illusts");
 
         for (int i = 0; i < illusts.size(); i++) {
-            artworks.add(illusts.getObject(i, PixivArtwork.class));
+            PixivArtwork object = illusts.getObject(i, PixivArtwork.class);
+            if(object.getTitle() == null) continue;
+            object.setFrom(From.Related);
+            artworks.add(object);
         }
 
         return artworks;
@@ -140,7 +144,7 @@ public class PixivFetchUtil {
     public static List<PixivArtwork> selectArtworks(List<PixivArtwork> orig, int limit, boolean follow, boolean recommend, boolean other) {
         LinkedList<PixivArtwork> art = new LinkedList<>();
         for (PixivArtwork artwork : orig) {
-            if (limit < art.size()) {
+            if (limit > art.size()) {
                 From from = artwork.getFrom();
                 if (from == null && other) art.add(artwork);
                 if (from == From.Follow && follow) art.add(artwork);
