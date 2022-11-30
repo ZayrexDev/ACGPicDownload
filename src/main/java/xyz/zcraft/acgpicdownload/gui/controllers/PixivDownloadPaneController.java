@@ -86,6 +86,7 @@ public class PixivDownloadPaneController implements Initializable {
     public void delSelected() {
         int a = data.size();
         data.removeAll(dataTable.getSelectionModel().getSelectedValues());
+        dataTable.getSelectionModel().clearSelection();
         Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")), a - data.size()), gui.mainPane);
     }
 
@@ -173,21 +174,6 @@ public class PixivDownloadPaneController implements Initializable {
 
         dataTable.setItems(data);
 
-        dataTable.getSelectionModel().selectionProperty()
-                .addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
-                    List<PixivDownload> selectedValues = dataTable.getSelectionModel().getSelectedValues();
-                    if (selectedValues.size() > 0) {
-                        Toolkit.getDefaultToolkit().getSystemClipboard()
-                                .setContents(
-                                        new StringSelection(PixivFetchUtil.getArtworkPageUrl(selectedValues.get(0).getArtwork())),
-                                        null);
-                        dataTable.getSelectionModel().clearSelection();
-                        Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
-                    }
-                });
-
-        dataTable.getSelectionModel().setAllowsMultipleSelection(false);
-
         data.clear();
     }
 
@@ -235,6 +221,28 @@ public class PixivDownloadPaneController implements Initializable {
         File showDialog = fc.showDialog(gui.mainStage);
         if (showDialog != null) {
             outputDirField.setText(showDialog.getAbsolutePath());
+        }
+    }
+
+    @javafx.fxml.FXML
+    public void clearSelected() {
+        int i = dataTable.getSelectionModel().getSelectedValues().size();
+        dataTable.getSelectionModel().clearSelection();
+        Notice.showSuccess(
+                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.notice.clearSelected")),
+                        i),
+                gui.mainPane);
+    }
+
+    @javafx.fxml.FXML
+    public void copySelected() {
+        StringBuilder sb = new StringBuilder();
+        for (PixivDownload s : dataTable.getSelectionModel().getSelectedValues()) {
+            sb.append(PixivFetchUtil.getArtworkPageUrl(s.getArtwork())).append("\n");
+        }
+        if (sb.length() > 0) {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
+            Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
         }
     }
 }

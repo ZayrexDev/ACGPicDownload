@@ -188,20 +188,7 @@ public class PixivMenuPaneController implements Initializable {
         );
 
         dataTable.setItems(data);
-
-        dataTable.getSelectionModel().selectionProperty()
-                .addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
-                    List<PixivArtwork> selectedValues = dataTable.getSelectionModel().getSelectedValues();
-                    if (selectedValues.size() > 0) {
-                        Toolkit.getDefaultToolkit().getSystemClipboard()
-                                .setContents(new StringSelection(PixivFetchUtil.getArtworkPageUrl(selectedValues.get(0))), null);
-                        dataTable.getSelectionModel().clearSelection();
-                        Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
-                    }
-                });
-
-        dataTable.getSelectionModel().setAllowsMultipleSelection(false);
-
+        dataTable.getSelectionModel().setAllowsMultipleSelection(true);
         data.clear();
     }
 
@@ -288,5 +275,50 @@ public class PixivMenuPaneController implements Initializable {
         data.clear();
 
         Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.menu.notice.sent"), gui.mainPane);
+    }
+
+    @javafx.fxml.FXML
+    public void removeSelectedBtnOnAction(){
+        int a = data.size();
+        data.removeAll(dataTable.getSelectionModel().getSelectedValues());
+        dataTable.getSelectionModel().clearSelection();
+        Notice.showSuccess(
+                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")),
+                        a - data.size()),
+                gui.mainPane);
+    }
+
+    @javafx.fxml.FXML
+    public void sendSelectedToDownloadBtnOnAction(){
+        int a = data.size();
+        for (PixivArtwork data : dataTable.getSelectionModel().getSelectedValues()) {
+            gui.pixivDownloadPaneController.getData().add(new PixivDownload(data));
+        }
+        data.removeAll(dataTable.getSelectionModel().getSelectedValues());
+        Notice.showSuccess(
+                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.notice.sent")),
+                        a - data.size()),
+                gui.mainPane);
+    }
+
+    @javafx.fxml.FXML
+    public void clearSelected(){
+        int i = dataTable.getSelectionModel().getSelectedValues().size();
+        dataTable.getSelectionModel().clearSelection();
+        Notice.showSuccess(
+                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.notice.clearSelected")),i),
+                gui.mainPane);
+    }
+
+    @javafx.fxml.FXML
+    public void copySelected(){
+        StringBuilder sb = new StringBuilder();
+        for (PixivArtwork s : dataTable.getSelectionModel().getSelectedValues()) {
+            sb.append(PixivFetchUtil.getArtworkPageUrl(s)).append("\n");
+        }
+        if (sb.length() > 0){
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
+            Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
+        }
     }
 }
