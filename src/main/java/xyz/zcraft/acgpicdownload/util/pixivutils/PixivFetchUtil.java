@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class PixivFetchUtil {
     private static final String TOP = "https://www.pixiv.net/ajax/top/illust?mode=all&lang=zh";
@@ -33,15 +35,41 @@ public class PixivFetchUtil {
 
     public static LinkedList<PixivArtwork> parseArtworks(String jsonString) {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
-        JSONArray illust = JSONObject.parse(jsonString).getJSONObject("body").getJSONObject("thumbnails").getJSONArray("illust");
+        JSONObject bodyObject = JSONObject.parse(jsonString).getJSONObject("body");
+        JSONObject tran = bodyObject.getJSONObject("tagTranslation");
+        JSONArray illust = bodyObject.getJSONObject("thumbnails").getJSONArray("illust");
 
         for (int i = 0; i < illust.size(); i++) {
-            artworks.add(illust.getObject(i, PixivArtwork.class));
+            PixivArtwork a = illust.getObject(i, PixivArtwork.class);
+            for (Object t : a.getOriginalTags()) {
+                a.getTranslatedTags().add(translateTag(t.toString(), tran));
+            }
+            artworks.add(a);
         }
 
-        classifyArtwork(artworks, JSONObject.parse(jsonString).getJSONObject("body").getJSONObject("page"));
+        classifyArtwork(artworks, bodyObject.getJSONObject("page"));
 
         return artworks;
+    }
+
+    public static String translateTag(String tag, JSONObject tran){
+        String origLang = Locale.getDefault().toLanguageTag().toLowerCase();
+        JSONObject tagObj = tran.getJSONObject(tag);
+        if(tagObj == null) return tag;
+        switch(origLang){
+            case "zh-cn","zh_cn","zh":{
+                return Objects.requireNonNullElse(tagObj.getString("zh"), tag);
+            }
+            case "zh_tw","zh-tw":{
+                return Objects.requireNonNullElse(tagObj.getString("zh_tw"), tag);
+            }
+            case "en": {
+                return Objects.requireNonNullElse(tagObj.getString("en"), tag);
+            }
+            default:{
+                return tag;
+            }
+        }
     }
 
     public static String getImageUrl(PixivArtwork artwork, String cookieString, String proxyHost, int proxyPort) throws IOException {
@@ -105,6 +133,8 @@ public class PixivFetchUtil {
 
     public static void classifyArtwork(List<PixivArtwork> orig, JSONObject pageJson) {
         LinkedList<String> recommendIDs = new LinkedList<>();
+        LinkedList<String> recommendTagIDs = new LinkedList<>();
+        LinkedList<String> recommendUserIDs = new LinkedList<>();
         LinkedList<String> followIDs = new LinkedList<>();
 
         for (Object o : pageJson.getJSONArray("follow")) {
@@ -118,14 +148,14 @@ public class PixivFetchUtil {
         JSONArray recommendByTag = pageJson.getJSONArray("recommendByTag");
         for (int i = 0; i < recommendByTag.size(); i++) {
             for (Object ids : recommendByTag.getJSONObject(i).getJSONArray("ids")) {
-                recommendIDs.add(ids.toString());
+                recommendTagIDs.add(ids.toString());
             }
         }
 
         JSONArray recommendUser = pageJson.getJSONArray("recommendUser");
         for (int i = 0; i < recommendUser.size(); i++) {
             for (Object ids : recommendUser.getJSONObject(i).getJSONArray("illustIds")) {
-                recommendIDs.add(ids.toString());
+                recommendUserIDs.add(ids.toString());
             }
         }
 
@@ -135,13 +165,18 @@ public class PixivFetchUtil {
                 artwork.setFrom(From.Follow);
             } else if (recommendIDs.contains(id)) {
                 artwork.setFrom(From.Recommend);
+            } else if (recommendTagIDs.contains(id)) {
+                artwork.setFrom(From.RecommendTag);
+            } else if (recommendUserIDs.contains(id)) {
+                artwork.setFrom(From.RecommendUser);
             } else {
                 artwork.setFrom(From.Other);
             }
         }
     }
 
-    public static List<PixivArtwork> selectArtworks(List<PixivArtwork> orig, int limit, boolean follow, boolean recommend, boolean other) {
+    public static List<PixivArtwork> selectArtworks(List<PixivArtwork> orig, int limit, boolean follow, boolean recommend,
+            boolean recommendTag, boolean recommendUser, boolean other) {
         LinkedList<PixivArtwork> art = new LinkedList<>();
         for (PixivArtwork artwork : orig) {
             if (limit > art.size()) {
@@ -149,6 +184,8 @@ public class PixivFetchUtil {
                 if (from == From.Other && other) art.add(artwork);
                 if (from == From.Follow && follow) art.add(artwork);
                 if (from == From.Recommend && recommend) art.add(artwork);
+                if (from == From.RecommendTag && recommendTag) art.add(artwork);
+                if (from == From.RecommendUser && recommendUser) art.add(artwork);
             } else {
                 break;
             }

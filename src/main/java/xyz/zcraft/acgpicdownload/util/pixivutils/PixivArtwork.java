@@ -1,5 +1,8 @@
 package xyz.zcraft.acgpicdownload.util.pixivutils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
@@ -22,7 +25,7 @@ public class PixivArtwork {
     @JSONField(name = "description")
     private String description;
     @JSONField(name = "tags")
-    private JSONArray tags;
+    private JSONArray originalTags;
     @JSONField(name = "userId")
     private String userId;
     @JSONField(name = "userName")
@@ -56,6 +59,7 @@ public class PixivArtwork {
     @JSONField(name = "aiType")
     private int aiType;
 
+    private Set<String> translatedTags = new HashSet<>();
     private String imageUrl;
 
     public String getImageUrl() {
@@ -68,36 +72,7 @@ public class PixivArtwork {
 
     private From from;
 
-    public PixivArtwork() {
-    }
-
-    public PixivArtwork(String id, String title, int illustType, int xRestrict, int restrict, int sl, String url, String description, JSONArray tags, String userId, String userName, int width, int height, int pageCount, boolean bookmarkable, Object bookmarkData, String alt, JSONObject titleCaptionTranslation, String createDate, String updateDate, boolean unlisted, boolean masked, JSONObject urls, String profileImageUrl, int aiType) {
-        this.id = id;
-        this.title = title;
-        this.illustType = illustType;
-        this.xRestrict = xRestrict;
-        this.restrict = restrict;
-        this.sl = sl;
-        this.url = url;
-        this.description = description;
-        this.tags = tags;
-        this.userId = userId;
-        this.userName = userName;
-        this.width = width;
-        this.height = height;
-        this.pageCount = pageCount;
-        this.bookmarkable = bookmarkable;
-        this.bookmarkData = bookmarkData;
-        this.alt = alt;
-        this.titleCaptionTranslation = titleCaptionTranslation;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
-        this.unlisted = unlisted;
-        this.masked = masked;
-        this.urls = urls;
-        this.profileImageUrl = profileImageUrl;
-        this.aiType = aiType;
-    }
+    public PixivArtwork() {}
 
     public From getFrom() {
         return from;
@@ -109,7 +84,7 @@ public class PixivArtwork {
 
     @Override
     public String toString() {
-        return "PixivArtwork{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", illustType=" + illustType + ", xRestrict=" + xRestrict + ", restrict=" + restrict + ", sl=" + sl + ", url='" + url + '\'' + ", description='" + description + '\'' + ", tags=" + tags + ", userId='" + userId + '\'' + ", userName='" + userName + '\'' + ", width=" + width + ", height=" + height + ", pageCount=" + pageCount + ", bookmarkable=" + bookmarkable + ", bookmarkData=" + bookmarkData + ", alt='" + alt + '\'' + ", titleCaptionTranslation=" + titleCaptionTranslation + ", createDate='" + createDate + '\'' + ", updateDate='" + updateDate + '\'' + ", unlisted=" + unlisted + ", masked=" + masked + ", urls=" + urls + ", profileImageUrl='" + profileImageUrl + '\'' + ", aiType=" + aiType + '}';
+        return "PixivArtwork{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", illustType=" + illustType + ", xRestrict=" + xRestrict + ", restrict=" + restrict + ", sl=" + sl + ", url='" + url + '\'' + ", description='" + description + '\'' + ", originalTags=" + originalTags + ", userId='" + userId + '\'' + ", userName='" + userName + '\'' + ", width=" + width + ", height=" + height + ", pageCount=" + pageCount + ", bookmarkable=" + bookmarkable + ", bookmarkData=" + bookmarkData + ", alt='" + alt + '\'' + ", titleCaptionTranslation=" + titleCaptionTranslation + ", createDate='" + createDate + '\'' + ", updateDate='" + updateDate + '\'' + ", unlisted=" + unlisted + ", masked=" + masked + ", urls=" + urls + ", profileImageUrl='" + profileImageUrl + '\'' + ", aiType=" + aiType + '}';
     }
 
     public String getId() {
@@ -176,22 +151,22 @@ public class PixivArtwork {
         this.description = description;
     }
 
-    public JSONArray getTags() {
-        return tags;
+    public JSONArray getOriginalTags() {
+        return originalTags;
     }
 
-    public String getTagsString() {
-        if(tags == null) return null;
+    public String getOriginalTagsString() {
+        if(originalTags == null) return null;
         StringBuilder sb = new StringBuilder();
-        for (Object tag : tags) {
+        for (Object tag : originalTags) {
             sb.append(tag);
             sb.append(",");
         }
         return sb.toString();
     }
 
-    public void setTags(JSONArray tags) {
-        this.tags = tags;
+    public void setOriginalTags(JSONArray originalTags) {
+        this.originalTags = originalTags;
     }
 
     public String getUserId() {
@@ -320,5 +295,13 @@ public class PixivArtwork {
 
     public void setAiType(int aiType) {
         this.aiType = aiType;
+    }
+
+    public Set<String> getTranslatedTags() {
+        return translatedTags;
+    }
+
+    public void setTranslatedTags(Set<String> translatedTags) {
+        this.translatedTags = translatedTags;
     }
 }

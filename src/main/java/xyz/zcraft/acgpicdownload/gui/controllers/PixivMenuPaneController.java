@@ -48,6 +48,10 @@ public class PixivMenuPaneController implements Initializable {
     @javafx.fxml.FXML
     private MFXToggleButton fromRecToggle;
     @javafx.fxml.FXML
+    private MFXToggleButton fromRecTagToggle;
+    @javafx.fxml.FXML
+    private MFXToggleButton fromRecUserToggle;
+    @javafx.fxml.FXML
     private MFXToggleButton fromOtherToggle;
     @javafx.fxml.FXML
     private AnchorPane loadingPane;
@@ -161,7 +165,7 @@ public class PixivMenuPaneController implements Initializable {
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
-        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTagsString));
+        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getOriginalTagsString));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
 
         titleColumn.setAlignment(Pos.CENTER);
@@ -179,7 +183,7 @@ public class PixivMenuPaneController implements Initializable {
         dataTable.getFilters().addAll(List.of(
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"), o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), PixivArtwork::getTagsString),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), PixivArtwork::getOriginalTagsString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId))
         );
 
@@ -226,6 +230,8 @@ public class PixivMenuPaneController implements Initializable {
                         (int) maxCountSlider.getValue(),
                         fromFollowToggle.isSelected(),
                         fromRecToggle.isSelected(),
+                        fromRecTagToggle.isSelected(),
+                        fromRecUserToggle.isSelected(),
                         fromOtherToggle.isSelected()
                 );
 
