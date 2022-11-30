@@ -48,8 +48,8 @@
                <children>
                   <Label text="%gui.pixiv.menu.typeToFetch" />
                   <MFXToggleButton fx:id="fromFollowToggle" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%gui.pixiv.menu.from.follow" />
-                  <MFXToggleButton fx:id="fromRecToggle2" layoutX="247.0" layoutY="10.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%gui.pixiv.menu.from.recommend" />
-                  <MFXToggleButton fx:id="fromRecUserToggle" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%fetch.pixiv.from.recommendUserfetch.pixiv.from.recommendUser" />
+                  <MFXToggleButton fx:id="fromRecToggle" layoutX="247.0" layoutY="10.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%gui.pixiv.menu.from.recommend" />
+                  <MFXToggleButton fx:id="fromRecUserToggle" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%fetch.pixiv.from.recommendUser" />
                   <MFXToggleButton fx:id="fromRecTagToggle" layoutX="312.0" layoutY="10.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%fetch.pixiv.from.recommendTag" />
                   <MFXToggleButton fx:id="fromOtherToggle" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" text="%gui.pixiv.menu.from.other" />
                </children>
