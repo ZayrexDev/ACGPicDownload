@@ -36,8 +36,8 @@ public class GUI extends Application {
 
     public GUI gui;
 
-    public static void main(String[] args) {
-        launch();
+    public static void start(String[] args) {
+        launch(args);
     }
 
     @Override

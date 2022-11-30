@@ -66,7 +66,7 @@ public class Main {
             log = new PrintStream("out.log");
         } catch (FileNotFoundException ignored) {}
         if (argList.size() == 0) {
-            GUI.main(args);
+            GUI.start(args);
         } else if (argList.get(0).equalsIgnoreCase("fetch")) {
             argList.remove(0);
             Fetch f = new Fetch();
