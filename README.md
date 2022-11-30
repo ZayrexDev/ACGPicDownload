@@ -4,7 +4,7 @@
 
 # ACGPicDownload
 
-一个从不同下载源下载 ~~二次元涩图~~ 图片的工具
+一个从P站和图片API爬 ~~二次元涩图~~ 图片的工具
 
 # 注意
 
@@ -18,6 +18,7 @@
 - 高度可自定义的下载连接与文件名
 
 GUI:
+![image](https://user-images.githubusercontent.com/73475219/204726878-32b7817f-e89e-42a3-84b0-2706a5566ee8.png)
 ![image](https://user-images.githubusercontent.com/73475219/203989880-dd08ef60-af17-4bbd-9c20-b16d77e7f832.png)
 
 命令行:
