@@ -147,6 +147,7 @@ public class FetchPaneController implements Initializable {
         AnchorPane.setBottomAnchor(mainPane, 0d);
         AnchorPane.setLeftAnchor(mainPane, 0d);
         AnchorPane.setRightAnchor(mainPane, 0d);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
         mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
         tt.setFromY(mainPane.getHeight());
@@ -161,7 +162,7 @@ public class FetchPaneController implements Initializable {
         mainPane.setVisible(false);
         tt.setNode(mainPane);
         tt.setAutoReverse(true);
-        tt.setRate(0.01);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
@@ -372,8 +373,8 @@ public class FetchPaneController implements Initializable {
     public void backBtnOnAction() {
         tt.stop();
         tt.setNode(mainPane);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setAutoReverse(true);
-        tt.setRate(0.01);
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
         tt.setFromY(0);

@@ -2,6 +2,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.Interpolator;
@@ -20,6 +21,7 @@ import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class SettingsPaneController implements Initializable {
@@ -31,6 +33,9 @@ public class SettingsPaneController implements Initializable {
 
     @javafx.fxml.FXML
     private MFXTextField proxyField;
+
+    @javafx.fxml.FXML
+    private MFXSlider aniSpeedSlider;
 
     private String proxyHost;
     private int proxyPort;
@@ -47,6 +52,7 @@ public class SettingsPaneController implements Initializable {
         mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
         mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
         tt.setFromY(mainPane.getHeight());
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setOnFinished(null);
         tt.setToY(0);
         mainPane.setVisible(true);
@@ -56,6 +62,7 @@ public class SettingsPaneController implements Initializable {
     public void hide() {
         tt.stop();
         tt.setFromY(0);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setToY(mainPane.getHeight());
         mainPane.setVisible(true);
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
@@ -86,7 +93,7 @@ public class SettingsPaneController implements Initializable {
         mainPane.setVisible(false);
         tt.setNode(mainPane);
         tt.setAutoReverse(true);
-        tt.setRate(0.01);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
@@ -132,6 +139,7 @@ public class SettingsPaneController implements Initializable {
         if (proxyPort != 0 && proxyHost != null) {
             obj.put("proxyHost", proxyHost);
             obj.put("proxyPort", proxyPort);
+            obj.put("aniSpeed", aniSpeedSlider.getValue());
         }
         try {
             ConfigManager.saveConfig();
@@ -147,6 +155,7 @@ public class SettingsPaneController implements Initializable {
         if (json.getString("proxyHost") != null && json.getInteger("proxyPort") != 0) {
             proxyField.setText(json.getString("proxyHost") + ":" + json.getInteger("proxyPort"));
         }
+        aniSpeedSlider.setValue(ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
     }
 
     public GUI getGui() {

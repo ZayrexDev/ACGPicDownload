@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 
 public class GUI extends Application {
     public FetchPaneController fetchPaneController;
@@ -42,6 +43,8 @@ public class GUI extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        ConfigManager.readConfig();
+        System.out.println(Objects.requireNonNullElse(ConfigManager.getConfig().getDoubleValue("aniSpeed"), 1.0));
         gui = this;
         mainStage = stage;
 

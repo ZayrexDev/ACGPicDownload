@@ -113,6 +113,7 @@ public class PixivMenuPaneController implements Initializable {
         AnchorPane.setLeftAnchor(mainPane, 0d);
         AnchorPane.setRightAnchor(mainPane, 0d);
         mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
         tt.setFromY(mainPane.getHeight());
         tt.setOnFinished(null);
@@ -127,6 +128,7 @@ public class PixivMenuPaneController implements Initializable {
         tt.setAutoReverse(true);
         tt.setRate(0.01);
         tt.setDuration(Duration.millis(5));
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setInterpolator(Interpolator.EASE_BOTH);
         tt.setFromY(0);
         tt.setToY(mainPane.getHeight());
@@ -141,7 +143,7 @@ public class PixivMenuPaneController implements Initializable {
         mainPane.setVisible(false);
         tt.setNode(mainPane);
         tt.setAutoReverse(true);
-        tt.setRate(0.01);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 

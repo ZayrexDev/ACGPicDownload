@@ -3,6 +3,9 @@
 	-mfx-main-color: -mfx-main;
 	-mfx-main-color-hover: rgb(0, 0, 0, 0.2);
 	-mfx-main-color-pressed: rgb(0, 0, 0, 0.3);
+	-mfx-base-color: -mfx-main;
+	-mfx-main-light: #707980;
+	-mfx-main-lighter: #e7e9ea;
 }
 
 .mfx-progress-bar .bar1,
@@ -17,4 +20,12 @@
 .mfx-combo-box-cell {
 	-mfx-hover: rgb(0, 0, 0, 0.1);
 	-mfx-selected: rgb(0, 0, 0, 0.3);
+}
+
+.mfx-filter-pane {
+	-mfx-main: black;
+	-mfx-gray: #6b6b6b;
+	-fx-background-color: white;
+	-fx-background-radius: 10;
+	-fx-padding: 7 14 7 14;
 }

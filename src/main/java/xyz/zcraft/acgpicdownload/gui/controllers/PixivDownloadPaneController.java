@@ -108,6 +108,7 @@ public class PixivDownloadPaneController implements Initializable {
         tt.stop();
         tt.setFromY(mainPane.getHeight());
         tt.setOnFinished(null);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setToY(0);
         mainPane.setVisible(true);
         tt.play();
@@ -118,6 +119,7 @@ public class PixivDownloadPaneController implements Initializable {
         tt.setNode(mainPane);
         tt.setFromY(0);
         tt.setToY(mainPane.getHeight());
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         mainPane.setVisible(true);
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
         tt.play();
@@ -186,7 +188,7 @@ public class PixivDownloadPaneController implements Initializable {
         mainPane.setVisible(false);
         tt.setNode(mainPane);
         tt.setAutoReverse(true);
-        tt.setRate(0.01);
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
 

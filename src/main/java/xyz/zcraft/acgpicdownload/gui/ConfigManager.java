@@ -22,6 +22,11 @@ public class ConfigManager {
         return Objects.requireNonNullElse(config.getJSONObject("sub").get(key), defaultValue);
     }
 
+    public static double getDoubleIfExist(String key,double defaultValue) {
+        if(config.containsKey(key)) return config.getDouble(key);
+        return defaultValue;
+    }
+
     public static void readConfig() throws IOException {
         File f = new File("config.json");
         if (!f.exists()) {
