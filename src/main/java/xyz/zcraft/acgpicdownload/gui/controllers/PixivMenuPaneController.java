@@ -27,9 +27,12 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -81,8 +84,12 @@ public class PixivMenuPaneController implements Initializable {
     }
 
     @javafx.fxml.FXML
-    public void cookieHelpBtnOnAction() {
-
+    public void cookieHelpBtnOnAction() throws IOException, URISyntaxException {
+        if(Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)){
+            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/%E8%8E%B7%E5%8F%96Cookie"));
+        } else {
+            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/Get-cookie"));
+        }
     }
 
     @javafx.fxml.FXML

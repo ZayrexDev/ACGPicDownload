@@ -56,7 +56,6 @@ public class GUI extends Application {
 
         Scene s = new Scene(mainPane);
 
-        stage.setResizable(true);
         stage.setScene(s);
 
         BufferedImage read = ImageIO.read(ResourceLoader.loadStream("bg.png"));

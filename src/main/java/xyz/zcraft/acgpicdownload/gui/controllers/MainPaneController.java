@@ -83,6 +83,10 @@ public class MainPaneController implements Initializable {
         background.fitHeightProperty().bind(mainPane.heightProperty());
         blurImg.fitWidthProperty().bind(mainPane.widthProperty());
         blurImg.fitHeightProperty().bind(mainPane.heightProperty());
+        // mainPane.widthProperty().addListener((observable, oldValue, newValue) -> blurImg
+        //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
+        // mainPane.heightProperty().addListener((observable, oldValue, newValue) -> blurImg
+        //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
         blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
         background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
 
