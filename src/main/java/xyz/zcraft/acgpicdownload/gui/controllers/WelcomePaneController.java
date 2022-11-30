@@ -34,7 +34,7 @@ public class WelcomePaneController implements Initializable {
         this.gui = gui;
     }
 
-    public void playAnimation() {
+    public void showMain() {
         tt.stop();
         tt.setFromX(0 - controls.getWidth());
         tt.setToX(0);
@@ -110,7 +110,7 @@ public class WelcomePaneController implements Initializable {
     }
 
     public void pixivBackBtnOnAction() {
-        playAnimation();
+        showMain();
         closePixivPane();
     }
 

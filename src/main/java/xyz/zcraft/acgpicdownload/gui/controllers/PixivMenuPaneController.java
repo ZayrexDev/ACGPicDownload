@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import com.alibaba.fastjson2.JSONObject;
+
 public class PixivMenuPaneController implements Initializable {
     GUI gui;
     TranslateTransition tt = new TranslateTransition();
@@ -81,7 +83,16 @@ public class PixivMenuPaneController implements Initializable {
 
     @javafx.fxml.FXML
     public void submitCookie() {
-
+        try {
+            JSONObject json = Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject());
+            json.put("cookie", cookieField.getText());
+            ConfigManager.getConfig().put("pixiv", json);
+            ConfigManager.saveConfig();
+            Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.notice.savedCookie"), gui.mainPane);
+        } catch (IOException e) {
+            Main.logError(e);
+            gui.showError(e);
+        }
     }
 
     public void show() {
@@ -111,7 +122,7 @@ public class PixivMenuPaneController implements Initializable {
         mainPane.setVisible(true);
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
         tt.play();
-        gui.welcomePaneController.playAnimation();
+        gui.welcomePaneController.openPixivPane();
     }
 
     @Override
@@ -136,6 +147,8 @@ public class PixivMenuPaneController implements Initializable {
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
         cookieHelpBtn.setText("");
         cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
+
+        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
     }
 
     private void initTable() {
@@ -187,7 +200,6 @@ public class PixivMenuPaneController implements Initializable {
 
         data.clear();
     }
-
 
     public void fetchBtnOnAction() {
         loadingPane.setVisible(true);

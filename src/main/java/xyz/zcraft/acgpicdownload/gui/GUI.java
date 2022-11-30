@@ -146,7 +146,7 @@ public class GUI extends Application {
             Platform.runLater(() -> {
                 mainPaneController.initDone();
                 welcomePane.setVisible(true);
-                welcomePaneController.playAnimation();
+                welcomePaneController.showMain();
             });
         });
 

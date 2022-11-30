@@ -381,7 +381,7 @@ public class FetchPaneController implements Initializable {
         mainPane.setVisible(true);
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
         tt.play();
-        gui.welcomePaneController.playAnimation();
+        gui.welcomePaneController.showMain();
     }
 
     private void updateSource() {

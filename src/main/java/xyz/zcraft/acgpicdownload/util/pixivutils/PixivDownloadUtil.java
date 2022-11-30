@@ -3,7 +3,6 @@ package xyz.zcraft.acgpicdownload.util.pixivutils;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadUtil;
 
@@ -34,14 +33,13 @@ public class PixivDownloadUtil {
 
         for (var a : artworksDownloads) {
             if (a.getStatus().equals(DownloadStatus.CREATED) || a.getStatus().equals(DownloadStatus.FAILED)) {
-                DownloadResult r = new DownloadResult();
                 tpe.execute(() -> {
                     try {
-                        new DownloadUtil(1).downloadPixiv(a, outDir, r, cookieString, proxyHost, proxyPort);
+                        new DownloadUtil(1).downloadPixiv(a, outDir, cookieString, proxyHost, proxyPort);
                     } catch (Exception e) {
                         Main.logError(e);
-                        r.setStatus(DownloadStatus.FAILED);
-                        r.setErrorMessage(e.toString());
+                        a.setStatus(DownloadStatus.FAILED);
+                        a.setErrorMessage(e.toString());
                     }
                 });
             }

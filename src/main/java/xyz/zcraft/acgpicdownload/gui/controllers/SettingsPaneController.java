@@ -60,7 +60,7 @@ public class SettingsPaneController implements Initializable {
         mainPane.setVisible(true);
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
         tt.play();
-        gui.welcomePaneController.playAnimation();
+        gui.welcomePaneController.showMain();
     }
 
     @javafx.fxml.FXML
@@ -112,7 +112,6 @@ public class SettingsPaneController implements Initializable {
                 }
             }
             if (proxyHost != null && proxyPort != 0) {
-                System.out.println("Proxy set");
                 System.getProperties().put("proxySet", "true");
                 System.getProperties().put("proxyHost", proxyHost);
                 System.getProperties().put("proxyPort", String.valueOf(proxyPort));
@@ -145,7 +144,7 @@ public class SettingsPaneController implements Initializable {
 
     public void restoreConfig() {
         JSONObject json = ConfigManager.getConfig();
-        if (proxyHost != null && proxyPort != 0) {
+        if (json.getString("proxyHost") != null && json.getInteger("proxyPort") != 0) {
             proxyField.setText(json.getString("proxyHost") + ":" + json.getInteger("proxyPort"));
         }
     }

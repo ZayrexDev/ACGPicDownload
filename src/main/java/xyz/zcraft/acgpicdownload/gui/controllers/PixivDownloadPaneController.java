@@ -9,6 +9,8 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -64,8 +66,9 @@ public class PixivDownloadPaneController implements Initializable {
         );
     }
 
-    private void updateStatus() {
-        dataTable.update();
+    private boolean updateStatus() {
+        Platform.runLater(()->dataTable.update());
+        return data.filtered((e)->e.getStatus()!=DownloadStatus.COMPLETED).size() == 0;
     }
 
     public void delCompleted() {
@@ -117,7 +120,7 @@ public class PixivDownloadPaneController implements Initializable {
         mainPane.setVisible(true);
         tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
         tt.play();
-        gui.welcomePaneController.playAnimation();
+        gui.welcomePaneController.openPixivPane();
     }
 
     private void initTable() {
@@ -207,6 +210,22 @@ public class PixivDownloadPaneController implements Initializable {
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
         selectDirBtn.setText("");
         selectDirBtn.setGraphic(new MFXFontIcon("mfx-folder"));
+
+        ScheduledService<Void> s = new ScheduledService<>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        updateStatus();
+                        return null;
+                    }
+                };
+            }
+        };
+
+        s.setPeriod(Duration.seconds(2));
+        s.start();
     }
 
     @javafx.fxml.FXML

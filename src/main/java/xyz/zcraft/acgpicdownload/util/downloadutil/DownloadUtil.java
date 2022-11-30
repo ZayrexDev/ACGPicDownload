@@ -145,7 +145,7 @@ public class DownloadUtil {
         }
     }
 
-    public void downloadPixiv(PixivDownload a, File toDic, DownloadResult d, String cookieString, String proxyHost, int proxyPort) throws IOException {
+    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, String proxyHost, int proxyPort) throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
         File f = null;
@@ -155,11 +155,7 @@ public class DownloadUtil {
             }
 
             if (!toDic.exists() && !toDic.mkdirs()) {
-                if (d != null) {
-                    d.setStatus(DownloadStatus.FAILED);
-                } else {
-                    throw new IOException("Can't create directory");
-                }
+                a.setStatus(DownloadStatus.FAILED);
             }
 
             URL url = new URL(a.getArtwork().getImageUrl());
@@ -167,14 +163,17 @@ public class DownloadUtil {
 
             c.setRequestProperty("Referer", PixivDownloadUtil.REFERER);
 
-            if (d != null) {
-                d.setTotalSize(c.getContentLengthLong());
-                d.setStatus(DownloadStatus.STARTED);
+            if (a != null) {
+                a.setTotalSize(c.getContentLengthLong());
+                a.setStatus(DownloadStatus.STARTED);
             }
 
             is = c.getInputStream();
 
-            f = new File(toDic, a.getArtwork().getId().concat("_p").concat(String.valueOf(a.getArtwork().getPageCount())));
+            String s = a.getArtwork().getImageUrl();
+
+            // f = new File(toDic, a.getArtwork().getId().concat("_p").concat(String.valueOf(a.getArtwork().getPageCount())));
+            f = new File(toDic,s.substring(s.lastIndexOf("/") + 1));
             fos = new FileOutputStream(f);
 
             byte[] buffer = new byte[10240];
@@ -184,16 +183,16 @@ public class DownloadUtil {
             while ((byteRead = is.read(buffer)) != -1) {
                 total += byteRead;
                 fos.write(buffer, 0, byteRead);
-                if (d != null) {
-                    d.setSizeDownloaded(total);
+                if (a != null) {
+                    a.setSizeDownloaded(total);
                 }
             }
 
             is.close();
             fos.close();
 
-            if (d != null) {
-                d.setStatus(DownloadStatus.COMPLETED);
+            if (a != null) {
+                a.setStatus(DownloadStatus.COMPLETED);
             }
         } catch (IOException e) {
             Main.logError(e);
@@ -202,12 +201,12 @@ public class DownloadUtil {
             if (f != null) f.delete();
             retriedCount++;
             if (retriedCount > maxRetryCount) {
-                if (d != null) {
-                    d.setStatus(DownloadStatus.FAILED);
+                if (a != null) {
+                    a.setStatus(DownloadStatus.FAILED);
                 }
                 throw e;
             } else {
-                downloadPixiv(a, toDic, d, cookieString, proxyHost, proxyPort);
+                downloadPixiv(a, toDic, cookieString, proxyHost, proxyPort);
             }
         }
     }
