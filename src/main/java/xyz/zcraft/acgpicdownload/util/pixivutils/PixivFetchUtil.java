@@ -16,11 +16,11 @@ public class PixivFetchUtil {
     private static final String USER = "https://www.pixiv.net/ajax/user/%s/profile/all?";
     private static final String USER_TAGS = "https://www.pixiv.net/ajax/tags/frequent/illust?%s";
     private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1";
-    private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=all&limit=100&lang=zh";
+    private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=all&limit=%d&lang=zh";
 
-    public static List<PixivArtwork> getDiscovery(String cookieString, String proxyHost, int proxyPort) throws IOException{
+    public static List<PixivArtwork> getDiscovery(int limit, String cookieString, String proxyHost, int proxyPort) throws IOException{
         HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(DISCOVERY.concat("&lang=").concat(getPixivLanguageTag()))
+        Connection c = Jsoup.connect(String.format(DISCOVERY, limit).concat("&lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
@@ -30,7 +30,7 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
 
-        return parseArtworks(c.get().body().ownText(),false);
+        return parseArtworks(c.get().body().ownText(),From.Discovery);
     }
 
     public static Set<String> fetchUser(String uid, String proxyHost, int proxyPort) throws IOException {
@@ -157,6 +157,24 @@ public class PixivFetchUtil {
         }
 
         if(classify) classifyArtwork(artworks, bodyObject.getJSONObject("page"));
+
+        return artworks;
+    }
+
+    public static LinkedList<PixivArtwork> parseArtworks(String jsonString, From from) {
+        LinkedList<PixivArtwork> artworks = new LinkedList<>();
+        JSONObject bodyObject = JSONObject.parse(jsonString).getJSONObject("body");
+        JSONObject tran = bodyObject.getJSONObject("tagTranslation");
+        JSONArray illust = bodyObject.getJSONObject("thumbnails").getJSONArray("illust");
+
+        for (int i = 0; i < illust.size(); i++) {
+            PixivArtwork a = illust.getObject(i, PixivArtwork.class);
+            a.setFrom(From.Discovery);
+            for (Object t : a.getOriginalTags()) {
+                a.getTranslatedTags().add(translateTag(t.toString(), tran));
+            }
+            artworks.add(a);
+        }
 
         return artworks;
     }

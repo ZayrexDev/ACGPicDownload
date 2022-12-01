@@ -26,6 +26,7 @@ public class GUI extends Application {
     public PixivMenuPaneController pixivMenuPaneController;
     public SettingsPaneController settingsPaneController;
     public PixivDownloadPaneController pixivDownloadPaneController;
+    public PixivDiscoveryPaneController pixivDiscoveryPaneController;
 
     public Stage mainStage;
     public Pane mainPane;
@@ -34,6 +35,7 @@ public class GUI extends Application {
     public Pane welcomePane;
     public Pane pixivMenuPane;
     public Pane pixivDownloadPane;
+    public Pane pixivDiscoveryPane;
 
     public GUI gui;
 
@@ -44,7 +46,6 @@ public class GUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         ConfigManager.readConfig();
-        System.out.println(Objects.requireNonNullElse(ConfigManager.getConfig().getDoubleValue("aniSpeed"), 1.0));
         gui = this;
         mainStage = stage;
 
@@ -124,6 +125,20 @@ public class GUI extends Application {
 
             mainPaneController.setProgress(0.8);
 
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"),
+                    ResourceBundleUtil.getResource());
+            try {
+                pixivDiscoveryPane = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            pixivDiscoveryPaneController = loader.getController();
+            pixivDiscoveryPaneController.setGui(gui);
+
+            Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPane));
+
+            mainPaneController.setProgress(0.8);
+
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
             try {
                 settingsPane = loader.load();
@@ -175,6 +190,10 @@ public class GUI extends Application {
 
     public void openFetchPane() {
         fetchPaneController.show();
+    }
+
+    public void openPixivDiscPane() {
+        pixivDiscoveryPaneController.show();
     }
 
     public void openPixivDownloadPane() {

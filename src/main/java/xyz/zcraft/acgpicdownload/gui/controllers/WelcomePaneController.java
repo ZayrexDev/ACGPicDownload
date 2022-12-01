@@ -12,7 +12,6 @@ import xyz.zcraft.acgpicdownload.gui.GUI;
 
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class WelcomePaneController implements Initializable {
@@ -126,5 +125,11 @@ public class WelcomePaneController implements Initializable {
         ttP.setToX(0 - pixivPane.getWidth());
         ttP.setOnFinished((e) -> pixivPane.setVisible(false));
         ttP.play();
+    }
+
+    @javafx.fxml.FXML
+    private void pixivDiscBtnOnAction(){
+        closePixivPane();
+        gui.openPixivDiscPane();
     }
 }

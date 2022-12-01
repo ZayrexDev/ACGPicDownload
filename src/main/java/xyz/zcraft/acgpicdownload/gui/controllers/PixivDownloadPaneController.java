@@ -141,7 +141,7 @@ public class PixivDownloadPaneController implements Initializable {
                 ResourceBundleUtil.getString("gui.pixiv.download.column.status"), true);
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
-        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFrom().toString()));
+        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFrom()));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getOriginalTagsString()));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
         statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getStatus().toString()));
