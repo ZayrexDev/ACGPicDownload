@@ -17,8 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Objects;
-
 public class GUI extends Application {
     public FetchPaneController fetchPaneController;
     public WelcomePaneController welcomePaneController;
@@ -201,7 +199,7 @@ public class GUI extends Application {
     }
 
     public void showError(Exception e){
-        ErrorPaneController epc = ErrorPaneController.getInstance();
+        ErrorPaneController epc = ErrorPaneController.getInstance(mainPane);
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
