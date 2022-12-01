@@ -37,7 +37,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="15.0">
                <children>
-                  <MFXComboBox floatingText="%key.unspecified" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
+                  <MFXComboBox floatingText="%gui.pixiv.disc.mode" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <Label text="%gui.pixiv.menu.maxCount" />
                   <MFXSlider fx:id="maxCountSlider" min="1.0" value="100.0" />
