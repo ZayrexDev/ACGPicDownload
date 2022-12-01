@@ -4,10 +4,17 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ConfigManager {
     private static JSONObject config;
+
+    private static final HashMap<String, String> tempConfig = new HashMap<>();
+
+    public static HashMap<String, String> getTempConfig() {
+        return tempConfig;
+    }
 
     public static JSONObject getConfig() {
         return Objects.requireNonNull(config);

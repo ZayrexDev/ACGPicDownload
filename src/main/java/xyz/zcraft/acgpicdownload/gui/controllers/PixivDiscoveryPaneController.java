@@ -1,5 +1,6 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
+import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
@@ -30,13 +31,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.ResourceBundle;
-
-import com.alibaba.fastjson2.JSONObject;
+import java.util.*;
 
 public class PixivDiscoveryPaneController implements Initializable{
     GUI gui;
@@ -101,9 +97,7 @@ public class PixivDiscoveryPaneController implements Initializable{
     }
 
     public void show() {
-        cookieField
-                .setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject())
-                        .getString("cookie"));
+        cookieField.setText(ConfigManager.getTempConfig().get("cookie"));
         tt.stop();
         AnchorPane.setTopAnchor(mainPane, 0d);
         AnchorPane.setBottomAnchor(mainPane, 0d);
@@ -159,12 +153,15 @@ public class PixivDiscoveryPaneController implements Initializable{
         cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
 
         modeCombo.getItems().addAll(
-            ResourceBundleUtil.getString("gui.pixiv.disc.mode.all"),
-            ResourceBundleUtil.getString("gui.pixiv.disc.mode.safe"),
-            ResourceBundleUtil.getString("gui.pixiv.disc.mode.adult")
+                ResourceBundleUtil.getString("gui.pixiv.disc.mode.all"),
+                ResourceBundleUtil.getString("gui.pixiv.disc.mode.safe"),
+                ResourceBundleUtil.getString("gui.pixiv.disc.mode.adult")
         );
 
         modeCombo.getSelectionModel().selectFirst();
+
+        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
+        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
     }
 
     private void initTable() {

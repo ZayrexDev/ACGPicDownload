@@ -60,7 +60,7 @@ public class PixivDownloadPaneController implements Initializable {
                 new Logger("GUI", System.out, Main.log),
                 (int) threadCountSlider.getValue(),
                 this::updateStatus,
-                gui.pixivMenuPaneController.getCookie(),
+                ConfigManager.getTempConfig().get("cookie"),
                 ConfigManager.getConfig().getString("proxyHost"),
                 ConfigManager.getConfig().getInteger("proxyPort")
         );
