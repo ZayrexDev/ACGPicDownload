@@ -34,7 +34,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 
-public class PixivUserPaneController implements Initializable {
+public class PixivRelatedPaneController implements Initializable {
     TranslateTransition tt = new TranslateTransition();
     FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
@@ -69,10 +69,10 @@ public class PixivUserPaneController implements Initializable {
     @javafx.fxml.FXML
     public void cookieHelpBtnOnAction() throws IOException, URISyntaxException {
         if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
-            java.awt.Desktop.getDesktop()
+            Desktop.getDesktop()
                     .browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/%E8%8E%B7%E5%8F%96Cookie"));
         } else {
-            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/Get-cookie"));
+            Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/Get-cookie"));
         }
     }
 
@@ -270,18 +270,15 @@ public class PixivUserPaneController implements Initializable {
                     subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
                 });
 
-                Set<String> artIDs = PixivFetchUtil.fetchUser(
-                        uidField.getText(),
-                        ConfigManager.getConfig().getString("proxyHost"),
-                        ConfigManager.getConfig().getInteger("proxyPort"));
-                List<String> queryString = PixivFetchUtil.buildQueryString(artIDs);
-
-                LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>();
-
-                for (String s : queryString) {
-                    pixivArtworks.addAll(PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
-                            ConfigManager.getConfig().getInteger("proxyPort")));
-                }
+                LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>(
+                        List.of(
+                                PixivFetchUtil.getArtwork(
+                                        uidField.getText(),
+                                        cookieField.getText(),
+                                        ConfigManager.getConfig().getString("proxyHost"),
+                                        ConfigManager.getConfig().getInteger("proxyPort")
+                                ))
+                );
 
                 if (relatedDepthSlider.getValue() > 0) {
                     List<PixivArtwork> temp2Artworks = new LinkedList<>();
@@ -311,13 +308,9 @@ public class PixivUserPaneController implements Initializable {
                     }
                 }
                 Platform.runLater(() -> data.addAll(pixivArtworks));
-                Notice.showSuccess(
-                        String.format(
-                                Objects.requireNonNull(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetched"))
-                                , pixivArtworks.size()
-                        ),
-                        gui.mainPane
-                );
+                Notice.showSuccess(String.format(
+                        Objects.requireNonNull(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetched")),
+                        pixivArtworks.size()), gui.mainPane);
             } catch (IOException e) {
                 Main.logError(e);
                 gui.showError(e);

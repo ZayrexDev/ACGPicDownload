@@ -59,7 +59,11 @@ public class MainPaneController implements Initializable {
     }
 
     public void setProgress(double p) {
-        initProgressBar.setProgress(p);
+        if (p == 1) {
+            initProgressBar.setProgress(-1);
+        } else {
+            initProgressBar.setProgress(p);
+        }
     }
 
     public void initDone() {

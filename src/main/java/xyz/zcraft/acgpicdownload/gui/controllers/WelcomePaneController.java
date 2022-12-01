@@ -3,6 +3,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -133,8 +134,15 @@ public class WelcomePaneController implements Initializable {
         gui.openPixivDiscPane();
     }
 
+    @FXML
     public void pixivUserBtnOnAction() {
         closePixivPane();
         gui.openPixivUserPane();
+    }
+
+    @FXML
+    public void pixivRelatedBtnOnAction() {
+        closePixivPane();
+        gui.openPixivRelatedPane();
     }
 }
