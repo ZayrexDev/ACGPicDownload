@@ -16,7 +16,7 @@ public class PixivFetchUtil {
     private static final String USER = "https://www.pixiv.net/ajax/user/%s/profile/all?";
     private static final String USER_TAGS = "https://www.pixiv.net/ajax/tags/frequent/illust?%s";
     private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1";
-    private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=%s&limit=%d&lang=zh";
+    private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=%s&limit=%d";
 
     private static final String[] MODES = {"all","safe","r18"};
     public static List<PixivArtwork> getDiscovery(int mode, int limit, String cookieString, String proxyHost, int proxyPort) throws IOException{
