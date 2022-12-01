@@ -233,10 +233,19 @@ public class FetchPaneController implements Initializable {
                 .addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
                     List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
                     if (selectedValues.size() > 0) {
-                        Toolkit.getDefaultToolkit().getSystemClipboard()
-                                .setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
-                        dataTable.getSelectionModel().clearSelection();
-                        Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
+                        if (selectedValues.get(0).getStatus() == DownloadStatus.COMPLETED &&
+                                ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy")) {
+                            Toolkit.getDefaultToolkit().getSystemClipboard()
+                                    .setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
+                            dataTable.getSelectionModel().clearSelection();
+                            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
+                        } else {
+                            try {
+                                Desktop.getDesktop().open(new File(outputDirField.getText(), selectedValues.get(0).getResult().getFileName()));
+                            } catch (IOException e) {
+                                Notice.showError(ResourceBundleUtil.getString("gui.fetch.table.cantOpen"), gui.mainPane);
+                            }
+                        }
                     }
                 });
 
@@ -285,8 +294,6 @@ public class FetchPaneController implements Initializable {
             try {
                 SourceManager.updateFromGithub();
             } catch (IOException e) {
-                // Notice.showError(ResourceBundleUtil.getString("gui.fetch.notice.cannotUpdateGithub"),
-                // gui.mainPane);
                 Main.logError(e);
                 gui.showError(e);
             } finally {

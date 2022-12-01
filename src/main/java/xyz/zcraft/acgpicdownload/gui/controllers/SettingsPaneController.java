@@ -2,6 +2,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXRadioButton;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -10,6 +11,7 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -41,6 +43,12 @@ public class SettingsPaneController implements Initializable {
 
     GUI gui;
     TranslateTransition tt = new TranslateTransition();
+    @javafx.fxml.FXML
+    private MFXRadioButton fetchPLCOCopy;
+    @javafx.fxml.FXML
+    private ToggleGroup fetchPaneLClickOperation;
+    @javafx.fxml.FXML
+    private MFXRadioButton fetchPLCOOpen;
 
     public void show() {
         tt.stop();
@@ -139,6 +147,7 @@ public class SettingsPaneController implements Initializable {
             obj.put("proxyHost", proxyHost);
             obj.put("proxyPort", proxyPort);
             obj.put("aniSpeed", aniSpeedSlider.getValue());
+            obj.put("fetchPLCOCopy", fetchPLCOCopy.isSelected());
         }
         try {
             ConfigManager.saveConfig();
@@ -155,6 +164,8 @@ public class SettingsPaneController implements Initializable {
             proxyField.setText(json.getString("proxyHost") + ":" + json.getInteger("proxyPort"));
         }
         aniSpeedSlider.setValue(ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
+        fetchPLCOCopy.setSelected(ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy"));
+        fetchPLCOOpen.setSelected(!ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy"));
     }
 
     public GUI getGui() {
