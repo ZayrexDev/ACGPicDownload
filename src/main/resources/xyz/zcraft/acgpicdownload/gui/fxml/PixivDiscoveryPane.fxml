@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
 <?import io.github.palexdev.materialfx.controls.MFXSlider?>
 <?import io.github.palexdev.materialfx.controls.MFXTableView?>
@@ -36,6 +37,8 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="15.0">
                <children>
+                  <MFXComboBox floatingText="%key.unspecified" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <Label text="%gui.pixiv.menu.maxCount" />
                   <MFXSlider fx:id="maxCountSlider" min="1.0" value="100.0" />
                   <Separator orientation="VERTICAL" prefHeight="200.0" />

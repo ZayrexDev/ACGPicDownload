@@ -59,6 +59,8 @@ public class PixivDiscoveryPaneController implements Initializable{
     @javafx.fxml.FXML
     private MFXButton cookieHelpBtn;
     @javafx.fxml.FXML
+    private MFXComboBox<String> modeCombo;
+    @javafx.fxml.FXML
     private MFXTableView<PixivArtwork> dataTable;
     private ObservableList<PixivArtwork> data;
     @javafx.fxml.FXML
@@ -155,6 +157,14 @@ public class PixivDiscoveryPaneController implements Initializable{
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
         cookieHelpBtn.setText("");
         cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
+
+        modeCombo.getItems().addAll(
+            ResourceBundleUtil.getString("gui.pixiv.disc.mode.all"),
+            ResourceBundleUtil.getString("gui.pixiv.disc.mode.safe"),
+            ResourceBundleUtil.getString("gui.pixiv.disc.mode.adult")
+        );
+
+        modeCombo.getSelectionModel().selectFirst();
     }
 
     private void initTable() {
@@ -216,6 +226,7 @@ public class PixivDiscoveryPaneController implements Initializable{
                 });
 
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.getDiscovery(
+                        modeCombo.getSelectedIndex(),
                         (int)maxCountSlider.getValue(),
                         cookieField.getText(),
                         ConfigManager.getConfig().getString("proxyHost"),
