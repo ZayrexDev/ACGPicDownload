@@ -10,20 +10,34 @@ import java.io.IOException;
 import java.util.*;
 
 public class PixivFetchUtil {
-    private static final String TOP = "https://www.pixiv.net/ajax/top/illust?mode=all&lang=zh";
+    private static final String TOP = "https://www.pixiv.net/ajax/top/illust?mode=all";
     private static final String RELATED = "https://www.pixiv.net/ajax/illust/%s/recommend/init?limit=%d";
     private static final String ARTWORK = "https://www.pixiv.net/artworks/";
-    private static final String USER = "https://www.pixiv.net/ajax/user/%s/profile/all?lang=zh";
+    private static final String USER = "https://www.pixiv.net/ajax/user/%s/profile/all?";
     private static final String USER_TAGS = "https://www.pixiv.net/ajax/tags/frequent/illust?%s";
-    private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1&lang=zh";
+    private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1";
+    private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=all&limit=100&lang=zh";
 
-    public static Set<String> fetchUser(String cookieString, String uid, String proxyHost, int proxyPort) throws IOException {
-        HashSet<String> set = new HashSet<>();
+    public static List<PixivArtwork> getDiscovery(String cookieString, String proxyHost, int proxyPort) throws IOException{
         HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(String.format(USER, uid))
+        Connection c = Jsoup.connect(DISCOVERY.concat("&lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
+                .timeout(10 * 1000);
+
+        if (proxyHost != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        return parseArtworks(c.get().body().ownText(),false);
+    }
+
+    public static Set<String> fetchUser(String uid, String proxyHost, int proxyPort) throws IOException {
+        HashSet<String> set = new HashSet<>();
+        Connection c = Jsoup.connect(String.format(USER, uid).concat("lang=").concat(getPixivLanguageTag()))
+                .ignoreContentType(true)
+                .method(Method.GET)
                 .timeout(10 * 1000);
         if (proxyHost != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
@@ -78,7 +92,7 @@ public class PixivFetchUtil {
     }
 
     public static String getPixivLanguageTag() {
-        switch (Locale.getDefault().toLanguageTag()) {
+        switch (Locale.getDefault().toLanguageTag().toLowerCase()) {
             case "zh-cn", "zh_cn", "zh" -> {
                 return "zh";
             }
@@ -91,18 +105,31 @@ public class PixivFetchUtil {
         }
     }
 
-    public static String buildQueryString(Set<String> ids) {
+    public static List<String> buildQueryString(Set<String> ids) {
+        LinkedList<String> list = new LinkedList<>();
         StringBuilder s = new StringBuilder();
+        int count = 0;
         for (String t : ids) {
-            s.append("&ids%5B%5D=").append(t);
+            if(count>=48){
+                s.append("&lang=").append(getPixivLanguageTag());
+                list.add(s.toString());
+                count = 0;
+                s = new StringBuilder();
+            }else{
+                s.append("&ids%5B%5D=").append(t);
+                count++;
+            }
         }
-        s.append("&lang=").append(getPixivLanguageTag());
-        return s.toString();
+        if(s.length() > 0){
+            s.append("&lang=").append(getPixivLanguageTag());
+            list.add(s.toString());
+        }
+        return list;
     }
 
     public static List<PixivArtwork> fetchMenu(String cookieString, String proxyHost, int proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(TOP)
+        Connection c = Jsoup.connect(TOP.concat("&lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
@@ -112,10 +139,10 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
 
-        return parseArtworks(c.get().body().ownText());
+        return parseArtworks(c.get().body().ownText(),true);
     }
 
-    public static LinkedList<PixivArtwork> parseArtworks(String jsonString) {
+    public static LinkedList<PixivArtwork> parseArtworks(String jsonString,boolean classify) {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
         JSONObject bodyObject = JSONObject.parse(jsonString).getJSONObject("body");
         JSONObject tran = bodyObject.getJSONObject("tagTranslation");
@@ -129,7 +156,7 @@ public class PixivFetchUtil {
             artworks.add(a);
         }
 
-        classifyArtwork(artworks, bodyObject.getJSONObject("page"));
+        if(classify) classifyArtwork(artworks, bodyObject.getJSONObject("page"));
 
         return artworks;
     }
