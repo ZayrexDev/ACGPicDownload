@@ -128,8 +128,13 @@ public class WelcomePaneController implements Initializable {
     }
 
     @javafx.fxml.FXML
-    private void pixivDiscBtnOnAction(){
+    private void pixivDiscBtnOnAction() {
         closePixivPane();
         gui.openPixivDiscPane();
+    }
+
+    public void pixivUserBtnOnAction() {
+        closePixivPane();
+        gui.openPixivUserPane();
     }
 }

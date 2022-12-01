@@ -103,6 +103,7 @@ public class FetchPaneController implements Initializable {
     @javafx.fxml.FXML
     private MFXButton updateFromGithubBtn;
 
+
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;

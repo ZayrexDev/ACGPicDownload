@@ -14,6 +14,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
@@ -38,7 +39,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PixivDownloadPaneController implements Initializable {
-    public MFXButton backBtn;
     GUI gui;
     TranslateTransition tt = new TranslateTransition();
     @FXML
@@ -52,6 +52,10 @@ public class PixivDownloadPaneController implements Initializable {
     private MFXButton selectDirBtn;
     @FXML
     private MFXSlider threadCountSlider;
+    @FXML
+    private MFXButton backBtn;
+    @FXML
+    private Label statusLabel;
 
     public void startDownload() {
         PixivDownloadUtil.startDownload(
@@ -66,9 +70,13 @@ public class PixivDownloadPaneController implements Initializable {
         );
     }
 
-    private boolean updateStatus() {
-        Platform.runLater(()->dataTable.update());
-        return data.filtered((e)->e.getStatus()!=DownloadStatus.COMPLETED).size() == 0;
+    private void updateStatus() {
+        Platform.runLater(() -> dataTable.update());
+        String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + data.filtered((e) -> e.getStatus() == DownloadStatus.CREATED).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size();
+        Platform.runLater(() -> statusLabel.setText(sb));
     }
 
     public void delCompleted() {

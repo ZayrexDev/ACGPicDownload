@@ -25,6 +25,7 @@ public class GUI extends Application {
     public SettingsPaneController settingsPaneController;
     public PixivDownloadPaneController pixivDownloadPaneController;
     public PixivDiscoveryPaneController pixivDiscoveryPaneController;
+    public PixivUserPaneController pixivUserPaneController;
 
     public Stage mainStage;
     public Pane mainPane;
@@ -34,6 +35,7 @@ public class GUI extends Application {
     public Pane pixivMenuPane;
     public Pane pixivDownloadPane;
     public Pane pixivDiscoveryPane;
+    public Pane pixivUserPane;
 
     public GUI gui;
 
@@ -108,6 +110,19 @@ public class GUI extends Application {
             pixivMenuPaneController.setGui(gui);
 
             Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPane));
+
+            mainPaneController.setProgress(0.4);
+
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"), ResourceBundleUtil.getResource());
+            try {
+                pixivUserPane = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            pixivUserPaneController = loader.getController();
+            pixivUserPaneController.setGui(gui);
+
+            Platform.runLater(() -> mainPane.getChildren().add(pixivUserPane));
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),
                     ResourceBundleUtil.getResource());
@@ -219,5 +234,9 @@ public class GUI extends Application {
 
     public void openSettingsPane() {
         settingsPaneController.show();
+    }
+
+    public void openPixivUserPane() {
+        pixivUserPaneController.show();
     }
 }
