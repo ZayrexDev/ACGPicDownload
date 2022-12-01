@@ -25,11 +25,8 @@ public class PixivDownloadUtil {
 
         ThreadPoolExecutor tpe;
 
-        if (maxThread == -1) {
-            tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-        } else {
-            tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
-        }
+        if (maxThread == -1) tpe = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        else tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(maxThread);
 
         for (var a : artworksDownloads) {
             if (a.getStatus().equals(DownloadStatus.CREATED) || a.getStatus().equals(DownloadStatus.FAILED)) {

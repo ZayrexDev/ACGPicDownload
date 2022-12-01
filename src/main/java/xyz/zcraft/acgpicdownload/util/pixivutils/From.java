@@ -8,6 +8,7 @@ public enum From {
     RecommendUser,
     RecommendTag,
     Related,
+    User,
     Other;
 
     @Override
@@ -20,6 +21,8 @@ public enum From {
             return ResourceBundleUtil.getString("fetch.pixiv.from.recommendUser");
         } else if (this == RecommendTag) {
             return ResourceBundleUtil.getString("fetch.pixiv.from.recommendTag");
+        } else if (this == User) {
+            return ResourceBundleUtil.getString("fetch.pixiv.from.user");
         } else if (this == Related) {
             return ResourceBundleUtil.getString("fetch.pixiv.from.related");
         } else {

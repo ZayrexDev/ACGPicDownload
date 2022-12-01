@@ -7,16 +7,98 @@ import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 
 public class PixivFetchUtil {
     private static final String TOP = "https://www.pixiv.net/ajax/top/illust?mode=all&lang=zh";
     private static final String RELATED = "https://www.pixiv.net/ajax/illust/%s/recommend/init?limit=%d";
     private static final String ARTWORK = "https://www.pixiv.net/artworks/";
+    private static final String USER = "https://www.pixiv.net/ajax/user/%s/profile/all?lang=zh";
+    private static final String USER_TAGS = "https://www.pixiv.net/ajax/tags/frequent/illust?%s";
+    private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1&lang=zh";
+
+    public static Set<String> fetchUser(String cookieString, String uid, String proxyHost, int proxyPort) throws IOException {
+        HashSet<String> set = new HashSet<>();
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect(String.format(USER, uid))
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        JSONObject jsonObject = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body").getJSONObject("illusts");
+
+        set.addAll(jsonObject.keySet());
+
+        return set;
+    }
+
+    public static HashMap<String, String> getUserTagTranslations(String queryString, String proxyHost, int proxyPort) throws IOException {
+        HashMap<String, String> tagTranslation = new HashMap<>();
+        Connection c = Jsoup.connect(String.format(USER_TAGS, queryString))
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        String s = c.get().body().ownText();
+        for (Object o : JSONObject.parseObject(s).getJSONArray("body")) {
+            if (o instanceof JSONObject obj) {
+                tagTranslation.put(obj.getString("tag"), obj.getString("tag_translation"));
+            }
+        }
+
+        return tagTranslation;
+    }
+
+    public static List<PixivArtwork> getUserArtworks(String queryString, String uid, String proxyHost, int proxyPort) throws IOException {
+        LinkedList<PixivArtwork> artworks = new LinkedList<>();
+        Connection c = Jsoup.connect(String.format(USER_WORKS, uid, queryString))
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        JSONObject obj = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body").getJSONObject("works");
+
+        for (String k : obj.keySet()) {
+            PixivArtwork a = JSONObject.parseObject(obj.get(k).toString(), PixivArtwork.class);
+            a.setFrom(From.User);
+            artworks.add(a);
+        }
+
+        return artworks;
+    }
+
+    public static String getPixivLanguageTag() {
+        switch (Locale.getDefault().toLanguageTag()) {
+            case "zh-cn", "zh_cn", "zh" -> {
+                return "zh";
+            }
+            case "zh_tw", "zh-tw" -> {
+                return "zh_tw";
+            }
+            default -> {
+                return "en";
+            }
+        }
+    }
+
+    public static String buildQueryString(Set<String> ids) {
+        StringBuilder s = new StringBuilder();
+        for (String t : ids) {
+            s.append("&ids%5B%5D=").append(t);
+        }
+        s.append("&lang=").append(getPixivLanguageTag());
+        return s.toString();
+    }
 
     public static List<PixivArtwork> fetchMenu(String cookieString, String proxyHost, int proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
