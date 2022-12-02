@@ -6,6 +6,7 @@ import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.Schedule;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.SSLUtil;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -60,6 +61,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        try {
+            SSLUtil.ignoreSsl();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setMFXLanguage();
         ArrayList<String> argList = new ArrayList<>(List.of(args));
         try {
