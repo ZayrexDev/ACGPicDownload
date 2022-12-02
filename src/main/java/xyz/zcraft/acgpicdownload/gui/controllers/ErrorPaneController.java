@@ -12,7 +12,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;

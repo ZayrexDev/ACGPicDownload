@@ -16,7 +16,7 @@ public class PixivDownloadUtil {
 
     public static void startDownload(List<PixivDownload> artworksDownloads, String outputDir,
                                      Logger logger, int maxThread, Runnable onUpdate,
-                                     String cookieString, String proxyHost, int proxyPort) {
+                                     String cookieString, String proxyHost, Integer proxyPort) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));

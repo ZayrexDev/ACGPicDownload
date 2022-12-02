@@ -20,21 +20,21 @@ public class PixivFetchUtil {
 
     private static final String[] MODES = {"all", "safe", "r18"};
 
-    public static PixivArtwork getArtwork(String id, String cookieString, String proxyHost, int proxyPort) throws IOException {
+    public static PixivArtwork getArtwork(String id, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(getArtworkPageUrl(id))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
                 .timeout(10 * 1000);
-        if (proxyHost != null && proxyPort != 0) {
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
         JSONObject jsonObject = JSONObject.parseObject(c.get().head().getElementById("meta-preload-data").attr("content")).getJSONObject("illust").getJSONObject(id);
         return jsonObject.to(PixivArtwork.class);
     }
 
-    public static List<PixivArtwork> getDiscovery(int mode, int limit, String cookieString, String proxyHost, int proxyPort) throws IOException {
+    public static List<PixivArtwork> getDiscovery(int mode, int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(String.format(DISCOVERY, MODES[mode], limit).concat("&lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
@@ -44,20 +44,21 @@ public class PixivFetchUtil {
 
         System.out.println(
                 String.format(DISCOVERY, MODES[mode], limit).concat("&lang=").concat(getPixivLanguageTag()));
-        if (proxyHost != null && proxyPort != 0) {
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
 
         return parseArtworks(c.get().body().ownText(), From.Discovery);
     }
 
-    public static Set<String> fetchUser(String uid, String proxyHost, int proxyPort) throws IOException {
+    public static Set<String> fetchUser(String uid, String proxyHost, Integer proxyPort) throws IOException {
         HashSet<String> set = new HashSet<>();
         Connection c = Jsoup.connect(String.format(USER, uid).concat("lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .timeout(10 * 1000);
-        if (proxyHost != null && proxyPort != 0) {
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
 
@@ -68,13 +69,13 @@ public class PixivFetchUtil {
         return set;
     }
 
-    public static HashMap<String, String> getUserTagTranslations(String queryString, String proxyHost, int proxyPort) throws IOException {
+    public static HashMap<String, String> getUserTagTranslations(String queryString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> tagTranslation = new HashMap<>();
         Connection c = Jsoup.connect(String.format(USER_TAGS, queryString))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .timeout(10 * 1000);
-        if (proxyHost != null && proxyPort != 0) {
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
 
@@ -88,13 +89,14 @@ public class PixivFetchUtil {
         return tagTranslation;
     }
 
-    public static List<PixivArtwork> getUserArtworks(String queryString, String uid, String proxyHost, int proxyPort) throws IOException {
+    public static List<PixivArtwork> getUserArtworks(String queryString, String uid, String proxyHost, Integer proxyPort) throws IOException {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
         Connection c = Jsoup.connect(String.format(USER_WORKS, uid, queryString))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .timeout(10 * 1000);
-        if (proxyHost != null && proxyPort != 0) {
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
 
@@ -145,7 +147,7 @@ public class PixivFetchUtil {
         return list;
     }
 
-    public static List<PixivArtwork> fetchMenu(String cookieString, String proxyHost, int proxyPort) throws IOException {
+    public static List<PixivArtwork> fetchMenu(String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(TOP.concat("&lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
@@ -153,7 +155,7 @@ public class PixivFetchUtil {
                 .cookies(cookie)
                 .timeout(10 * 1000);
 
-        if (proxyHost != null && proxyPort != 0) {
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
 
@@ -217,21 +219,21 @@ public class PixivFetchUtil {
         }
     }
 
-    public static String getImageUrl(PixivArtwork artwork, String cookieString, String proxyHost, int proxyPort) throws IOException {
+    public static String getImageUrl(PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(getArtworkPageUrl(artwork))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
                 .timeout(10 * 1000);
-        if (proxyHost != null && proxyPort != 0) {
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
 
         return JSONObject.parseObject(c.get().head().getElementById("meta-preload-data").attr("content")).getJSONObject("illust").getJSONObject(artwork.getId()).getJSONObject("urls").getString("original");
     }
 
-    public static List<PixivArtwork> getRelated(PixivArtwork artwork, int limit, String cookieString, String proxyHost, int proxyPort) throws IOException {
+    public static List<PixivArtwork> getRelated(PixivArtwork artwork, int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(String.format(RELATED, artwork.getId(), limit))
                 .ignoreContentType(true)
@@ -239,7 +241,7 @@ public class PixivFetchUtil {
                 .cookies(cookie)
                 .timeout(10 * 1000);
 
-        if (proxyHost != null && proxyPort != 0) {
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
 

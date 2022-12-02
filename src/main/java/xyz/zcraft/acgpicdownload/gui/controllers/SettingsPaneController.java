@@ -112,6 +112,9 @@ public class SettingsPaneController implements Initializable {
     }
 
     private void verifyProxy(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        proxyHost = null;
+        proxyPort = 0;
+        System.getProperties().put("proxySet", "false");
         if (!newValue.isEmpty()) {
             String[] str = newValue.split(":");
             if (str.length == 2) {
@@ -119,8 +122,6 @@ public class SettingsPaneController implements Initializable {
                 try {
                     proxyPort = Integer.parseInt(str[1]);
                 } catch (NumberFormatException ignored) {
-                    proxyHost = null;
-                    proxyPort = 0;
                     proxyField.setTextFill(Color.RED);
                     return;
                 }
@@ -134,8 +135,6 @@ public class SettingsPaneController implements Initializable {
                 proxyField.setTextFill(Color.RED);
             }
         } else {
-            proxyHost = null;
-            proxyPort = 0;
             proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
         }
     }
@@ -146,9 +145,12 @@ public class SettingsPaneController implements Initializable {
         if (proxyPort != 0 && proxyHost != null) {
             obj.put("proxyHost", proxyHost);
             obj.put("proxyPort", proxyPort);
-            obj.put("aniSpeed", aniSpeedSlider.getValue());
-            obj.put("fetchPLCOCopy", fetchPLCOCopy.isSelected());
+        } else {
+            obj.remove("proxyHost");
+            obj.remove("proxyPort");
         }
+        obj.put("aniSpeed", aniSpeedSlider.getValue());
+        obj.put("fetchPLCOCopy", fetchPLCOCopy.isSelected());
         try {
             ConfigManager.saveConfig();
             Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"), gui.mainPane);

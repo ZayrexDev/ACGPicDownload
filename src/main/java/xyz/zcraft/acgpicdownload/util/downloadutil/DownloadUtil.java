@@ -145,7 +145,7 @@ public class DownloadUtil {
         }
     }
 
-    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, String proxyHost, int proxyPort) throws IOException {
+    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
         File f = null;

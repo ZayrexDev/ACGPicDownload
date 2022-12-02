@@ -338,7 +338,7 @@ public class FetchPaneController implements Initializable {
             ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(),
                     new Logger("GUI", System.out, Main.log),
                      true,
-                      Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"), null),
+                      ConfigManager.getConfig().getString("proxyHost"),
                       Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0),
                       new ExceptionHandler() {
                         @Override

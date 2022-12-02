@@ -242,8 +242,8 @@ public class PixivMenuPaneController implements Initializable {
                             PixivArtwork temp2 = temp.get(j);
                             List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
                                     cookieField.getText(),
-                                    Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"), null),
-                                    Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0)
+                                    ConfigManager.getConfig().getString("proxyHost"),
+                                    ConfigManager.getConfig().getInteger("proxyPort")
                             );
                             temp2Artworks.addAll(related);
                         }

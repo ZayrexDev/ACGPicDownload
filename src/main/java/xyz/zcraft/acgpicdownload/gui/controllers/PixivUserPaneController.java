@@ -279,7 +279,8 @@ public class PixivUserPaneController implements Initializable {
                 LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>();
 
                 for (String s : queryString) {
-                    pixivArtworks.addAll(PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
+                    pixivArtworks.addAll(
+                        PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
                             ConfigManager.getConfig().getInteger("proxyPort")));
                 }
 
@@ -301,8 +302,8 @@ public class PixivUserPaneController implements Initializable {
                             PixivArtwork temp2 = temp.get(j);
                             List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
                                     cookieField.getText(),
-                                    Objects.requireNonNullElse(ConfigManager.getConfig().getString("proxyHost"), null),
-                                    Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0));
+                                    ConfigManager.getConfig().getString("proxyHost"),
+                                    ConfigManager.getConfig().getInteger("proxyPort"));
                             temp2Artworks.addAll(related);
                         }
                         temp.clear();

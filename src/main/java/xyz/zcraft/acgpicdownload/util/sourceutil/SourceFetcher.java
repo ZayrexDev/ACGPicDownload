@@ -24,6 +24,7 @@ public class SourceFetcher {
         Connection conn = Jsoup.connect(source.getUrl().replaceAll("\\|", "%7C")).followRedirects(true).ignoreContentType(true);
 
         if (proxyHost != null && proxyPort != 0) {
+            System.out.println("Proxy set to " + proxyHost + ":" + proxyPort);
             conn.proxy(proxyHost, proxyPort);
         }
 
