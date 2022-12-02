@@ -270,6 +270,7 @@ public class PixivFetchUtil {
         String[] t = cookieString.split(";");
         HashMap<String, String> cookieMap = new HashMap<>();
         for (String t2 : t) {
+            t2 = t2.trim();
             String[] t3 = t2.split("=");
             if (t3.length >= 2) {
                 cookieMap.put(t3[0], t3[1]);

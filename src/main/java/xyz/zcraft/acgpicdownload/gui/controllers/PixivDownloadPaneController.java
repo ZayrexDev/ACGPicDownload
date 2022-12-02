@@ -70,13 +70,30 @@ public class PixivDownloadPaneController implements Initializable {
         );
     }
 
+    @javafx.fxml.FXML
+    public void backToMenu() {
+        tt.stop();
+        tt.setNode(mainPane);
+        tt.setAutoReverse(true);
+        tt.setRate(0.01);
+        tt.setDuration(Duration.millis(5));
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
+        tt.setInterpolator(Interpolator.EASE_BOTH);
+        tt.setFromY(0);
+        tt.setToY(mainPane.getHeight());
+        mainPane.setVisible(true);
+        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
+        tt.play();
+        gui.welcomePaneController.showMain();
+    }
+
     private void updateStatus() {
         Platform.runLater(() -> dataTable.update());
         String sb = ResourceBundleUtil.getString("cli.download.status.created") + data.filtered((e) -> e.getStatus() == DownloadStatus.CREATED).size() + " "
-                    + ResourceBundleUtil.getString("cli.download.status.init") + data.filtered((e) -> e.getStatus() == DownloadStatus.INITIALIZE).size() + " "
-                    + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
-                    + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
-                    + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size();
+                + ResourceBundleUtil.getString("cli.download.status.init") + data.filtered((e) -> e.getStatus() == DownloadStatus.INITIALIZE).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size();
         Platform.runLater(() -> statusLabel.setText(sb));
     }
 
@@ -218,9 +235,9 @@ public class PixivDownloadPaneController implements Initializable {
         ScheduledService<Void> s = new ScheduledService<>() {
             @Override
             protected Task<Void> createTask() {
-                return new Task<Void>() {
+                return new Task<>() {
                     @Override
-                    protected Void call() throws Exception {
+                    protected Void call() {
                         updateStatus();
                         return null;
                     }

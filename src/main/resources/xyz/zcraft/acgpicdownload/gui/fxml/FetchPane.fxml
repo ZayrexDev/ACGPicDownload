@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
-<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
-<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
-<?import io.github.palexdev.materialfx.controls.MFXSlider?>
-<?import io.github.palexdev.materialfx.controls.MFXTableView?>
-<?import io.github.palexdev.materialfx.controls.MFXTextField?>
-<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+<?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane fx:id="mainPane" prefHeight="438.0" prefWidth="767.0" style="-fx-background-color: #ffffff88;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.FetchPaneController">
    <children>
       <VBox layoutX="235.0" layoutY="92.0" prefHeight="372.0" prefWidth="558.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox spacing="5.0">
                <children>
-                  <MFXButton fx:id="backBtn" maxHeight="1.7976931348623157E308" onAction="#backBtnOnAction" text="" HBox.hgrow="ALWAYS" />
-                  <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%gui.fetch.title" HBox.hgrow="ALWAYS">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
+                  <MFXButton fx:id="backBtn" maxHeight="1.7976931348623157E308" onAction="#backBtnOnAction" text=""
+                             HBox.hgrow="ALWAYS"/>
+                  <HBox alignment="BOTTOM_LEFT">
+                     <children>
+                        <Label onMouseClicked="#backBtnOnAction" text="%gui.path.home" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label text="%gui.fetch.title">
+                           <font>
+                              <Font size="16.0"/>
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
             </HBox>
             <Separator prefWidth="200.0" />

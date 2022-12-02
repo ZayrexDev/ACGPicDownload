@@ -63,7 +63,7 @@ public class PixivMenuPaneController implements Initializable {
     private MFXButton cookieHelpBtn;
     @javafx.fxml.FXML
     private MFXTableView<PixivArtwork> dataTable;
-    private ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
+    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     @javafx.fxml.FXML
     private MFXTextField cookieField;
 
@@ -89,6 +89,9 @@ public class PixivMenuPaneController implements Initializable {
     public void submitCookie() {
         try {
             JSONObject json = Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject());
+            HashMap<String, String> stringStringHashMap = PixivFetchUtil.parseCookie(cookieField.getText());
+            String s = stringStringHashMap.get("PHPSESSID");
+            cookieField.setText("PHPSESSID" + "=" + s);
             json.put("cookie", cookieField.getText());
             ConfigManager.getConfig().put("pixiv", json);
             ConfigManager.saveConfig();
@@ -97,6 +100,23 @@ public class PixivMenuPaneController implements Initializable {
             Main.logError(e);
             gui.showError(e);
         }
+    }
+
+    @javafx.fxml.FXML
+    public void backToMenu() {
+        tt.stop();
+        tt.setNode(mainPane);
+        tt.setAutoReverse(true);
+        tt.setRate(0.01);
+        tt.setDuration(Duration.millis(5));
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
+        tt.setInterpolator(Interpolator.EASE_BOTH);
+        tt.setFromY(0);
+        tt.setToY(mainPane.getHeight());
+        mainPane.setVisible(true);
+        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
+        tt.play();
+        gui.welcomePaneController.showMain();
     }
 
     public void show() {

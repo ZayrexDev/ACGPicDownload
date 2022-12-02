@@ -1,27 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
-<?import io.github.palexdev.materialfx.controls.MFXSlider?>
-<?import io.github.palexdev.materialfx.controls.MFXTableView?>
-<?import io.github.palexdev.materialfx.controls.MFXTextField?>
-<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+<?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivMenuPaneController">
    <children>
       <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0" stylesheets="@../default.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
-                  <MFXButton fx:id="backBtn" onAction="#backBtnOnAction" />
-                  <Label text="%gui.pixiv.menu.title" />
+                  <MFXButton fx:id="backBtn" onAction="#backBtnOnAction"/>
+                  <HBox alignment="BOTTOM_LEFT">
+                     <children>
+                        <Label onMouseClicked="#backToMenu" text="%gui.path.home" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label onMouseClicked="#backBtnOnAction" text="%gui.path.pixiv" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label text="%gui.pixiv.menu.title">
+                           <font>
+                              <Font size="16.0"/>
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
                <VBox.margin>
                   <Insets />
@@ -30,9 +42,12 @@
             <Separator prefWidth="200.0" />
             <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="600.0" spacing="10.0">
                <children>
-                  <MFXTextField fx:id="cookieField" floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" HBox.hgrow="ALWAYS" />
-                  <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelpBtnOnAction" />
-                  <MFXButton onAction="#submitCookie" text="%gui.pixiv.menu.submitCookie" />
+                  <MFXPasswordField fx:id="cookieField" allowCopy="true" allowCut="true" allowPaste="true"
+                                    floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie" maxHeight="30.0"
+                                    maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
+                                    HBox.hgrow="ALWAYS"/>
+                  <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelpBtnOnAction"/>
+                  <MFXButton onAction="#submitCookie" text="%gui.pixiv.menu.submitCookie"/>
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="15.0">

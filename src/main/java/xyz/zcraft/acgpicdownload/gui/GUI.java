@@ -216,27 +216,34 @@ public class GUI extends Application {
         pixivDownloadPaneController.show();
     }
 
-    public void showError(Exception e){
-        ErrorPaneController epc = ErrorPaneController.getInstance(mainPane);
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        pw.flush();
-        Platform.runLater(() -> {
-            StringBuilder sb = new StringBuilder();
-            String msg = conductException(e);
-            if(msg != null) {
-                sb.append(ResourceBundleUtil.getString("err.conduct"));
-                sb.append(msg);
-                sb.append("\n");
+    public static String conductException(Exception e) {
+        if (e instanceof org.jsoup.HttpStatusException ex) {
+            switch (ex.getStatusCode()) {
+                case 400, 401 -> {
+                    return ResourceBundleUtil.getString("err.status.401");
+                }
+                case 404 -> {
+                    return ResourceBundleUtil.getString("err.status.404");
+                }
+                case 427 -> {
+                    return ResourceBundleUtil.getString("err.status.427");
+                }
             }
-            sb.append(sw.toString());
-            gui.fill(epc.getErrorPane());
-            gui.mainPane.getChildren().addAll(epc.getErrorPane());
-            epc.setErrorMessage(sb.toString());
-            epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
-            epc.show();
-        });
+        } else if (e instanceof java.net.SocketTimeoutException) {
+            return ResourceBundleUtil.getString("err.status.timeout");
+        } else if (e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused")) {
+            String h = ConfigManager.getConfig().getString("proxyHost");
+            Integer p = ConfigManager.getConfig().getInteger("proxyPort");
+            String s = "";
+            if (h != null && p != null) {
+                s = h + ":" + p;
+            }
+            return String.format(ResourceBundleUtil.getString("err.status.invalidProxy"), s);
+        } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
+            return ResourceBundleUtil.getString("err.status.ssl");
+        }
+
+        return null;
     }
 
     public SettingsPaneController getSettingsPaneController() {
@@ -297,33 +304,26 @@ public class GUI extends Application {
         data.clear();
     }
 
-    public static String conductException(Exception e){
-        if(e instanceof org.jsoup.HttpStatusException ex){
-            switch (ex.getStatusCode()){
-                case 400,401 ->{
-                    return ResourceBundleUtil.getString("err.status.401");
-                }
-                case 404 ->{
-                    return ResourceBundleUtil.getString("err.status.404");
-                }
-                case 427 ->{
-                    return ResourceBundleUtil.getString("err.status.427");
-                }
+    public void showError(Exception e) {
+        ErrorPaneController epc = ErrorPaneController.getInstance(mainPane);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        pw.flush();
+        Platform.runLater(() -> {
+            StringBuilder sb = new StringBuilder();
+            String msg = conductException(e);
+            if (msg != null) {
+                sb.append(ResourceBundleUtil.getString("err.conduct"));
+                sb.append(msg);
+                sb.append("\n");
             }
-        }else if(e instanceof java.net.SocketTimeoutException ex){
-            return ResourceBundleUtil.getString("err.status.timeout");
-        } else if (e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused")) {
-            String h = ConfigManager.getConfig().getString("proxyHost");
-            Integer p = ConfigManager.getConfig().getInteger("proxyPort");
-            String s = "";
-            if(h != null && p != null){
-                s = h + ":" + p;
-            }
-            return String.format(ResourceBundleUtil.getString("err.status.invalidProxy"), s);
-        }else if(e instanceof javax.net.ssl.SSLHandshakeException ex){
-            return ResourceBundleUtil.getString("err.status.ssl");
-        }
-
-        return null;
+            sb.append(sw);
+            gui.fill(epc.getErrorPane());
+            gui.mainPane.getChildren().addAll(epc.getErrorPane());
+            epc.setErrorMessage(sb.toString());
+            epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
+            epc.show();
+        });
     }
 }

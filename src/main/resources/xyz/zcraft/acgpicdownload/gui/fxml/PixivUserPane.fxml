@@ -3,6 +3,7 @@
 <?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
@@ -17,7 +18,27 @@
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
                   <MFXButton fx:id="backBtn" onAction="#backBtnOnAction"/>
-                  <Label text="%gui.pixiv.user.title"/>
+                  <HBox alignment="BOTTOM_LEFT">
+                     <children>
+                        <Label onMouseClicked="#backToMenu" text="%gui.path.home" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label onMouseClicked="#backBtnOnAction" text="%gui.path.pixiv" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label text="%gui.pixiv.user.title">
+                           <font>
+                              <Font size="16.0"/>
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
                <VBox.margin>
                   <Insets/>
@@ -26,9 +47,10 @@
             <Separator prefWidth="200.0"/>
             <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="600.0" spacing="10.0">
                <children>
-                  <MFXTextField fx:id="cookieField" floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie"
-                                maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                HBox.hgrow="ALWAYS"/>
+                  <MFXPasswordField fx:id="cookieField" allowCopy="true" allowCut="true" allowPaste="true"
+                                    floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie" maxHeight="30.0"
+                                    maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
+                                    HBox.hgrow="ALWAYS"/>
                   <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelpBtnOnAction"/>
                   <MFXButton onAction="#submitCookie" text="%gui.pixiv.menu.submitCookie"/>
                </children>

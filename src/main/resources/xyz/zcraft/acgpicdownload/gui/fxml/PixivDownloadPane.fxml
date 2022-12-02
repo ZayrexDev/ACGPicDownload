@@ -3,15 +3,37 @@
 <?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivDownloadPaneController">
    <children>
       <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0" stylesheets="@../default.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
-                  <MFXButton fx:id="backBtn" onAction="#backBtnOnAction" />
-                  <Label text="%gui.pixiv.download.title" />
+                  <MFXButton fx:id="backBtn" onAction="#backBtnOnAction"/>
+                  <HBox alignment="BOTTOM_LEFT">
+                     <children>
+                        <Label onMouseClicked="#backToMenu" text="%gui.path.home" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label onMouseClicked="#backBtnOnAction" text="%gui.path.pixiv" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label text="%gui.pixiv.download.title">
+                           <font>
+                              <Font size="16.0"/>
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
                </children>
                <VBox.margin>
                   <Insets />

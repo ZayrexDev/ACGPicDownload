@@ -1,7 +1,10 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.github.palexdev.materialfx.controls.*;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXSlider;
+import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -54,7 +57,7 @@ public class PixivUserPaneController implements Initializable {
     private Label operationLabel;
     @javafx.fxml.FXML
     private Label subOperationLabel;
-    private ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
+    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
 
     private GUI gui;
 
@@ -74,10 +77,29 @@ public class PixivUserPaneController implements Initializable {
     }
 
     @javafx.fxml.FXML
+    public void backToMenu() {
+        tt.stop();
+        tt.setNode(mainPane);
+        tt.setAutoReverse(true);
+        tt.setRate(0.01);
+        tt.setDuration(Duration.millis(5));
+        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
+        tt.setInterpolator(Interpolator.EASE_BOTH);
+        tt.setFromY(0);
+        tt.setToY(mainPane.getHeight());
+        mainPane.setVisible(true);
+        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
+        tt.play();
+        gui.welcomePaneController.showMain();
+    }
+
+    @javafx.fxml.FXML
     public void submitCookie() {
         try {
-            JSONObject json = Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"),
-                    new JSONObject());
+            JSONObject json = Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject());
+            HashMap<String, String> stringStringHashMap = PixivFetchUtil.parseCookie(cookieField.getText());
+            String s = stringStringHashMap.get("PHPSESSID");
+            cookieField.setText("PHPSESSID" + "=" + s);
             json.put("cookie", cookieField.getText());
             ConfigManager.getConfig().put("pixiv", json);
             ConfigManager.saveConfig();

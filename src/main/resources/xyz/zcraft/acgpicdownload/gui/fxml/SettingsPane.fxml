@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
-<?import io.github.palexdev.materialfx.controls.MFXRadioButton?>
-<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
-<?import io.github.palexdev.materialfx.controls.MFXSlider?>
-<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.SettingsPaneController">
     <children>
         <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <children>
-                        <MFXButton fx:id="backBtn" onAction="#backBtnOnAction" />
-                        <Label text="%gui.settings.title" />
+                        <MFXButton fx:id="backBtn" onAction="#backBtnOnAction"/>
+                        <HBox alignment="BOTTOM_LEFT">
+                            <children>
+                                <Label onMouseClicked="#backBtnOnAction" text="%gui.path.home" textFill="#595959">
+                                    <cursor>
+                                        <Cursor fx:constant="HAND"/>
+                                    </cursor>
+                                </Label>
+                                <Label text="/" textFill="#595959"/>
+                                <Label text="%gui.settings.title">
+                                    <font>
+                                        <Font size="16.0"/>
+                                    </font>
+                                </Label>
+                            </children>
+                        </HBox>
                     </children>
                     <VBox.margin>
                         <Insets />
