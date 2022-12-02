@@ -1,11 +1,7 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXComboBox;
-import io.github.palexdev.materialfx.controls.MFXRadioButton;
-import io.github.palexdev.materialfx.controls.MFXSlider;
-import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
@@ -113,12 +109,12 @@ public class SettingsPaneController implements Initializable {
 
         proxyField.textProperty().addListener(this::verifyProxy);
 
-        languageCombo.setConverter(new StringConverter<Locale>() {
+        languageCombo.setConverter(new StringConverter<>() {
             @Override
             public String toString(Locale l) {
-                if(l == null) return null;
-                if(l.equals(Locale.CHINA)) return "中文";
-                if(l.equals(Locale.ENGLISH)) return "English";
+                if (l == null) return null;
+                if (l.equals(Locale.CHINA)) return "中文";
+                if (l.equals(Locale.ENGLISH)) return "English";
                 return l.getDisplayLanguage();
             }
 
@@ -177,7 +173,7 @@ public class SettingsPaneController implements Initializable {
         }
         obj.put("aniSpeed", aniSpeedSlider.getValue());
         obj.put("fetchPLCOCopy", fetchPLCOCopy.isSelected());
-        obj.put("lang", languageCombo.getSelectedItem().getLanguage());
+        obj.put("lang", languageCombo.getSelectedItem().toLanguageTag());
         try {
             ConfigManager.saveConfig();
             Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"), gui.mainPane);
@@ -197,9 +193,10 @@ public class SettingsPaneController implements Initializable {
         fetchPLCOOpen.setSelected(!ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy"));
         String lang = ConfigManager.getConfig().getString("lang");
         Locale locale;
-        if(lang != null) locale = Locale.forLanguageTag(lang);
+        if (lang != null) locale = Locale.forLanguageTag(lang);
         else locale = Locale.getDefault();
-        languageCombo.getSelectionModel().selectItem(locale);
+        if (languageCombo.getItems().contains(locale)) languageCombo.getSelectionModel().selectItem(locale);
+        else languageCombo.getSelectionModel().selectFirst();
     }
 
     public GUI getGui() {
