@@ -2,8 +2,6 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.*;
-import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
-import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -12,7 +10,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
@@ -57,7 +54,7 @@ public class PixivRelatedPaneController implements Initializable {
     private Label operationLabel;
     @javafx.fxml.FXML
     private Label subOperationLabel;
-    private ObservableList<PixivArtwork> data;
+    private ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
 
     private GUI gui;
 
@@ -140,7 +137,7 @@ public class PixivRelatedPaneController implements Initializable {
         ft.setRate(0.05);
         ft.setDuration(Duration.millis(5));
 
-        initTable();
+        GUI.initTable(data, dataTable);
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
@@ -149,48 +146,6 @@ public class PixivRelatedPaneController implements Initializable {
 
         cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
         cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
-    }
-
-    private void initTable() {
-        data = FXCollections.observableArrayList(new PixivArtwork());
-
-        MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.title"), true);
-        MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.from"), true);
-        MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
-        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
-
-        titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
-        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
-        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getOriginalTagsString));
-        idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
-
-        titleColumn.setAlignment(Pos.CENTER);
-        fromColumn.setAlignment(Pos.CENTER);
-        tagColumn.setAlignment(Pos.CENTER);
-        idColumn.setAlignment(Pos.CENTER);
-
-        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-
-        dataTable.getTableColumns().addAll(List.of(titleColumn, fromColumn, tagColumn, idColumn));
-
-        dataTable.getFilters().addAll(List.of(
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
-                        o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
-                        PixivArtwork::getOriginalTagsString),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId)));
-
-        dataTable.setItems(data);
-        dataTable.getSelectionModel().setAllowsMultipleSelection(true);
-        data.clear();
     }
 
     public GUI getGui() {

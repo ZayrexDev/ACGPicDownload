@@ -140,6 +140,8 @@ public class PixivDownloadPaneController implements Initializable {
 
         MFXTableColumn<PixivDownload> titleColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.title"), true);
+        MFXTableColumn<PixivDownload> authorColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), true);
         MFXTableColumn<PixivDownload> fromColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.from"), true);
         MFXTableColumn<PixivDownload> tagColumn = new MFXTableColumn<>(
@@ -150,28 +152,33 @@ public class PixivDownloadPaneController implements Initializable {
                 ResourceBundleUtil.getString("gui.pixiv.download.column.status"), true);
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
+        authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFrom()));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getOriginalTagsString()));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
         statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getStatus().toString()));
 
         titleColumn.setAlignment(Pos.CENTER);
+        authorColumn.setAlignment(Pos.CENTER);
         fromColumn.setAlignment(Pos.CENTER);
         tagColumn.setAlignment(Pos.CENTER);
         idColumn.setAlignment(Pos.CENTER);
         statusColumn.setAlignment(Pos.CENTER);
 
-        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
+        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
+        authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.15).get());
+        fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.05).get());
         tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
         idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
         statusColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
 
-        dataTable.getTableColumns().addAll(List.of(titleColumn, fromColumn, tagColumn, idColumn, statusColumn));
+        dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn, statusColumn));
 
         dataTable.getFilters().addAll(List.of(
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.title"), o -> o.getArtwork()
                         .getTitle()),
+                        new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), o -> o.getArtwork()
+                        .getUserName()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.from"),
                         o -> o.getArtwork().getFrom()
                                 .toString()),

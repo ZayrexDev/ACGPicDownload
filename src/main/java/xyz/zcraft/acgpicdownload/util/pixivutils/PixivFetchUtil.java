@@ -42,9 +42,6 @@ public class PixivFetchUtil {
                 .cookies(cookie)
                 .timeout(10 * 1000);
 
-        System.out.println(
-                String.format(DISCOVERY, MODES[mode], limit).concat("&lang=").concat(getPixivLanguageTag()));
-
         if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
