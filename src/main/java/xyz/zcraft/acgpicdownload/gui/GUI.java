@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class GUI extends Application {
     public FetchPaneController fetchPaneController;
@@ -59,10 +60,70 @@ public class GUI extends Application {
         launch(args);
     }
 
+    public static String conductException(Exception e) {
+        if (e instanceof org.jsoup.HttpStatusException ex) {
+            switch (ex.getStatusCode()) {
+                case 400, 401 -> {
+                    return ResourceBundleUtil.getString("err.status.401");
+                }
+                case 404 -> {
+                    return ResourceBundleUtil.getString("err.status.404");
+                }
+                case 427 -> {
+                    return ResourceBundleUtil.getString("err.status.427");
+                }
+            }
+        } else if (e instanceof java.net.SocketTimeoutException) {
+            return ResourceBundleUtil.getString("err.status.timeout");
+        } else if (e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused")) {
+            String h = ConfigManager.getConfig().getString("proxyHost");
+            Integer p = ConfigManager.getConfig().getInteger("proxyPort");
+            String s = "";
+            if (h != null && p != null) {
+                s = h + ":" + p;
+            }
+            return String.format(Objects.requireNonNull(ResourceBundleUtil.getString("err.status.invalidProxy")), s);
+        } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
+            return ResourceBundleUtil.getString("err.status.ssl");
+        }
+
+        return null;
+    }
+
+    public void openPixivMenuPane() {
+        pixivMenuPaneController.show();
+    }
+
+    public void fill(Node node) {
+        AnchorPane.setTopAnchor(node, 0d);
+        AnchorPane.setBottomAnchor(node, 0d);
+        AnchorPane.setLeftAnchor(node, 0d);
+        AnchorPane.setRightAnchor(node, 0d);
+    }
+
+    public void fill(Node... node) {
+        for (Node node1 : node) {
+            fill(node1);
+        }
+    }
+
+    public void openFetchPane() {
+        fetchPaneController.show();
+    }
+
+    public void openPixivDiscPane() {
+        pixivDiscoveryPaneController.show();
+    }
+
+    public void openPixivDownloadPane() {
+        pixivDownloadPaneController.show();
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
         ConfigManager.readConfig();
-        if(ConfigManager.getConfig().containsKey("lang")) ResourceBundleUtil.load(ConfigManager.getConfig().getString("lang"));
+        if (ConfigManager.getConfig().containsKey("lang"))
+            ResourceBundleUtil.load(ConfigManager.getConfig().getString("lang"));
         gui = this;
         mainStage = stage;
 
@@ -85,6 +146,8 @@ public class GUI extends Application {
         stage.setWidth(800);
         stage.setHeight(stage.getWidth() / rate + 29);
         stage.setResizable(false);
+
+        stage.setOnCloseRequest(windowEvent -> System.exit(0));
 
         stage.show();
 
@@ -185,65 +248,6 @@ public class GUI extends Application {
 
         initThread.setPriority(1);
         initThread.start();
-    }
-
-    public void openPixivMenuPane() {
-        pixivMenuPaneController.show();
-    }
-
-    public void fill(Node node) {
-        AnchorPane.setTopAnchor(node, 0d);
-        AnchorPane.setBottomAnchor(node, 0d);
-        AnchorPane.setLeftAnchor(node, 0d);
-        AnchorPane.setRightAnchor(node, 0d);
-    }
-
-    public void fill(Node... node) {
-        for (Node node1 : node) {
-            fill(node1);
-        }
-    }
-
-    public void openFetchPane() {
-        fetchPaneController.show();
-    }
-
-    public void openPixivDiscPane() {
-        pixivDiscoveryPaneController.show();
-    }
-
-    public void openPixivDownloadPane() {
-        pixivDownloadPaneController.show();
-    }
-
-    public static String conductException(Exception e) {
-        if (e instanceof org.jsoup.HttpStatusException ex) {
-            switch (ex.getStatusCode()) {
-                case 400, 401 -> {
-                    return ResourceBundleUtil.getString("err.status.401");
-                }
-                case 404 -> {
-                    return ResourceBundleUtil.getString("err.status.404");
-                }
-                case 427 -> {
-                    return ResourceBundleUtil.getString("err.status.427");
-                }
-            }
-        } else if (e instanceof java.net.SocketTimeoutException) {
-            return ResourceBundleUtil.getString("err.status.timeout");
-        } else if (e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused")) {
-            String h = ConfigManager.getConfig().getString("proxyHost");
-            Integer p = ConfigManager.getConfig().getInteger("proxyPort");
-            String s = "";
-            if (h != null && p != null) {
-                s = h + ":" + p;
-            }
-            return String.format(ResourceBundleUtil.getString("err.status.invalidProxy"), s);
-        } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
-            return ResourceBundleUtil.getString("err.status.ssl");
-        }
-
-        return null;
     }
 
     public SettingsPaneController getSettingsPaneController() {
