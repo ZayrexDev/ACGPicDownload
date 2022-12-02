@@ -4,6 +4,7 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
@@ -17,8 +18,11 @@ import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ErrorPaneController {
@@ -33,7 +37,7 @@ public class ErrorPaneController {
     private Pane parent;
 
     public static ErrorPaneController getInstance(Pane parent) {
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")));
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")),ResourceBundleUtil.getResource());
         try {
             loader.load();
         } catch (IOException e) {
@@ -98,5 +102,14 @@ public class ErrorPaneController {
 
     public void errorOkBtnOnAction(ActionEvent actionEvent) {
         hide();
+    }
+
+    @FXML
+    public void openFAQ() throws IOException, URISyntaxException{
+        if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
+            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/常见问题"));
+        } else {
+            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/FAQ"));
+        }
     }
 }
