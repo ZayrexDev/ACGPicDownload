@@ -45,7 +45,7 @@ public class PixivDownloadPaneController implements Initializable {
     private MFXTableView<PixivDownload> dataTable;
     @FXML
     private AnchorPane mainPane;
-    private ObservableList<PixivDownload> data;
+    private volatile ObservableList<PixivDownload> data;
     @FXML
     private MFXTextField outputDirField;
     @FXML
@@ -72,10 +72,11 @@ public class PixivDownloadPaneController implements Initializable {
 
     private void updateStatus() {
         Platform.runLater(() -> dataTable.update());
-        String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + data.filtered((e) -> e.getStatus() == DownloadStatus.CREATED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size();
+        String sb = ResourceBundleUtil.getString("cli.download.status.created") + data.filtered((e) -> e.getStatus() == DownloadStatus.CREATED).size() + " "
+                    + ResourceBundleUtil.getString("cli.download.status.init") + data.filtered((e) -> e.getStatus() == DownloadStatus.INITIALIZE).size() + " "
+                    + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
+                    + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
+                    + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size();
         Platform.runLater(() -> statusLabel.setText(sb));
     }
 
@@ -220,7 +221,7 @@ public class PixivDownloadPaneController implements Initializable {
             }
         };
 
-        s.setPeriod(Duration.seconds(2));
+        s.setPeriod(Duration.seconds(1));
         s.start();
     }
 

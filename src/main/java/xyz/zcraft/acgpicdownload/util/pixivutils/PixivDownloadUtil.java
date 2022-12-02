@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class PixivDownloadUtil {
     public static final String REFERER = "https://www.pixiv.net";
 
-    public static void startDownload(List<PixivDownload> artworksDownloads, String outputDir,
+    public synchronized static void startDownload(List<PixivDownload> artworksDownloads, String outputDir,
                                      Logger logger, int maxThread, Runnable onUpdate,
                                      String cookieString, String proxyHost, Integer proxyPort) {
         File outDir = new File(outputDir);
@@ -30,6 +30,7 @@ public class PixivDownloadUtil {
 
         for (var a : artworksDownloads) {
             if (a.getStatus().equals(DownloadStatus.CREATED) || a.getStatus().equals(DownloadStatus.FAILED)) {
+                a.setStatus(DownloadStatus.INITIALIZE);
                 tpe.execute(() -> {
                     try {
                         new DownloadUtil(1).downloadPixiv(a, outDir, cookieString, proxyHost, proxyPort);
