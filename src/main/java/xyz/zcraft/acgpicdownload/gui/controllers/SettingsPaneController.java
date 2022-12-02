@@ -2,6 +2,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXRadioButton;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -10,11 +11,13 @@ import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
@@ -23,6 +26,7 @@ import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class SettingsPaneController implements Initializable {
@@ -37,6 +41,9 @@ public class SettingsPaneController implements Initializable {
 
     @javafx.fxml.FXML
     private MFXSlider aniSpeedSlider;
+
+    @FXML
+    private MFXComboBox<Locale> languageCombo;
 
     private String proxyHost;
     private int proxyPort;
@@ -105,6 +112,25 @@ public class SettingsPaneController implements Initializable {
         tt.setInterpolator(Interpolator.EASE_BOTH);
 
         proxyField.textProperty().addListener(this::verifyProxy);
+
+        languageCombo.setConverter(new StringConverter<Locale>() {
+            @Override
+            public String toString(Locale l) {
+                if(l == null) return null;
+                if(l.equals(Locale.CHINA)) return "中文";
+                if(l.equals(Locale.ENGLISH)) return "English";
+                return l.getDisplayLanguage();
+            }
+
+            @Override
+            public Locale fromString(String s) {
+                return Locale.forLanguageTag(s);
+            }
+        });
+
+        languageCombo.getItems().clear();
+        languageCombo.getItems().addAll(Locale.CHINA, Locale.ENGLISH);
+
         restoreConfig();
 
         backBtn.setText("");
@@ -151,6 +177,7 @@ public class SettingsPaneController implements Initializable {
         }
         obj.put("aniSpeed", aniSpeedSlider.getValue());
         obj.put("fetchPLCOCopy", fetchPLCOCopy.isSelected());
+        obj.put("lang", languageCombo.getSelectedItem().getLanguage());
         try {
             ConfigManager.saveConfig();
             Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"), gui.mainPane);
@@ -168,6 +195,11 @@ public class SettingsPaneController implements Initializable {
         aniSpeedSlider.setValue(ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         fetchPLCOCopy.setSelected(ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy"));
         fetchPLCOOpen.setSelected(!ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy"));
+        String lang = ConfigManager.getConfig().getString("lang");
+        Locale locale;
+        if(lang != null) locale = Locale.forLanguageTag(lang);
+        else locale = Locale.getDefault();
+        languageCombo.getSelectionModel().selectItem(locale);
     }
 
     public GUI getGui() {

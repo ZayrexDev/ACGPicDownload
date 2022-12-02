@@ -62,6 +62,7 @@ public class GUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         ConfigManager.readConfig();
+        if(ConfigManager.getConfig().containsKey("lang")) ResourceBundleUtil.load(ConfigManager.getConfig().getString("lang"));
         gui = this;
         mainStage = stage;
 
