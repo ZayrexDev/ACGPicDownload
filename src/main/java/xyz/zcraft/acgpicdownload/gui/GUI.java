@@ -53,14 +53,7 @@ public class GUI extends Application {
 
     public Stage mainStage;
     public Pane mainPane;
-    public Pane settingsPane;
-    public Pane fetchPane;
     public Pane welcomePane;
-    public Pane pixivMenuPane;
-    public Pane pixivDownloadPane;
-    public Pane pixivDiscoveryPane;
-    public Pane pixivUserPane;
-    public Pane pixivRelatedPane;
 
     public GUI gui;
 
@@ -171,54 +164,53 @@ public class GUI extends Application {
                 mainPaneController.setProgress(0.1);
 
                 loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
-                fetchPane = loader.load();
+                loader.load();
                 fetchPaneController = loader.getController();
                 fetchPaneController.setGui(gui);
-                Platform.runLater(() -> mainPane.getChildren().add(fetchPane));
+                Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
                 mainPaneController.setProgress(0.2);
 
                 loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
-                pixivMenuPane = loader.load();
+                loader.load();
                 pixivMenuPaneController = loader.getController();
                 pixivMenuPaneController.setGui(gui);
-                Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPane));
+                Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
                 mainPaneController.setProgress(0.3);
 
                 loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"), ResourceBundleUtil.getResource());
-                pixivUserPane = loader.load();
+                loader.load();
                 pixivUserPaneController = loader.getController();
                 pixivUserPaneController.setGui(gui);
-                Platform.runLater(() -> mainPane.getChildren().add(pixivUserPane));
+                Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
                 mainPaneController.setProgress(0.4);
 
                 loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"), ResourceBundleUtil.getResource());
-                pixivRelatedPane = loader.load();
+                loader.load();
                 pixivRelatedPaneController = loader.getController();
                 pixivRelatedPaneController.setGui(gui);
-                Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPane));
+                Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
                 mainPaneController.setProgress(0.5);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),
-                        ResourceBundleUtil.getResource());
-                pixivDownloadPane = loader.load();
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),ResourceBundleUtil.getResource());
+                loader.load();
                 pixivDownloadPaneController = loader.getController();
                 pixivDownloadPaneController.setGui(gui);
-                Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPane));
+                Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
                 mainPaneController.setProgress(0.6);
 
                 loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"),
                         ResourceBundleUtil.getResource());
-                pixivDiscoveryPane = loader.load();
+                loader.load();
                 pixivDiscoveryPaneController = loader.getController();
                 pixivDiscoveryPaneController.setGui(gui);
-                Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPane));
+                Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
                 mainPaneController.setProgress(0.7);
 
                 loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
-                settingsPane = loader.load();
+                loader.load();
                 settingsPaneController = loader.getController();
                 settingsPaneController.setGui(gui);
-                Platform.runLater(() -> mainPane.getChildren().add(settingsPane));
+                Platform.runLater(() -> mainPane.getChildren().add(settingsPaneController.getMainPane()));
                 mainPaneController.setProgress(0.8);
 
                 // Load done
@@ -235,8 +227,11 @@ public class GUI extends Application {
             } catch (Exception e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
                     MFXGenericDialog content = MFXGenericDialogBuilder.build()
-                            .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + e.getMessage())
+                            .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw.toString())
                             .setShowClose(true)
                             .setHeaderText(ResourceBundleUtil.getString("cli.fetch.err")).get();
                     content.addActions(Map.entry(new MFXButton("OK"), event -> System.exit(1)));
@@ -250,6 +245,11 @@ public class GUI extends Application {
                             .setScrimOwner(true)
                             .get()
                             .showDialog();
+
+                    pw.close();
+                    try {
+                        sw.close();
+                    } catch (IOException ignored) {}
                 });
             }
         });
@@ -369,6 +369,8 @@ public class GUI extends Application {
             epc.setErrorMessage(sb.toString());
             epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
             epc.show();
+            pw.close();
+            try {sw.close();} catch (IOException ignored) {}
         });
     }
 }

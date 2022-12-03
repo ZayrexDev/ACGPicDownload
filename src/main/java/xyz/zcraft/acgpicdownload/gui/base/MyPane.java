@@ -73,4 +73,8 @@ public class MyPane implements Initializable{
         mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
         mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
     }
+
+    public AnchorPane getMainPane() {
+        return mainPane;
+    }
 }
