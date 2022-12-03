@@ -1,29 +1,19 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXSlider;
-import io.github.palexdev.materialfx.controls.MFXTableView;
-import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.Initializable;
+import javafx.collections.*;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
-import xyz.zcraft.acgpicdownload.gui.Notice;
+import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.*;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -34,8 +24,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 
-public class PixivRelatedPaneController implements Initializable {
-    TranslateTransition tt = new TranslateTransition();
+public class PixivRelatedPaneController extends MyPane {
     FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     private AnchorPane mainPane;
@@ -95,62 +84,23 @@ public class PixivRelatedPaneController implements Initializable {
 
     @javafx.fxml.FXML
     public void backToMenu() {
-        tt.stop();
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01);
-        tt.setDuration(Duration.millis(5));
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
-        tt.setFromY(0);
-        tt.setToY(mainPane.getHeight());
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
+        super.hide();
         gui.welcomePaneController.showMain();
     }
 
     public void show() {
         cookieField.setText(ConfigManager.getTempConfig().get("cookie"));
-        tt.stop();
-        AnchorPane.setTopAnchor(mainPane, 0d);
-        AnchorPane.setBottomAnchor(mainPane, 0d);
-        AnchorPane.setLeftAnchor(mainPane, 0d);
-        AnchorPane.setRightAnchor(mainPane, 0d);
-        mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
-        tt.setFromY(mainPane.getHeight());
-        tt.setOnFinished(null);
-        tt.setToY(0);
-        mainPane.setVisible(true);
-        tt.play();
+        super.show();
     }
 
     public void hide() {
-        tt.stop();
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01);
-        tt.setDuration(Duration.millis(5));
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
-        tt.setFromY(0);
-        tt.setToY(mainPane.getHeight());
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
+        super.hide();
         gui.welcomePaneController.openPixivPane();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mainPane.setVisible(false);
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setDuration(Duration.millis(5));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
+        super.initialize(url, resourceBundle);
 
         ft.setNode(loadingPane);
         ft.setFromValue(0);
@@ -168,14 +118,6 @@ public class PixivRelatedPaneController implements Initializable {
 
         cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
         cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
-    }
-
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
     }
 
     public void sendToDownloadBtnOnAction() {

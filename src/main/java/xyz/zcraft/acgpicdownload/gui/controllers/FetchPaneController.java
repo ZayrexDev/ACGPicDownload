@@ -10,12 +10,10 @@ import io.github.palexdev.materialfx.font.MFXFontIcon;
 import io.github.palexdev.materialfx.utils.StringUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -24,27 +22,14 @@ import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
-import xyz.zcraft.acgpicdownload.gui.Notice;
-import xyz.zcraft.acgpicdownload.gui.argpanes.ArgumentPane;
-import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane;
-import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedStringArgumentPane;
-import xyz.zcraft.acgpicdownload.gui.argpanes.StringArgumentPane;
-import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
-import xyz.zcraft.acgpicdownload.util.Logger;
-import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
-import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
-import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
-import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
-import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
+import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.base.MyPane;
+import xyz.zcraft.acgpicdownload.gui.base.argpanes.*;
+import xyz.zcraft.acgpicdownload.util.*;
+import xyz.zcraft.acgpicdownload.util.downloadutil.*;
+import xyz.zcraft.acgpicdownload.util.fetchutil.*;
+import xyz.zcraft.acgpicdownload.util.sourceutil.*;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.*;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -54,15 +39,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 
-public class FetchPaneController implements Initializable {
+public class FetchPaneController extends MyPane {
     private final LinkedList<ArgumentPane<?>> arguments = new LinkedList<>();
-    TranslateTransition tt = new TranslateTransition();
     TransformableList<Source> sourceTransformableList;
     FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     private MFXFilterComboBox<Source> sourcesComboBox;
     private ObservableList<Source> sources;
-    private GUI gui;
     @javafx.fxml.FXML
     private MFXButton fetchBtn;
     @javafx.fxml.FXML
@@ -134,38 +117,13 @@ public class FetchPaneController implements Initializable {
         dataTable.update();
     }
 
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
-    }
-
     public void show() {
-        tt.stop();
-        AnchorPane.setTopAnchor(mainPane, 0d);
-        AnchorPane.setBottomAnchor(mainPane, 0d);
-        AnchorPane.setLeftAnchor(mainPane, 0d);
-        AnchorPane.setRightAnchor(mainPane, 0d);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
-        mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
-        tt.setFromY(mainPane.getHeight());
-        tt.setOnFinished(null);
-        tt.setToY(0);
-        mainPane.setVisible(true);
-        tt.play();
+        super.show();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mainPane.setVisible(false);
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setDuration(Duration.millis(5));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
+        super.initialize(url, resourceBundle);
 
         ft.setNode(loadingPane);
         ft.setFromValue(0);

@@ -5,7 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox fx:id="pane" alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane">
+<HBox fx:id="pane" alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.base.argpanes.LimitedIntegerArgumentPane">
    <children>
       <Label fx:id="argNameLabel" maxHeight="1.7976931348623157E308" text="参数" />
       <MFXSlider fx:id="argSlider" popupPadding="-25.0" popupSide="OTHER_SIDE" tickUnit="1.0" />

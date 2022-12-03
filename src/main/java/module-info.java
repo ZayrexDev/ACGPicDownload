@@ -14,8 +14,10 @@ module xyz.zcraft.acgpicdownload {
     exports xyz.zcraft.acgpicdownload.gui.controllers;
     opens xyz.zcraft.acgpicdownload.util.sourceutil to com.alibaba.fastjson2;
     exports xyz.zcraft.acgpicdownload.util.sourceutil;
-    opens xyz.zcraft.acgpicdownload.gui.argpanes to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;
-    exports xyz.zcraft.acgpicdownload.gui.argpanes;
+    opens xyz.zcraft.acgpicdownload.gui.base to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;
+    exports xyz.zcraft.acgpicdownload.gui.base;
+    opens xyz.zcraft.acgpicdownload.gui.base.argpanes to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;
+    exports xyz.zcraft.acgpicdownload.gui.base.argpanes;
     opens xyz.zcraft.acgpicdownload.util.sourceutil.argument to javafx.base, javafx.controls, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
     exports xyz.zcraft.acgpicdownload.util.sourceutil.argument;
     opens xyz.zcraft.acgpicdownload.util.pixivutils to javafx.base, javafx.controls, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;

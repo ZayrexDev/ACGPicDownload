@@ -1,4 +1,4 @@
-package xyz.zcraft.acgpicdownload.gui.argpanes;
+package xyz.zcraft.acgpicdownload.gui.base.argpanes;
 
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import javafx.fxml.FXMLLoader;

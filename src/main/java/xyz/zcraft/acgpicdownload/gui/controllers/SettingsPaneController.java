@@ -3,21 +3,16 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
+import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import java.io.IOException;
@@ -25,7 +20,7 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class SettingsPaneController implements Initializable {
+public class SettingsPaneController extends MyPane {
     @javafx.fxml.FXML
     private AnchorPane mainPane;
 
@@ -44,8 +39,6 @@ public class SettingsPaneController implements Initializable {
     private String proxyHost;
     private int proxyPort;
 
-    GUI gui;
-    TranslateTransition tt = new TranslateTransition();
     @javafx.fxml.FXML
     private MFXRadioButton fetchPLCOCopy;
     @javafx.fxml.FXML
@@ -54,29 +47,11 @@ public class SettingsPaneController implements Initializable {
     private MFXRadioButton fetchPLCOOpen;
 
     public void show() {
-        tt.stop();
-        AnchorPane.setTopAnchor(mainPane, 0d);
-        AnchorPane.setBottomAnchor(mainPane, 0d);
-        AnchorPane.setLeftAnchor(mainPane, 0d);
-        AnchorPane.setRightAnchor(mainPane, 0d);
-        mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
-        mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
-        tt.setFromY(mainPane.getHeight());
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setOnFinished(null);
-        tt.setToY(0);
-        mainPane.setVisible(true);
-        tt.play();
+        super.show();
     }
 
     public void hide() {
-        tt.stop();
-        tt.setFromY(0);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setToY(mainPane.getHeight());
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
+        super.hide();
         gui.welcomePaneController.showMain();
     }
 
@@ -100,12 +75,7 @@ public class SettingsPaneController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mainPane.setVisible(false);
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setDuration(Duration.millis(5));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
+       super.initialize(location, resources);
 
         proxyField.textProperty().addListener(this::verifyProxy);
 
@@ -197,13 +167,5 @@ public class SettingsPaneController implements Initializable {
         else locale = Locale.getDefault();
         if (languageCombo.getItems().contains(locale)) languageCombo.getSelectionModel().selectItem(locale);
         else languageCombo.getSelectionModel().selectFirst();
-    }
-
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
     }
 }

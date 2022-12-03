@@ -4,31 +4,23 @@ import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
-import xyz.zcraft.acgpicdownload.gui.Notice;
-import xyz.zcraft.acgpicdownload.util.Logger;
-import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.base.MyPane;
+import xyz.zcraft.acgpicdownload.util.*;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownloadUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.*;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -38,9 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class PixivDownloadPaneController implements Initializable {
-    GUI gui;
-    TranslateTransition tt = new TranslateTransition();
+public class PixivDownloadPaneController extends MyPane {
     @FXML
     private MFXTableView<PixivDownload> dataTable;
     @FXML
@@ -72,18 +62,7 @@ public class PixivDownloadPaneController implements Initializable {
 
     @javafx.fxml.FXML
     public void backToMenu() {
-        tt.stop();
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01);
-        tt.setDuration(Duration.millis(5));
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
-        tt.setFromY(0);
-        tt.setToY(mainPane.getHeight());
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
+        super.hide();
         gui.welcomePaneController.showMain();
     }
 
@@ -116,14 +95,6 @@ public class PixivDownloadPaneController implements Initializable {
         Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")), a - data.size()), gui.mainPane);
     }
 
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
-    }
-
     public ObservableList<PixivDownload> getData() {
         return data;
     }
@@ -131,24 +102,11 @@ public class PixivDownloadPaneController implements Initializable {
     public void show() {
         mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
         mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
-        tt.stop();
-        tt.setFromY(mainPane.getHeight());
-        tt.setOnFinished(null);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setToY(0);
-        mainPane.setVisible(true);
-        tt.play();
+        super.show();
     }
 
     public void backBtnOnAction() {
-        tt.stop();
-        tt.setNode(mainPane);
-        tt.setFromY(0);
-        tt.setToY(mainPane.getHeight());
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
+        super.hide();
         gui.welcomePaneController.openPixivPane();
     }
 
@@ -214,16 +172,7 @@ public class PixivDownloadPaneController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        AnchorPane.setTopAnchor(mainPane, 0d);
-        AnchorPane.setBottomAnchor(mainPane, 0d);
-        AnchorPane.setLeftAnchor(mainPane, 0d);
-        AnchorPane.setRightAnchor(mainPane, 0d);
-        mainPane.setVisible(false);
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setDuration(Duration.millis(5));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
+        super.initialize(location, resources);
 
         initTable();
 

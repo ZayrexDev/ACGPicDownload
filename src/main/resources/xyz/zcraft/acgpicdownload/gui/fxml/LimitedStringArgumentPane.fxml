@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="38.0" prefWidth="244.0"
       style="-fx-border-radius: 10;" xmlns="http://javafx.com/javafx/19"
-      fx:controller="xyz.zcraft.acgpicdownload.gui.argpanes.LimitedStringArgumentPane">
+      fx:controller="xyz.zcraft.acgpicdownload.gui.base.argpanes.LimitedStringArgumentPane">
    <children>
       <MFXComboBox fx:id="argCombo" floatMode="BORDER" floatingText="参数" maxWidth="1.7976931348623157E308"
                    minHeight="30.0"/>
