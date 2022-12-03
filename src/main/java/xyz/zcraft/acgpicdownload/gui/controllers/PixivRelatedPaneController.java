@@ -48,8 +48,6 @@ public class PixivRelatedPaneController extends MyPane {
     private Label subOperationLabel;
     private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
 
-    private GUI gui;
-
     @javafx.fxml.FXML
     public void backBtnOnAction() {
         hide();

@@ -4,7 +4,6 @@ import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -97,18 +96,7 @@ public class PixivMenuPaneController extends MyPane {
 
     @javafx.fxml.FXML
     public void backToMenu() {
-        tt.stop();
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01);
-        tt.setDuration(Duration.millis(5));
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
-        tt.setFromY(0);
-        tt.setToY(mainPane.getHeight());
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
+        super.hide();
         gui.welcomePaneController.showMain();
     }
 

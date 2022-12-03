@@ -9,7 +9,6 @@ import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import io.github.palexdev.materialfx.utils.StringUtils;
 import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -337,17 +336,7 @@ public class FetchPaneController extends MyPane {
 
     @javafx.fxml.FXML
     public void backBtnOnAction() {
-        tt.stop();
-        tt.setNode(mainPane);
-        tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setAutoReverse(true);
-        tt.setDuration(Duration.millis(5));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
-        tt.setFromY(0);
-        tt.setToY(mainPane.getHeight());
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
+        super.hide();
         gui.welcomePaneController.showMain();
     }
 

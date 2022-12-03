@@ -15,34 +15,27 @@ import xyz.zcraft.acgpicdownload.gui.GUI;
 
 public class MyPane implements Initializable{
     protected GUI gui;
-    protected TranslateTransition tt = new TranslateTransition();
+    private TranslateTransition tt = new TranslateTransition();
+    private TranslateTransition tt2 = new TranslateTransition();
     @FXML
     protected AnchorPane mainPane;
 
     public void show() {
         tt.stop();
-        AnchorPane.setTopAnchor(mainPane, 0d);
-        AnchorPane.setBottomAnchor(mainPane, 0d);
-        AnchorPane.setLeftAnchor(mainPane, 0d);
-        AnchorPane.setRightAnchor(mainPane, 0d);
-        mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
         tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
         tt.setFromY(mainPane.getHeight());
-        tt.setOnFinished(null);
-        tt.setToY(0);
+        tt.setOnFinished((e)->tt2.play());
+        tt.setToY(-10);
+        tt2.setFromY(-10);
+        tt2.setOnFinished(null);
+        tt2.setToY(0);
         mainPane.setVisible(true);
         tt.play();
     }
 
     public void hide() {
         tt.stop();
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01);
-        tt.setDuration(Duration.millis(5));
         tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
         tt.setFromY(0);
         tt.setToY(mainPane.getHeight());
         mainPane.setVisible(true);
@@ -57,11 +50,18 @@ public class MyPane implements Initializable{
         AnchorPane.setLeftAnchor(mainPane, 0d);
         AnchorPane.setRightAnchor(mainPane, 0d);
         mainPane.setVisible(false);
+
         tt.setNode(mainPane);
         tt.setAutoReverse(true);
         tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setDuration(Duration.millis(5));
         tt.setInterpolator(Interpolator.EASE_BOTH);
+
+        tt2.setNode(mainPane);
+        tt2.setAutoReverse(true);
+        tt2.setRate(0.05 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
+        tt2.setDuration(Duration.millis(5));
+        tt2.setInterpolator(Interpolator.EASE_BOTH);
     }
 
     public GUI getGui() {
@@ -70,5 +70,7 @@ public class MyPane implements Initializable{
 
     public void setGui(GUI gui) {
         this.gui = gui;
+        mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
+        mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
     }
 }
