@@ -1,4 +1,4 @@
-package xyz.zcraft.acgpicdownload.gui.argpanes;
+package xyz.zcraft.acgpicdownload.gui.base.argpanes;
 
 import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
 

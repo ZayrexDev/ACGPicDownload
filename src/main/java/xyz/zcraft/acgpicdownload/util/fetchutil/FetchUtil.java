@@ -128,7 +128,7 @@ public class FetchUtil {
             dr.setResult(result);
             tpe.execute(() -> {
                 try {
-                    new DownloadUtil(1).download(result, outDir, dr, saveFullResult);
+                    new DownloadUtil(1).download(result, outDir, dr, saveFullResult, null);
                 } catch (Exception e) {
                     Main.logError(e);
                     dr.setStatus(DownloadStatus.FAILED);
@@ -163,7 +163,7 @@ public class FetchUtil {
                 tpe.execute(() -> {
                     try {
                         new DownloadUtil(1).download(downloadResult.getResult(), outDir, downloadResult,
-                                saveFullResult);
+                                saveFullResult, null);
                     } catch (Exception e) {
                         Main.logError(e);
                         downloadResult.setStatus(DownloadStatus.FAILED);

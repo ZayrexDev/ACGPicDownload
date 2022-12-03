@@ -1,43 +1,65 @@
-package xyz.zcraft.acgpicdownload.gui.scenes;
+package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
+import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ErrorPaneController {
     @javafx.fxml.FXML
     private AnchorPane errorPane;
     @javafx.fxml.FXML
-    private TextArea errorArea;
+    private Label errorLabel;
     @javafx.fxml.FXML
     private MFXButton errorOkBtn;
     @javafx.fxml.FXML
     private ImageView bg;
+    private Pane parent;
 
-    public static ErrorPaneController getInstance() {
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")));
+    public static ErrorPaneController getInstance(Pane parent) {
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")),ResourceBundleUtil.getResource());
         try {
             loader.load();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return loader.getController();
+        return ((ErrorPaneController)loader.getController()).setParent(parent);
+    }
+
+    public ErrorPaneController setParent(Pane parent) {
+        this.parent = parent;
+        return this;
     }
 
     public AnchorPane getErrorPane() {
         return errorPane;
+    }
+
+    @javafx.fxml.FXML
+    private void copyErrorMsg(){
+        Toolkit.getDefaultToolkit().getSystemClipboard()
+                                .setContents(new StringSelection(errorLabel.getText()), null);
+        Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), parent);
     }
 
     public void hide() {
@@ -75,10 +97,19 @@ public class ErrorPaneController {
     }
 
     public void setErrorMessage(String message) {
-        errorArea.setText(message);
+        errorLabel.setText(message);
     }
 
     public void errorOkBtnOnAction(ActionEvent actionEvent) {
         hide();
+    }
+
+    @FXML
+    public void openFAQ() throws IOException, URISyntaxException{
+        if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
+            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/常见问题"));
+        } else {
+            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/FAQ"));
+        }
     }
 }

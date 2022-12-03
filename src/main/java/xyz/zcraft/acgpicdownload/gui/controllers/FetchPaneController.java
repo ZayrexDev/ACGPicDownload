@@ -1,4 +1,4 @@
-package xyz.zcraft.acgpicdownload.gui.scenes;
+package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
@@ -9,44 +9,26 @@ import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import io.github.palexdev.materialfx.utils.StringUtils;
 import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
-import xyz.zcraft.acgpicdownload.gui.Notice;
-import xyz.zcraft.acgpicdownload.gui.argpanes.ArgumentPane;
-import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedIntegerArgumentPane;
-import xyz.zcraft.acgpicdownload.gui.argpanes.LimitedStringArgumentPane;
-import xyz.zcraft.acgpicdownload.gui.argpanes.StringArgumentPane;
-import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
-import xyz.zcraft.acgpicdownload.util.Logger;
-import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
-import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
-import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
-import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
-import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
+import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.base.MyPane;
+import xyz.zcraft.acgpicdownload.gui.base.argpanes.*;
+import xyz.zcraft.acgpicdownload.util.*;
+import xyz.zcraft.acgpicdownload.util.downloadutil.*;
+import xyz.zcraft.acgpicdownload.util.fetchutil.*;
+import xyz.zcraft.acgpicdownload.util.sourceutil.*;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.*;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -56,15 +38,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 
-public class FetchPaneController implements Initializable {
+public class FetchPaneController extends MyPane {
     private final LinkedList<ArgumentPane<?>> arguments = new LinkedList<>();
-    TranslateTransition tt = new TranslateTransition();
     TransformableList<Source> sourceTransformableList;
     FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     private MFXFilterComboBox<Source> sourcesComboBox;
     private ObservableList<Source> sources;
-    private GUI gui;
     @javafx.fxml.FXML
     private MFXButton fetchBtn;
     @javafx.fxml.FXML
@@ -92,16 +72,12 @@ public class FetchPaneController implements Initializable {
     private MFXProgressBar progressBar;
     @javafx.fxml.FXML
     private Label statusLabel;
-    @javafx.fxml.FXML
-    private MFXTextField proxyField;
     private boolean downloading;
     private DownloadManager dm;
     @javafx.fxml.FXML
     private MFXButton backBtn;
     @javafx.fxml.FXML
     private HBox argumentsPane;
-    private String proxyHost;
-    private int proxyPort;
     @javafx.fxml.FXML
     private MFXButton selectDirBtn;
     @javafx.fxml.FXML
@@ -109,10 +85,15 @@ public class FetchPaneController implements Initializable {
     @javafx.fxml.FXML
     private MFXButton updateFromGithubBtn;
 
+
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         downloading = true;
-        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data), Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath() : outputDirField.getText(), new Logger("GUI", System.out, Main.log), fullResultToggle.isSelected(), true, (int) threadCountSlider.getValue(), () -> Platform.runLater(this::updateStatus),true);
+        FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data),
+                Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath()
+                        : outputDirField.getText(),
+                new Logger("GUI", System.out, Main.log), fullResultToggle.isSelected(), true,
+                (int) threadCountSlider.getValue(), () -> Platform.runLater(this::updateStatus), true);
         downloading = false;
     }
 
@@ -123,7 +104,10 @@ public class FetchPaneController implements Initializable {
 
         progressBar.setProgress(dm.getPercentComplete());
         if (downloading) {
-            String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + dm.getCreated() + " " + ResourceBundleUtil.getString("cli.download.status.started") + dm.getStarted() + " " + ResourceBundleUtil.getString("cli.download.status.completed") + dm.getCompleted() + " " + ResourceBundleUtil.getString("cli.download.status.failed") + dm.getFailed() + " " + dm.getSpeed();
+            String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + dm.getCreated() + " "
+                    + ResourceBundleUtil.getString("cli.download.status.started") + dm.getStarted() + " "
+                    + ResourceBundleUtil.getString("cli.download.status.completed") + dm.getCompleted() + " "
+                    + ResourceBundleUtil.getString("cli.download.status.failed") + dm.getFailed() + " " + dm.getSpeed();
             Platform.runLater(() -> statusLabel.setText(sb));
         } else {
             Platform.runLater(() -> statusLabel.setText(ResourceBundleUtil.getString("cli.download.status.completed")));
@@ -132,35 +116,13 @@ public class FetchPaneController implements Initializable {
         dataTable.update();
     }
 
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
-    }
-
     public void show() {
-        AnchorPane.setTopAnchor(mainPane, 0d);
-        AnchorPane.setBottomAnchor(mainPane, 0d);
-        AnchorPane.setLeftAnchor(mainPane, 0d);
-        AnchorPane.setRightAnchor(mainPane, 0d);
-        mainPane.maxWidthProperty().bind(gui.mainStage.widthProperty());
-        mainPane.maxHeightProperty().bind(gui.mainStage.heightProperty());
-        tt.setFromY(mainPane.getHeight());
-        tt.setToY(0);
-        mainPane.setVisible(true);
-        tt.play();
+        super.show();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mainPane.setVisible(false);
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01);
-        tt.setDuration(Duration.millis(5));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
+        super.initialize(url, resourceBundle);
 
         ft.setNode(loadingPane);
         ft.setFromValue(0);
@@ -176,15 +138,12 @@ public class FetchPaneController implements Initializable {
         fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
         data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size() == 0));
 
-        proxyField.textProperty().addListener(this::verifyProxy);
-
         try {
             ConfigManager.readConfig();
             restoreConfig();
         } catch (IOException e) {
             Main.logError(e);
         }
-
 
         sourceUpdateBtn.setGraphic(new MFXFontIcon("mfx-sync"));
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
@@ -195,9 +154,12 @@ public class FetchPaneController implements Initializable {
     private void initTable() {
         data = FXCollections.observableArrayList(new DownloadResult());
 
-        MFXTableColumn<DownloadResult> titleColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.fetch.table.column.fileName"), true);
-        MFXTableColumn<DownloadResult> linkColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.fetch.table.column.link"), true);
-        MFXTableColumn<DownloadResult> statusColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.fetch.table.column.status"), true);
+        MFXTableColumn<DownloadResult> titleColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.fetch.table.column.fileName"), true);
+        MFXTableColumn<DownloadResult> linkColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.fetch.table.column.link"), true);
+        MFXTableColumn<DownloadResult> statusColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.fetch.table.column.status"), true);
 
         titleColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getFileName()));
         linkColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
@@ -213,19 +175,37 @@ public class FetchPaneController implements Initializable {
 
         dataTable.getTableColumns().addAll(List.of(titleColumn, linkColumn, statusColumn));
 
-        dataTable.getFilters().addAll(List.of(new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.fileName"), arg0 -> arg0.getResult().getFileName()), new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.link"), arg0 -> arg0.getResult().getUrl()), new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.status"), DownloadResult::getStatusString)));
+        dataTable.getFilters()
+                .addAll(List.of(
+                        new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.fileName"),
+                                arg0 -> arg0.getResult().getFileName()),
+                        new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.link"),
+                                arg0 -> arg0.getResult().getUrl()),
+                        new StringFilter<>(ResourceBundleUtil.getString("gui.fetch.table.column.status"),
+                                DownloadResult::getStatusString)));
 
         dataTable.setItems(data);
 
         dataTable.getSelectionModel().setAllowsMultipleSelection(false);
-        dataTable.getSelectionModel().selectionProperty().addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
-            List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
-            if (selectedValues.size() > 0) {
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
-                dataTable.getSelectionModel().clearSelection();
-                Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
-            }
-        });
+        dataTable.getSelectionModel().selectionProperty()
+                .addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
+                    List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
+                    if (selectedValues.size() > 0) {
+                        if (selectedValues.get(0).getStatus() == DownloadStatus.COMPLETED &&
+                                ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy")) {
+                            Toolkit.getDefaultToolkit().getSystemClipboard()
+                                    .setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
+                            dataTable.getSelectionModel().clearSelection();
+                            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
+                        } else {
+                            try {
+                                Desktop.getDesktop().open(new File(outputDirField.getText(), selectedValues.get(0).getResult().getFileName()));
+                            } catch (IOException e) {
+                                Notice.showError(ResourceBundleUtil.getString("gui.fetch.table.cantOpen"), gui.mainPane);
+                            }
+                        }
+                    }
+                });
 
         data.clear();
     }
@@ -272,7 +252,6 @@ public class FetchPaneController implements Initializable {
             try {
                 SourceManager.updateFromGithub();
             } catch (IOException e) {
-                // Notice.showError(ResourceBundleUtil.getString("gui.fetch.notice.cannotUpdateGithub"), gui.mainPane);
                 Main.logError(e);
                 gui.showError(e);
             } finally {
@@ -312,13 +291,19 @@ public class FetchPaneController implements Initializable {
             }
 
             FetchUtil.replaceArgument(s, args);
-            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(), new Logger("GUI", System.out, Main.log), true, proxyHost, proxyPort, new ExceptionHandler() {
-                @Override
-                public void handle(Exception e) {
-                    gui.showError(e);
-                    Main.logError(e);
-                }
-            });
+
+            ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(),
+                    new Logger("GUI", System.out, Main.log),
+                     true,
+                      ConfigManager.getConfig().getString("proxyHost"),
+                      Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0),
+                      new ExceptionHandler() {
+                        @Override
+                        public void handle(Exception e) {
+                            gui.showError(e);
+                            Main.logError(e);
+                        }
+                      });
             LinkedList<DownloadResult> drs = new LinkedList<>();
             for (Result result : r1) {
                 DownloadResult dr = new DownloadResult();
@@ -326,6 +311,7 @@ public class FetchPaneController implements Initializable {
                 r.add(dr);
                 drs.add(dr);
             }
+
             dm = new DownloadManager(drs.toArray(new DownloadResult[]{}));
 
             Platform.runLater(() -> {
@@ -342,23 +328,16 @@ public class FetchPaneController implements Initializable {
     public void delCompletedBtnOnAction() {
         int a = data.size();
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
-        Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")), a - data.size()), gui.mainPane);
+        Notice.showSuccess(
+                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")),
+                        a - data.size()),
+                gui.mainPane);
     }
 
     @javafx.fxml.FXML
     public void backBtnOnAction() {
-        TranslateTransition tt = new TranslateTransition();
-        tt.setNode(mainPane);
-        tt.setAutoReverse(true);
-        tt.setRate(0.01);
-        tt.setDuration(Duration.millis(5));
-        tt.setInterpolator(Interpolator.EASE_BOTH);
-        tt.setFromY(0);
-        tt.setToY(mainPane.getHeight());
-        mainPane.setVisible(true);
-        tt.setOnFinished((e) -> Platform.runLater(() -> mainPane.setVisible(false)));
-        tt.play();
-        gui.welcomePaneController.playAnimation();
+        super.hide();
+        gui.welcomePaneController.showMain();
     }
 
     private void updateSource() {
@@ -424,46 +403,18 @@ public class FetchPaneController implements Initializable {
     @javafx.fxml.FXML
     public void selectDirBtnOnAction() {
         DirectoryChooser fc = new DirectoryChooser();
-        fc.setTitle("选择目录");
+        fc.setTitle("...");
         File showDialog = fc.showDialog(gui.mainStage);
         if (showDialog != null) {
             outputDirField.setText(showDialog.getAbsolutePath());
         }
     }
 
-    private void verifyProxy(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if (!newValue.isEmpty()) {
-            String[] str = newValue.split(":");
-            if (str.length == 2) {
-                proxyHost = str[0];
-                try {
-                    proxyPort = Integer.parseInt(str[1]);
-                } catch (NumberFormatException ignored) {
-                    proxyHost = null;
-                    proxyPort = 0;
-                    proxyField.setTextFill(Color.RED);
-                    return;
-                }
-            }
-            if (proxyHost != null && proxyPort != 0) {
-                System.getProperties().put("proxySet", "true");
-                System.getProperties().put("proxyHost", proxyHost);
-                System.getProperties().put("proxyPort", String.valueOf(proxyPort));
-                proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
-            } else {
-                proxyField.setTextFill(Color.RED);
-            }
-        } else {
-            proxyHost = null;
-            proxyPort = 0;
-            proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
-        }
-    }
-
     public void saveConfig() {
         JSONObject obj = ConfigManager.getConfig();
+        obj = obj.getJSONObject("fetch");
+        if(obj == null) obj = new JSONObject();
         obj.put("times", (int) timesSlider.getValue());
-        obj.put("proxy", proxyField.getText());
         obj.put("output", outputDirField.getText());
         obj.put("threadCount", (int) threadCountSlider.getValue());
         obj.put("full", fullResultToggle.isSelected());
@@ -480,6 +431,7 @@ public class FetchPaneController implements Initializable {
             sourceObj.put(sourcesComboBox.getSelectedItem().getName(), sourceCfg);
         }
         obj.put("sources", sourceObj);
+        ConfigManager.getConfig().put("fetch", obj);
 
         try {
             ConfigManager.saveConfig();
@@ -493,19 +445,21 @@ public class FetchPaneController implements Initializable {
     public void restoreConfig() {
         JSONObject json = ConfigManager.getConfig();
         if (json != null) {
-            timesSlider.setValue(Objects.requireNonNullElse(json.getInteger("times"), 1));
-            proxyField.setText(Objects.requireNonNullElse(json.getString("proxy"), ""));
-            outputDirField.setText(Objects.requireNonNullElse(json.getString("output"), ""));
-            threadCountSlider.setValue(Objects.requireNonNullElse(json.getInteger("threadCount"), 10));
-            fullResultToggle.setSelected(json.getBooleanValue("full"));
+            json = json.getJSONObject("fetch");
+            if (json != null) {
+                timesSlider.setValue(Objects.requireNonNullElse(json.getInteger("times"), 1));
+                outputDirField.setText(Objects.requireNonNullElse(json.getString("output"), ""));
+                threadCountSlider.setValue(Objects.requireNonNullElse(json.getInteger("threadCount"), 10));
+                fullResultToggle.setSelected(json.getBooleanValue("full"));
 
-            String name = json.getString("source");
-            if (name != null) {
-                ObservableList<Source> items = sourcesComboBox.getItems();
-                for (Source i : items) {
-                    if (i.getName().equals(name)) {
-                        sourcesComboBox.getSelectionModel().selectItem(i);
-                        break;
+                String name = json.getString("source");
+                if (name != null) {
+                    ObservableList<Source> items = sourcesComboBox.getItems();
+                    for (Source i : items) {
+                        if (i.getName().equals(name)) {
+                            sourcesComboBox.getSelectionModel().selectItem(i);
+                            break;
+                        }
                     }
                 }
             }
@@ -513,16 +467,18 @@ public class FetchPaneController implements Initializable {
     }
 
     public void restoreSourceConfig() {
-        JSONObject json = ConfigManager.getConfig();
+        JSONObject json = ConfigManager.getConfig().getJSONObject("fetch");
         if (json == null) return;
         json = json.getJSONObject("sources");
         if (json == null) return;
         String name = sourcesComboBox.getSelectedItem().getName();
         json = json.getJSONObject(name);
-        if (json == null) return;
+        if (json == null)
+            return;
         for (ArgumentPane<?> argumentPane : arguments) {
             Object t = json.get(argumentPane.getArgument().getName());
-            if (t == null) continue;
+            if (t == null)
+                continue;
             Argument<?> argument = argumentPane.getArgument();
             if (argument instanceof LimitedStringArgument arg) {
                 if (t instanceof String v) {

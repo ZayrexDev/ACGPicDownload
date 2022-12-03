@@ -35,7 +35,7 @@ public class SourceManager {
     public static void updateFromGithub() throws IOException{
         File f = new File("sources.json");
         if(f.exists()) f.delete();
-        DownloadUtil.download(f, GITHUB_LINK);
+        DownloadUtil.download(f, GITHUB_LINK, null);
     }
 
     private static String readStringFromConfig() throws IOException {

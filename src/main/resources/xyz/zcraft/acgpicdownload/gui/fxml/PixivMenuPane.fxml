@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivMenuPaneController">
+   <children>
+      <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0" stylesheets="@../default.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <MFXButton fx:id="backBtn" onAction="#backBtnOnAction"/>
+                  <HBox alignment="BOTTOM_LEFT">
+                     <children>
+                        <Label onMouseClicked="#backToMenu" text="%gui.path.home" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label onMouseClicked="#backBtnOnAction" text="%gui.path.pixiv" textFill="#595959">
+                           <cursor>
+                              <Cursor fx:constant="HAND"/>
+                           </cursor>
+                        </Label>
+                        <Label text="/" textFill="#595959"/>
+                        <Label text="%gui.pixiv.menu.title">
+                           <font>
+                              <Font size="16.0"/>
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="600.0" spacing="10.0">
+               <children>
+                  <MFXPasswordField fx:id="cookieField" allowCopy="true" allowCut="true" allowPaste="true"
+                                    floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie" maxHeight="30.0"
+                                    maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
+                                    HBox.hgrow="ALWAYS"/>
+                  <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelpBtnOnAction"/>
+                  <MFXButton onAction="#submitCookie" text="%gui.pixiv.menu.submitCookie"/>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="15.0">
+               <children>
+                  <Label text="%gui.pixiv.menu.maxCount" />
+                  <MFXSlider fx:id="maxCountSlider" max="500.0" min="1.0" value="200.0" />
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <Label text="%gui.pixiv.menu.relatedDepth" />
+                  <MFXSlider fx:id="relatedDepthSlider" max="5.0" value="1.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="0.0" prefWidth="722.0">
+               <children>
+                  <Label text="%gui.pixiv.menu.typeToFetch" />
+                  <MFXToggleButton fx:id="fromFollowToggle" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%gui.pixiv.menu.from.follow" />
+                  <MFXToggleButton fx:id="fromRecToggle" layoutX="247.0" layoutY="10.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%gui.pixiv.menu.from.recommend" />
+                  <MFXToggleButton fx:id="fromRecUserToggle" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%fetch.pixiv.from.recommendUser" />
+                  <MFXToggleButton fx:id="fromRecTagToggle" layoutX="312.0" layoutY="10.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" selected="true" text="%fetch.pixiv.from.recommendTag" />
+                  <MFXToggleButton fx:id="fromOtherToggle" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" text="%gui.pixiv.menu.from.other" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" spacing="10.0">
+               <children>
+                  <MFXButton onAction="#fetchBtnOnAction" text="%gui.pixiv.menu.fetch" />
+                  <Separator maxHeight="20.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0" />
+                  <MFXButton layoutX="10.0" layoutY="10.0" onAction="#copySelected" text="%gui.pixiv.menu.copySelected" />
+                  <MFXButton layoutX="111.0" layoutY="10.0" onAction="#clearSelected" text="%gui.pixiv.menu.clearSelected" />
+                  <Separator layoutX="84.0" layoutY="13.0" maxHeight="20.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0" />
+                  <MFXButton onAction="#sendToDownloadBtnOnAction" text="%gui.pixiv.menu.sendToDownload" />
+                  <MFXButton layoutX="272.0" layoutY="10.0" onAction="#sendSelectedToDownloadBtnOnAction" text="%gui.pixiv.menu.sendSelectedToDownload" />
+                  <Separator layoutX="334.0" layoutY="13.0" maxHeight="20.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0" />
+                  <MFXButton layoutX="373.0" layoutY="10.0" onAction="#removeSelectedBtnOnAction" text="%gui.pixiv.menu.deleteSelected" />
+               </children>
+            </HBox>
+            <MFXTableView fx:id="dataTable" footerVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+      <AnchorPane fx:id="loadingPane" layoutX="30.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ffffffb8;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane layoutY="171.1999969482422" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="150.0">
+               <children>
+                  <Label fx:id="operationLabel" text="正在加载" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="subOperationLabel" alignment="TOP_LEFT" text="..." AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
+                  <MFXProgressBar layoutY="52.0" maxWidth="1.7976931348623157E308" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

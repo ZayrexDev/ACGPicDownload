@@ -45,3 +45,6 @@ build/
 /sources.json
 /src/main/resources/META-INF/
 /config.json
+/ACGPicDownload.exe
+/pic/
+/bg/

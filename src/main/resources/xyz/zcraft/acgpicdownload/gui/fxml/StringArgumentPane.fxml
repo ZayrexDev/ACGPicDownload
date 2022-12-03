@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="pane" prefHeight="38.0" prefWidth="244.0"
       style="-fx-border-radius: 10;" xmlns="http://javafx.com/javafx/19"
-      fx:controller="xyz.zcraft.acgpicdownload.gui.argpanes.StringArgumentPane">
+      fx:controller="xyz.zcraft.acgpicdownload.gui.base.argpanes.StringArgumentPane">
    <children>
       <MFXTextField fx:id="argField" floatMode="BORDER" floatingText="参数" maxWidth="1.7976931348623157E308"
                     minHeight="30.0" prefHeight="9.0" prefWidth="600.0"/>

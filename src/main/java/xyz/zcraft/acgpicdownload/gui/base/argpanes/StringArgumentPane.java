@@ -1,4 +1,4 @@
-package xyz.zcraft.acgpicdownload.gui.argpanes;
+package xyz.zcraft.acgpicdownload.gui.base.argpanes;
 
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.fxml.FXMLLoader;

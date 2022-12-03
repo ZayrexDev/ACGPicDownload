@@ -4,9 +4,17 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class ResourceBundleUtil {
-    private static final ResourceBundle BUNDLE;
+    private static ResourceBundle BUNDLE;
 
     static {
+        loadDefault();
+    }
+
+    public static void load(String language){
+        BUNDLE = ResourceBundle.getBundle("xyz.zcraft.acgpicdownload.languages.String", Locale.forLanguageTag(language));
+    }
+
+    public static void loadDefault(){
         BUNDLE = ResourceBundle.getBundle("xyz.zcraft.acgpicdownload.languages.String", Locale.getDefault());
     }
 

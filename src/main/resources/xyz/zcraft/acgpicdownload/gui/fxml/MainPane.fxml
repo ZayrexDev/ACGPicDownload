@@ -3,38 +3,27 @@
 <?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.BoxBlur?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="1.7976931348623157E308"
-            maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../default.css"
-            xmlns="http://javafx.com/javafx/19" fx:controller="xyz.zcraft.acgpicdownload.gui.scenes.MainPaneController">
+
+<AnchorPane fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.MainPaneController">
     <children>
-        <ImageView fx:id="background" fitHeight="360.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true"
-                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                   AnchorPane.topAnchor="0.0">
-            <image>
-                <Image url="@../bg.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="blurImg" fitHeight="360.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true"
-                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                   AnchorPane.topAnchor="0.0">
+        <ImageView fx:id="background" fitHeight="360.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+        <ImageView fx:id="blurImg" fitHeight="360.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <effect>
-                <BoxBlur height="10.0" iterations="2" width="10.0"/>
+                <BoxBlur height="10.0" iterations="2" width="10.0" />
             </effect>
         </ImageView>
-        <VBox fx:id="initPane" alignment="CENTER" fillWidth="false" visible="false" AnchorPane.bottomAnchor="0.0"
-              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox fx:id="initPane" alignment="CENTER" fillWidth="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <Label text="ACGPicDownloader">
                     <font>
-                        <Font name="Segoe UI" size="35.0"/>
+                        <Font name="Segoe UI" size="35.0" />
                     </font>
                 </Label>
-                <MFXProgressBar fx:id="initProgressBar" maxWidth="1.7976931348623157E308" prefWidth="300.0"
-                                progress="0.0"/>
+                <MFXProgressBar fx:id="initProgressBar" maxWidth="1.7976931348623157E308" prefWidth="300.0" progress="0.0" />
             </children>
         </VBox>
     </children>

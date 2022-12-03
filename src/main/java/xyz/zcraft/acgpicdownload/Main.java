@@ -1,9 +1,13 @@
 package xyz.zcraft.acgpicdownload;
 
+import io.github.palexdev.materialfx.i18n.I18N;
+import io.github.palexdev.materialfx.i18n.Language;
 import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.Schedule;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.SSLUtil;
+
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -12,9 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import io.github.palexdev.materialfx.i18n.I18N;
-import io.github.palexdev.materialfx.i18n.Language;
 
 public class Main {
     private static boolean debug = false;
@@ -53,19 +54,25 @@ public class Main {
             } catch (FileNotFoundException ignored) {
             }
         }
+        e.printStackTrace();
         err.print("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]");
         e.printStackTrace(err);
         err.flush();
     }
 
     public static void main(String[] args) {
+        try {
+            SSLUtil.ignoreSsl();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setMFXLanguage();
         ArrayList<String> argList = new ArrayList<>(List.of(args));
         try {
             log = new PrintStream("out.log");
         } catch (FileNotFoundException ignored) {}
         if (argList.size() == 0) {
-            GUI.main(args);
+            GUI.start(args);
         } else if (argList.get(0).equalsIgnoreCase("fetch")) {
             argList.remove(0);
             Fetch f = new Fetch();

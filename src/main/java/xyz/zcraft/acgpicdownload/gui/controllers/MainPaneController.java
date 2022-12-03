@@ -1,8 +1,9 @@
-package xyz.zcraft.acgpicdownload.gui.scenes;
+package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXProgressBar;
 import javafx.animation.FadeTransition;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -39,6 +40,10 @@ public class MainPaneController implements Initializable {
 
     public void setBackground(InputStream stream) {
         background.setImage(new Image(stream));
+        WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
+        blurImg.setImage(snapshot);
+        blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
+        background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
     }
 
     public GUI getGui() {
@@ -47,6 +52,14 @@ public class MainPaneController implements Initializable {
 
     public void setGui(GUI gui) {
         this.gui = gui;
+        background.fitWidthProperty().bind(gui.mainStage.widthProperty());
+        background.fitHeightProperty().bind(gui.mainStage.heightProperty());
+        blurImg.fitWidthProperty().bind(gui.mainStage.widthProperty());
+        blurImg.fitHeightProperty().bind(gui.mainStage.heightProperty());
+        blurImg.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
+        background.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
+        WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
+        blurImg.setImage(snapshot);
     }
 
     public VBox getInitPane() {
@@ -58,7 +71,11 @@ public class MainPaneController implements Initializable {
     }
 
     public void setProgress(double p) {
-        initProgressBar.setProgress(p);
+        if (p == 1) {
+            initProgressBar.setProgress(-1);
+        } else {
+            initProgressBar.setProgress(p);
+        }
     }
 
     public void initDone() {
@@ -78,14 +95,10 @@ public class MainPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        background.fitWidthProperty().bind(mainPane.widthProperty());
-        background.fitHeightProperty().bind(mainPane.heightProperty());
-        blurImg.fitWidthProperty().bind(mainPane.widthProperty());
-        blurImg.fitHeightProperty().bind(mainPane.heightProperty());
-
-        WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
-        blurImg.setImage(snapshot);
-
+        // mainPane.widthProperty().addListener((observable, oldValue, newValue) -> blurImg
+        //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
+        // mainPane.heightProperty().addListener((observable, oldValue, newValue) -> blurImg
+        //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
         initPane.setVisible(true);
     }
 }
