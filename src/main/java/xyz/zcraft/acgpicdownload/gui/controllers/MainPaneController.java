@@ -40,6 +40,10 @@ public class MainPaneController implements Initializable {
 
     public void setBackground(InputStream stream) {
         background.setImage(new Image(stream));
+        WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
+        blurImg.setImage(snapshot);
+        blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
+        background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
     }
 
     public GUI getGui() {
@@ -48,6 +52,14 @@ public class MainPaneController implements Initializable {
 
     public void setGui(GUI gui) {
         this.gui = gui;
+        background.fitWidthProperty().bind(gui.mainStage.widthProperty());
+        background.fitHeightProperty().bind(gui.mainStage.heightProperty());
+        blurImg.fitWidthProperty().bind(gui.mainStage.widthProperty());
+        blurImg.fitHeightProperty().bind(gui.mainStage.heightProperty());
+        blurImg.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
+        background.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
+        WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
+        blurImg.setImage(snapshot);
     }
 
     public VBox getInitPane() {
@@ -83,20 +95,10 @@ public class MainPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        background.fitWidthProperty().bind(mainPane.widthProperty());
-        background.fitHeightProperty().bind(mainPane.heightProperty());
-        blurImg.fitWidthProperty().bind(mainPane.widthProperty());
-        blurImg.fitHeightProperty().bind(mainPane.heightProperty());
         // mainPane.widthProperty().addListener((observable, oldValue, newValue) -> blurImg
         //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
         // mainPane.heightProperty().addListener((observable, oldValue, newValue) -> blurImg
         //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
-        blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
-        background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
-
-        WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
-        blurImg.setImage(snapshot);
-
         initPane.setVisible(true);
     }
 }

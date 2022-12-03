@@ -26,11 +26,19 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Stream;
 
 public class GUI extends Application {
     public FetchPaneController fetchPaneController;
@@ -134,16 +142,16 @@ public class GUI extends Application {
         mainPaneController = mainLoader.getController();
         mainPaneController.setGui(gui);
 
-        mainPaneController.setBackground(ResourceLoader.loadStream("bg.png"));
+        BufferedImage read = readBackground();
 
         Scene s = new Scene(mainPane);
 
         stage.setScene(s);
 
-        BufferedImage read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
         double rate = (double) read.getWidth() / (double) read.getHeight();
 
         stage.setWidth(800);
+        // stage.setHeight(500);/
         stage.setHeight(stage.getWidth() / rate + 29);
         stage.setResizable(false);
 
@@ -248,6 +256,39 @@ public class GUI extends Application {
 
         initThread.setPriority(1);
         initThread.start();
+    }
+
+    private BufferedImage readBackground() throws FileNotFoundException, IOException {
+        InputStream imgMain = null;
+        BufferedImage read = null;
+        File bgFolder = new File("bg");
+        if(!bgFolder.exists()) bgFolder.mkdirs();
+        List<File> fl = new ArrayList<>(Stream.of(bgFolder.listFiles())
+                            .filter((f)->f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
+                            .toList());
+        while(read == null || imgMain == null){
+            if (fl.size() > 0) {
+                File file = fl.get(new Random().nextInt(fl.size()));
+                imgMain = new FileInputStream(file);
+                read = ImageIO.read(new FileInputStream(file));
+                double rate = (double) read.getWidth() / (double) read.getHeight();
+                if (800 / rate > 500 || 800 / rate < 250) {
+                    fl.remove(file);
+                    if (imgMain != null)
+                        imgMain.close();
+                    imgMain = null;
+                    read = null;
+                }
+            } else {
+                if (imgMain != null)
+                    imgMain.close();
+                imgMain = ResourceLoader.loadStream("bg.png");
+                read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
+            }
+        }
+
+        mainPaneController.setBackground(imgMain);
+        return read;
     }
 
     public SettingsPaneController getSettingsPaneController() {
