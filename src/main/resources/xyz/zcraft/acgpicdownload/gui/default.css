@@ -23,9 +23,27 @@
 }
 
 .mfx-filter-pane {
-	-mfx-main: black;
 	-mfx-gray: #6b6b6b;
 	-fx-background-color: white;
 	-fx-background-radius: 10;
 	-fx-padding: 7 14 7 14;
+}
+
+.mfx-filter-dialog .mfx-button .text {
+	-fx-fill: -mfx-main;
+}
+
+.mfx-filter-dialog .mfx-button {
+	-fx-fill: black;
+	-fx-border-color: black;
+	-fx-border-radius: 5;
+}
+
+.mfx-filter-dialog {
+	-mfx-base-color: -mfx-main;
+	-fx-fill: black;
+}
+
+.mfx-filter-dialog {
+	-mfx-base-color: black;
 }
