@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
@@ -15,6 +16,7 @@ import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
@@ -45,6 +47,16 @@ public class SettingsPaneController extends MyPane {
     private ToggleGroup fetchPaneLClickOperation;
     @javafx.fxml.FXML
     private MFXRadioButton fetchPLCOOpen;
+    @FXML
+    private MFXRadioButton bgFromDefault;
+    @FXML
+    private ToggleGroup bgFrom;
+    @FXML
+    private MFXRadioButton bgFromFolder;
+    @FXML
+    private MFXTextField bgFolderField;
+    @FXML
+    private MFXButton bgChooseFolderBtn;
 
     public void show() {
         super.show();
@@ -73,9 +85,19 @@ public class SettingsPaneController extends MyPane {
         return 7890;
     }
 
+    @FXML
+    private void bgChooseFolder() {
+        DirectoryChooser fc = new DirectoryChooser();
+        fc.setTitle("...");
+        File showDialog = fc.showDialog(gui.mainStage);
+        if (showDialog != null) {
+            bgFolderField.setText(showDialog.getAbsolutePath());
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-       super.initialize(location, resources);
+        super.initialize(location, resources);
 
         proxyField.textProperty().addListener(this::verifyProxy);
 
@@ -101,6 +123,8 @@ public class SettingsPaneController extends MyPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        bgChooseFolderBtn.setText("");
+        bgChooseFolderBtn.setGraphic(new MFXFontIcon("mfx-folder"));
     }
 
     private void verifyProxy(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -144,6 +168,11 @@ public class SettingsPaneController extends MyPane {
         obj.put("aniSpeed", aniSpeedSlider.getValue());
         obj.put("fetchPLCOCopy", fetchPLCOCopy.isSelected());
         obj.put("lang", languageCombo.getSelectedItem().toLanguageTag());
+
+        if (bgFromFolder.isSelected()) {
+            obj.put("bg", bgFolderField.getText());
+        }
+
         try {
             ConfigManager.saveConfig();
             Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"), gui.mainPane);
@@ -161,11 +190,18 @@ public class SettingsPaneController extends MyPane {
         aniSpeedSlider.setValue(ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         fetchPLCOCopy.setSelected(ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy"));
         fetchPLCOOpen.setSelected(!ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy"));
+
         String lang = ConfigManager.getConfig().getString("lang");
         Locale locale;
         if (lang != null) locale = Locale.forLanguageTag(lang);
         else locale = Locale.getDefault();
         if (languageCombo.getItems().contains(locale)) languageCombo.getSelectionModel().selectItem(locale);
         else languageCombo.getSelectionModel().selectFirst();
+
+        if (json.containsKey("bg")) {
+            bgFromDefault.setSelected(false);
+            bgFromFolder.setSelected(true);
+            bgFolderField.setText(json.getString("bg"));
+        }
     }
 }

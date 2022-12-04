@@ -26,18 +26,8 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class GUI extends Application {
@@ -231,7 +221,7 @@ public class GUI extends Application {
                     PrintWriter pw = new PrintWriter(sw);
                     e.printStackTrace(pw);
                     MFXGenericDialog content = MFXGenericDialogBuilder.build()
-                            .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw.toString())
+                            .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw)
                             .setShowClose(true)
                             .setHeaderText(ResourceBundleUtil.getString("cli.fetch.err")).get();
                     content.addActions(Map.entry(new MFXButton("OK"), event -> System.exit(1)));
@@ -249,7 +239,8 @@ public class GUI extends Application {
                     pw.close();
                     try {
                         sw.close();
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) {
+                    }
                 });
             }
         });
@@ -258,41 +249,42 @@ public class GUI extends Application {
         initThread.start();
     }
 
-    private BufferedImage readBackground() throws FileNotFoundException, IOException {
+    private BufferedImage readBackground() throws IOException {
+        String bg = ConfigManager.getConfig().getString("bg");
         InputStream imgMain = null;
         BufferedImage read = null;
-        File bgFolder = new File("bg");
-        if(!bgFolder.exists()) bgFolder.mkdirs();
-        List<File> fl = new ArrayList<>(Stream.of(bgFolder.listFiles())
-                            .filter((f)->f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
-                            .toList());
-        while(read == null || imgMain == null){
-            if (fl.size() > 0) {
-                File file = fl.get(new Random().nextInt(fl.size()));
-                imgMain = new FileInputStream(file);
-                read = ImageIO.read(new FileInputStream(file));
-                double rate = (double) read.getWidth() / (double) read.getHeight();
-                if (800 / rate > 500 || 800 / rate < 250) {
-                    fl.remove(file);
+        if (bg != null && !bg.isEmpty()) {
+            File bgFolder = new File(bg);
+            if (!bgFolder.exists()) bgFolder.mkdirs();
+            List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
+                    .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
+                    .toList());
+            while (read == null || imgMain == null) {
+                if (fl.size() > 0) {
+                    File file = fl.get(new Random().nextInt(fl.size()));
+                    imgMain = new FileInputStream(file);
+                    read = ImageIO.read(new FileInputStream(file));
+                    double rate = (double) read.getWidth() / (double) read.getHeight();
+                    if (800 / rate > 500 || 800 / rate < 250) {
+                        fl.remove(file);
+                        imgMain.close();
+                        imgMain = null;
+                        read = null;
+                    }
+                } else {
                     if (imgMain != null)
                         imgMain.close();
-                    imgMain = null;
-                    read = null;
+                    imgMain = ResourceLoader.loadStream("bg.png");
+                    read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
                 }
-            } else {
-                if (imgMain != null)
-                    imgMain.close();
-                imgMain = ResourceLoader.loadStream("bg.png");
-                read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
             }
+        } else {
+            imgMain = ResourceLoader.loadStream("bg.png");
+            read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
         }
 
         mainPaneController.setBackground(imgMain);
         return read;
-    }
-
-    public SettingsPaneController getSettingsPaneController() {
-        return settingsPaneController;
     }
 
     public void openSettingsPane() {
