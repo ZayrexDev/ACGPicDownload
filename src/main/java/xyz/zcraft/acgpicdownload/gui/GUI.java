@@ -68,7 +68,10 @@ public class GUI extends Application {
             }
         } else if (e instanceof java.net.SocketTimeoutException) {
             return ResourceBundleUtil.getString("err.status.timeout");
-        } else if (e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused")) {
+        } else if ((e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused"))
+                || (e instanceof java.net.SocketException ex && ex.getMessage().contains("Network is unreachable: no further information"))
+                || (e instanceof java.net.UnknownHostException)
+            ) {
             String h = ConfigManager.getConfig().getString("proxyHost");
             Integer p = ConfigManager.getConfig().getInteger("proxyPort");
             String s = "";
@@ -398,7 +401,7 @@ public class GUI extends Application {
             gui.fill(epc.getErrorPane());
             gui.mainPane.getChildren().addAll(epc.getErrorPane());
             epc.setErrorMessage(sb.toString());
-            epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
+            epc.setBlur(mainPaneController.isTransparent() ? null : mainPane.snapshot(new SnapshotParameters(), null));
             epc.show();
             pw.close();
             try {

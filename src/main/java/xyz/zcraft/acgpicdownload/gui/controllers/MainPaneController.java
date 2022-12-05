@@ -60,7 +60,12 @@ public class MainPaneController implements Initializable {
         blurImg.setImage(snapshot);
     }
 
+    public boolean isTransparent() {
+        return transparent;
+    }
+
     public void setTransparent(){
+        transparent = true;
         blurImg.setVisible(false);
         background.setVisible(false);
         titleLbl.setTextFill(Color.BLACK);
@@ -85,6 +90,7 @@ public class MainPaneController implements Initializable {
         blurImg.setImage(snapshot);
     }
 
+    private boolean transparent = false;
     public VBox getInitPane() {
         return initPane;
     }
