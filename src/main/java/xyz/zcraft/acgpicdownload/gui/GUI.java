@@ -69,7 +69,7 @@ public class GUI extends Application {
         } else if (e instanceof java.net.SocketTimeoutException) {
             return ResourceBundleUtil.getString("err.status.timeout");
         } else if ((e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused"))
-                || (e instanceof java.net.SocketException ex && ex.getMessage().contains("Network is unreachable: no further information"))
+                || (e instanceof java.net.SocketException ex1 && ex1.getMessage().contains("Network is unreachable: no further information"))
                 || (e instanceof java.net.UnknownHostException)
             ) {
             String h = ConfigManager.getConfig().getString("proxyHost");
