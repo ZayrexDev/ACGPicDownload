@@ -193,16 +193,18 @@ public class FetchPaneController extends MyPane {
                     if (selectedValues.size() > 0) {
                         if (selectedValues.get(0).getStatus() == DownloadStatus.COMPLETED &&
                                 ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy")) {
+                            try {
+                                Desktop.getDesktop().open(new File(outputDirField.getText(),
+                                        selectedValues.get(0).getResult().getFileName()));
+                            } catch (IOException e) {
+                                Notice.showError(ResourceBundleUtil.getString("gui.fetch.table.cantOpen"),
+                                        gui.mainPane);
+                            }
+                        } else {
                             Toolkit.getDefaultToolkit().getSystemClipboard()
                                     .setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
                             dataTable.getSelectionModel().clearSelection();
                             Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
-                        } else {
-                            try {
-                                Desktop.getDesktop().open(new File(outputDirField.getText(), selectedValues.get(0).getResult().getFileName()));
-                            } catch (IOException e) {
-                                Notice.showError(ResourceBundleUtil.getString("gui.fetch.table.cantOpen"), gui.mainPane);
-                            }
                         }
                     }
                 });
