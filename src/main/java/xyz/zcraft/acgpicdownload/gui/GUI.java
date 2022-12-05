@@ -20,6 +20,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import xyz.zcraft.acgpicdownload.gui.controllers.*;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
@@ -43,6 +44,7 @@ public class GUI extends Application {
 
     public Stage mainStage;
     public Pane mainPane;
+    public Pane stagePane;
     public Pane welcomePane;
 
     public GUI gui;
@@ -121,22 +123,15 @@ public class GUI extends Application {
         stage.setTitle("ACGPicDownload");
 
         FXMLLoader mainLoader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"), ResourceBundleUtil.getResource());
-        mainPane = mainLoader.load();
+        stagePane = mainLoader.load();
         mainPaneController = mainLoader.getController();
+        mainPane = mainPaneController.getMainPane();
         mainPaneController.setGui(gui);
 
-        BufferedImage read = readBackground();
+        stagePane.maxWidthProperty().bind(mainStage.widthProperty());
+        stagePane.maxHeightProperty().bind(mainStage.heightProperty());
 
-        Scene s = new Scene(mainPane);
-
-        stage.setScene(s);
-
-        double rate = (double) read.getWidth() / (double) read.getHeight();
-
-        stage.setWidth(800);
-        // stage.setHeight(500);/
-        stage.setHeight(stage.getWidth() / rate + 29);
-        stage.setResizable(false);
+        readBackground();
 
         stage.setOnCloseRequest(windowEvent -> System.exit(0));
 
@@ -157,6 +152,7 @@ public class GUI extends Application {
                 loader.load();
                 fetchPaneController = loader.getController();
                 fetchPaneController.setGui(gui);
+                fill(fetchPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
                 mainPaneController.setProgress(0.2);
 
@@ -164,6 +160,7 @@ public class GUI extends Application {
                 loader.load();
                 pixivMenuPaneController = loader.getController();
                 pixivMenuPaneController.setGui(gui);
+                fill(pixivMenuPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
                 mainPaneController.setProgress(0.3);
 
@@ -171,6 +168,7 @@ public class GUI extends Application {
                 loader.load();
                 pixivUserPaneController = loader.getController();
                 pixivUserPaneController.setGui(gui);
+                fill(pixivUserPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
                 mainPaneController.setProgress(0.4);
 
@@ -178,6 +176,7 @@ public class GUI extends Application {
                 loader.load();
                 pixivRelatedPaneController = loader.getController();
                 pixivRelatedPaneController.setGui(gui);
+                fill(pixivUserPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
                 mainPaneController.setProgress(0.5);
 
@@ -185,14 +184,15 @@ public class GUI extends Application {
                 loader.load();
                 pixivDownloadPaneController = loader.getController();
                 pixivDownloadPaneController.setGui(gui);
+                fill(pixivDownloadPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
                 mainPaneController.setProgress(0.6);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivDiscoveryPaneController = loader.getController();
                 pixivDiscoveryPaneController.setGui(gui);
+                fill(pixivDiscoveryPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
                 mainPaneController.setProgress(0.7);
 
@@ -200,6 +200,7 @@ public class GUI extends Application {
                 loader.load();
                 settingsPaneController = loader.getController();
                 settingsPaneController.setGui(gui);
+                fill(settingsPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(settingsPaneController.getMainPane()));
                 mainPaneController.setProgress(0.8);
 
@@ -249,42 +250,61 @@ public class GUI extends Application {
         initThread.start();
     }
 
-    private BufferedImage readBackground() throws IOException {
+    private void readBackground() throws IOException {
+        Scene s = new Scene(stagePane);
         String bg = ConfigManager.getConfig().getString("bg");
         InputStream imgMain = null;
         BufferedImage read = null;
-        if (bg != null && !bg.isEmpty()) {
-            File bgFolder = new File(bg);
-            if (!bgFolder.exists()) bgFolder.mkdirs();
-            List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
-                    .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
-                    .toList());
-            while (read == null || imgMain == null) {
-                if (fl.size() > 0) {
-                    File file = fl.get(new Random().nextInt(fl.size()));
-                    imgMain = new FileInputStream(file);
-                    read = ImageIO.read(new FileInputStream(file));
-                    double rate = (double) read.getWidth() / (double) read.getHeight();
-                    if (800 / rate > 500 || 800 / rate < 250) {
-                        fl.remove(file);
-                        imgMain.close();
-                        imgMain = null;
-                        read = null;
+        mainStage.setScene(s);
+        if(bg != null && bg.equals("transparent")){
+            s.setFill(null);
+            mainStage.initStyle(StageStyle.TRANSPARENT);
+            mainPane.setStyle("-fx-background: rgba(255,255,255,0.5);");
+            mainPaneController.getTitlePane().setStyle("-fx-background: rgba(255,255,255,0.5);");
+            stagePane.setStyle("-fx-background: rgba(255,255,255,0.5);");
+            mainStage.setWidth(800);
+            mainStage.setHeight(500);
+            mainStage.setResizable(true);
+            mainPaneController.setTransparent(true);
+        }else{
+            mainStage.initStyle(StageStyle.UNDECORATED);
+            if (bg != null && !bg.isEmpty()) {
+                File bgFolder = new File(bg);
+                if (!bgFolder.exists())
+                    bgFolder.mkdirs();
+                List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
+                        .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
+                        .toList());
+                while (read == null || imgMain == null) {
+                    if (fl.size() > 0) {
+                        File file = fl.get(new Random().nextInt(fl.size()));
+                        imgMain = new FileInputStream(file);
+                        read = ImageIO.read(new FileInputStream(file));
+                        double rate = (double) read.getWidth() / (double) read.getHeight();
+                        if (800 / rate > 500 || 800 / rate < 250) {
+                            fl.remove(file);
+                            imgMain.close();
+                            imgMain = null;
+                            read = null;
+                        }
+                    } else {
+                        if (imgMain != null)
+                            imgMain.close();
+                        imgMain = ResourceLoader.loadStream("bg.png");
+                        read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
                     }
-                } else {
-                    if (imgMain != null)
-                        imgMain.close();
-                    imgMain = ResourceLoader.loadStream("bg.png");
-                    read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
                 }
+            } else {
+                imgMain = ResourceLoader.loadStream("bg.png");
+                read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
             }
-        } else {
-            imgMain = ResourceLoader.loadStream("bg.png");
-            read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
-        }
 
-        mainPaneController.setBackground(imgMain);
-        return read;
+            mainPaneController.setBackground(imgMain);
+            double rate = (double) read.getWidth() / (double) read.getHeight();
+            mainStage.setWidth(800);
+            mainStage.setHeight(mainStage.getWidth() / rate + 29);
+            mainStage.setResizable(false);
+        }
     }
 
     public void openSettingsPane() {
