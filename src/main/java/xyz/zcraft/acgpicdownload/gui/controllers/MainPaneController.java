@@ -7,6 +7,7 @@ import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -21,13 +22,14 @@ import xyz.zcraft.acgpicdownload.gui.GUI;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 public class MainPaneController implements Initializable {
     GUI gui;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
     private ImageView background;
+    @javafx.fxml.FXML
+    private Label titleLbl;
     @javafx.fxml.FXML
     private VBox initPane;
     @javafx.fxml.FXML
@@ -56,23 +58,14 @@ public class MainPaneController implements Initializable {
         background.setImage(new Image(stream));
         WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
         blurImg.setImage(snapshot);
-        // blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
-        // background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
     }
 
     public void setTransparent(){
         blurImg.setVisible(false);
         background.setVisible(false);
-        // background.fitWidthProperty().unbind();
-        // background.fitHeightProperty().unbind();
-        // blurImg.fitWidthProperty().unbind();
-        // blurImg.fitHeightProperty().unbind();
-        // background.setFitHeight(0);
-        // background.setFitWidth(0);
-        // blurImg.setFitWidth(0);
-        // blurImg.setFitHeight(0);
-        // blurImg.setViewport(new Rectangle2D(0, 0, 0, 0));
-        // background.setViewport(new Rectangle2D(0, 0, 0, 0));
+        titleLbl.setTextFill(Color.BLACK);
+        closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.BLACK));
+        minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.BLACK));
     }
 
     public GUI getGui() {
@@ -84,16 +77,10 @@ public class MainPaneController implements Initializable {
     }
 
     public void fitBackground(){
-        // background.fitWidthProperty().bind(gui.mainStage.widthProperty());
-        // background.fitHeightProperty().bind(gui.mainStage.heightProperty());
-        // blurImg.fitWidthProperty().bind(background.fitWidthProperty());
-        // blurImg.fitHeightProperty().bind(background.fitHeightProperty());
         background.setFitWidth(gui.mainStage.getWidth());
         background.setFitHeight(gui.mainStage.getHeight());
         blurImg.setFitWidth(gui.mainStage.getWidth());
         blurImg.setFitHeight(gui.mainStage.getHeight());
-        // blurImg.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
-        // background.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
         WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
         blurImg.setImage(snapshot);
     }
@@ -107,11 +94,7 @@ public class MainPaneController implements Initializable {
     }
 
     public void setProgress(double p) {
-        if (p == 1) {
-            initProgressBar.setProgress(-1);
-        } else {
-            initProgressBar.setProgress(p);
-        }
+        initProgressBar.setProgress(p == 1 ? -1 : p);
     }
 
     public void initDone() {

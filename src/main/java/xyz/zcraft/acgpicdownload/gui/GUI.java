@@ -122,30 +122,29 @@ public class GUI extends Application {
 
         stage.setTitle("ACGPicDownload");
 
-        FXMLLoader mainLoader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"), ResourceBundleUtil.getResource());
+        FXMLLoader mainLoader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"),
+                ResourceBundleUtil.getResource());
         stagePane = mainLoader.load();
         mainPaneController = mainLoader.getController();
         mainPane = mainPaneController.getMainPane();
         mainPaneController.setGui(gui);
 
-        // stagePane.maxWidthProperty().bind(mainStage.widthProperty());
-        // stagePane.maxHeightProperty().bind(mainStage.heightProperty());
-
         readBackground();
 
-        // System.out.println(stage.getWidth() + "x" + stage.getHeight());
-        // System.out.println(mainPane.getWidth() + "x" + mainPane.getHeight());
-        // System.out.println(mainPaneController.getTitlePane().getWidth() + "x" + mainPaneController.getTitlePane().getHeight());
         mainPaneController.fitBackground();
 
-        stage.setOnCloseRequest(windowEvent -> System.exit(0));
+        stage.setOnCloseRequest(windowEvent -> {
+            stage.hide();
+            System.exit(0);
+        });
 
         stage.show();
 
         Thread initThread = new Thread(() -> {
             try {
                 FXMLLoader loader;
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"), ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"),
+                        ResourceBundleUtil.getResource());
                 welcomePane = loader.load();
                 welcomePaneController = loader.getController();
                 welcomePaneController.setGui(gui);
@@ -153,7 +152,8 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(welcomePane));
                 mainPaneController.setProgress(0.1);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"),
+                        ResourceBundleUtil.getResource());
                 loader.load();
                 fetchPaneController = loader.getController();
                 fetchPaneController.setGui(gui);
@@ -161,7 +161,8 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
                 mainPaneController.setProgress(0.2);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"),
+                        ResourceBundleUtil.getResource());
                 loader.load();
                 pixivMenuPaneController = loader.getController();
                 pixivMenuPaneController.setGui(gui);
@@ -169,7 +170,8 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
                 mainPaneController.setProgress(0.3);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"), ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"),
+                        ResourceBundleUtil.getResource());
                 loader.load();
                 pixivUserPaneController = loader.getController();
                 pixivUserPaneController.setGui(gui);
@@ -177,7 +179,8 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
                 mainPaneController.setProgress(0.4);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"), ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"),
+                        ResourceBundleUtil.getResource());
                 loader.load();
                 pixivRelatedPaneController = loader.getController();
                 pixivRelatedPaneController.setGui(gui);
@@ -185,7 +188,8 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
                 mainPaneController.setProgress(0.5);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),
+                        ResourceBundleUtil.getResource());
                 loader.load();
                 pixivDownloadPaneController = loader.getController();
                 pixivDownloadPaneController.setGui(gui);
@@ -193,7 +197,8 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
                 mainPaneController.setProgress(0.6);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"), ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"),
+                        ResourceBundleUtil.getResource());
                 loader.load();
                 pixivDiscoveryPaneController = loader.getController();
                 pixivDiscoveryPaneController.setGui(gui);
@@ -201,7 +206,8 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
                 mainPaneController.setProgress(0.7);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"),
+                        ResourceBundleUtil.getResource());
                 loader.load();
                 settingsPaneController = loader.getController();
                 settingsPaneController.setGui(gui);
@@ -261,7 +267,7 @@ public class GUI extends Application {
         InputStream imgMain = null;
         BufferedImage read = null;
         mainStage.setScene(s);
-        if(bg != null && bg.equals("transparent")){
+        if (bg != null && bg.equals("transparent")) {
             s.setFill(null);
             mainStage.initStyle(StageStyle.TRANSPARENT);
             mainPane.setStyle("-fx-background: rgba(255,255,255,0.5);");
@@ -271,7 +277,7 @@ public class GUI extends Application {
             mainStage.setHeight(500);
             mainStage.setResizable(true);
             mainPaneController.setTransparent();
-        }else{
+        } else {
             mainStage.initStyle(StageStyle.UNDECORATED);
             if (bg != null && !bg.isEmpty()) {
                 File bgFolder = new File(bg);
@@ -328,11 +334,16 @@ public class GUI extends Application {
         data.clear();
         data.add(new PixivArtwork());
 
-        MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.title"), true);
-        MFXTableColumn<PixivArtwork> authorColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), true);
-        MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.from"), true);
-        MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
-        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
+        MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.download.column.title"), true);
+        MFXTableColumn<PixivArtwork> authorColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), true);
+        MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.download.column.from"), true);
+        MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
+        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
         authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getUserName));
@@ -352,13 +363,16 @@ public class GUI extends Application {
         tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
         idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
 
-        dataTable.getTableColumns().addAll(List.of(titleColumn,authorColumn, fromColumn, tagColumn, idColumn));
+        dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn));
 
         dataTable.getFilters().addAll(List.of(
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), PixivArtwork::getUserName),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"), o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), PixivArtwork::getOriginalTagsString),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),
+                        PixivArtwork::getUserName),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
+                        o -> o.getFrom().toString()),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
+                        PixivArtwork::getOriginalTagsString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId)));
 
         dataTable.setItems(data);
@@ -387,7 +401,10 @@ public class GUI extends Application {
             epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
             epc.show();
             pw.close();
-            try {sw.close();} catch (IOException ignored) {}
+            try {
+                sw.close();
+            } catch (IOException ignored) {
+            }
         });
     }
 }

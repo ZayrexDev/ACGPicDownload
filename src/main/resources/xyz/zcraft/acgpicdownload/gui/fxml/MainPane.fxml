@@ -44,7 +44,7 @@
               </ImageView>
               <VBox fx:id="initPane" alignment="CENTER" fillWidth="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
-                      <Label text="ACGPicDownloader">
+                      <Label text="ACGPicDownload">
                           <font>
                               <Font name="Segoe UI" size="35.0" />
                           </font>
