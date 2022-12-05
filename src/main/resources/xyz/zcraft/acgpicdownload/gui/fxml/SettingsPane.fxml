@@ -1,130 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.*?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXRadioButton?>
+<?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
+<?import io.github.palexdev.materialfx.controls.MFXSlider?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+
 <AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.SettingsPaneController">
     <children>
         <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <children>
-                        <MFXButton fx:id="backBtn" onAction="#backBtnOnAction"/>
+                        <MFXButton fx:id="backBtn" onAction="#backBtnOnAction" />
                         <HBox alignment="BOTTOM_LEFT">
                             <children>
                                 <Label onMouseClicked="#backBtnOnAction" text="%gui.path.home" textFill="#595959">
                                     <cursor>
-                                        <Cursor fx:constant="HAND"/>
+                                        <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Label>
-                                <Label text="/" textFill="#595959"/>
+                                <Label text="/" textFill="#595959" />
                                 <Label text="%gui.settings.title">
                                     <font>
-                                        <Font size="16.0"/>
+                                        <Font size="16.0" />
                                     </font>
                                 </Label>
                             </children>
                         </HBox>
                     </children>
                     <VBox.margin>
-                        <Insets/>
+                        <Insets />
                     </VBox.margin>
                 </HBox>
-                <Separator prefWidth="200.0"/>
-                <MFXScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308"
-                               maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent;"
-                               VBox.vgrow="ALWAYS">
+                <Separator prefWidth="200.0" />
+                <MFXScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                     <content>
                         <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="10.0">
                             <children>
-                                <MFXTextField fx:id="proxyField" floatMode="BORDER" floatingText="%gui.settings.proxy"
-                                              maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                              promptText="%gui.settings.proxyPrompt"/>
+                                <MFXTextField fx:id="proxyField" floatMode="BORDER" floatingText="%gui.settings.proxy" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" promptText="%gui.settings.proxyPrompt" />
                                 <HBox alignment="CENTER" prefHeight="6.0" prefWidth="766.0" spacing="10.0">
                                     <children>
-                                        <Label text="%gui.settings.aniSpeed"/>
-                                        <MFXSlider fx:id="aniSpeedSlider" decimalPrecision="2" max="1.75"
-                                                   maxWidth="1.7976931348623157E308" min="0.25" value="1.0"
-                                                   HBox.hgrow="ALWAYS"/>
+                                        <Label text="%gui.settings.aniSpeed" />
+                                        <MFXSlider fx:id="aniSpeedSlider" decimalPrecision="2" max="1.75" maxWidth="1.7976931348623157E308" min="0.25" value="1.0" HBox.hgrow="ALWAYS" />
                                     </children>
                                 </HBox>
                                 <HBox prefHeight="3.0" prefWidth="766.0" spacing="20.0">
                                     <children>
-                                        <Label text="%gui.settings.fetchPaneLeftClickOperation"/>
-                                        <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="5.0"
-                                              HBox.hgrow="ALWAYS">
+                                        <Label text="%gui.settings.fetchPaneLeftClickOperation" />
+                                        <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="5.0" HBox.hgrow="ALWAYS">
                                             <children>
                                                 <VBox>
                                                     <children>
-                                                        <MFXRadioButton fx:id="fetchPLCOCopy"
-                                                                        text="%gui.settings.fetchPaneLeftClickOperation.copy">
+                                                        <MFXRadioButton fx:id="fetchPLCOCopy" text="%gui.settings.fetchPaneLeftClickOperation.copy">
                                                             <toggleGroup>
-                                                                <ToggleGroup fx:id="fetchPaneLClickOperation"/>
+                                                                <ToggleGroup fx:id="fetchPaneLClickOperation" />
                                                             </toggleGroup>
                                                         </MFXRadioButton>
-                                                        <MFXRadioButton fx:id="fetchPLCOOpen"
-                                                                        text="%gui.settings.fetchPaneLeftClickOperation.open"
-                                                                        toggleGroup="$fetchPaneLClickOperation"/>
+                                                        <MFXRadioButton fx:id="fetchPLCOOpen" text="%gui.settings.fetchPaneLeftClickOperation.open" toggleGroup="$fetchPaneLClickOperation" />
                                                     </children>
                                                 </VBox>
                                             </children>
                                         </HBox>
                                     </children>
                                 </HBox>
-                                <MFXComboBox fx:id="languageCombo" floatMode="BORDER" floatingText="%gui.settings.lang"
-                                             maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS"/>
+                                <MFXComboBox fx:id="languageCombo" floatMode="BORDER" floatingText="%gui.settings.lang" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
                                 <HBox prefHeight="39.0" prefWidth="766.0" spacing="10.0">
                                     <children>
-                                        <Label text="%gui.settings.bg"/>
-                                        <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0"
-                                              spacing="5.0" HBox.hgrow="ALWAYS">
+                                        <Label text="%gui.settings.bg" />
+                                        <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <MFXRadioButton fx:id="bgFromDefault" selected="true"
-                                                                text="%gui.settings.bg.default">
+                                                <MFXRadioButton fx:id="bgFromDefault" selected="true" text="%gui.settings.bg.default">
                                                     <toggleGroup>
-                                                        <ToggleGroup fx:id="bgFrom"/>
+                                                        <ToggleGroup fx:id="bgFrom" />
                                                     </toggleGroup>
                                                 </MFXRadioButton>
                                                 <HBox spacing="50.0">
                                                     <children>
-                                                        <MFXRadioButton fx:id="bgFromFolder"
-                                                                        maxHeight="1.7976931348623157E308"
-                                                                        text="%gui.settings.bg.folder"
-                                                                        toggleGroup="$bgFrom"/>
-                                                        <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
-                                                              spacing="10.0" HBox.hgrow="ALWAYS">
+                                                        <MFXRadioButton fx:id="bgFromFolder" maxHeight="1.7976931348623157E308" text="%gui.settings.bg.folder" toggleGroup="$bgFrom" />
+                                                        <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" spacing="10.0" HBox.hgrow="ALWAYS">
                                                             <children>
-                                                                <MFXTextField fx:id="bgFolderField" floatMode="DISABLED"
-                                                                              maxHeight="30.0"
-                                                                              maxWidth="1.7976931348623157E308"
-                                                                              minHeight="30.0" prefHeight="30.0"
-                                                                              prefWidth="340.0" HBox.hgrow="ALWAYS"/>
-                                                                <MFXButton fx:id="bgChooseFolderBtn"
-                                                                           maxHeight="1.7976931348623157E308"
-                                                                           onAction="#bgChooseFolder" text=" "/>
+                                                                <MFXTextField fx:id="bgFolderField" floatMode="DISABLED" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" prefWidth="340.0" HBox.hgrow="ALWAYS" />
+                                                                <MFXButton fx:id="bgChooseFolderBtn" maxHeight="1.7976931348623157E308" onAction="#bgChooseFolder" text=" " />
                                                             </children>
                                                         </HBox>
                                                     </children>
                                                 </HBox>
+                                    <MFXRadioButton fx:id="bgTransparent" layoutX="10.0" layoutY="10.0" text="%gui.settings.bg.transparent" toggleGroup="$bgFrom" />
                                             </children>
                                         </VBox>
                                     </children>
                                 </HBox>
                             </children>
                             <padding>
-                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                             </padding>
                         </VBox>
                     </content>
                     <VBox.margin>
-                        <Insets/>
+                        <Insets />
                     </VBox.margin>
                 </MFXScrollPane>
-                <MFXButton maxWidth="1.7976931348623157E308" onAction="#saveConfigBtnOnAction" text="%gui.settings.save"
-                           VBox.vgrow="ALWAYS"/>
+                <MFXButton maxWidth="1.7976931348623157E308" onAction="#saveConfigBtnOnAction" text="%gui.settings.save" VBox.vgrow="ALWAYS" />
             </children>
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

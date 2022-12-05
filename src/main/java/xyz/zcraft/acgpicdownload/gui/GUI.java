@@ -128,10 +128,15 @@ public class GUI extends Application {
         mainPane = mainPaneController.getMainPane();
         mainPaneController.setGui(gui);
 
-        stagePane.maxWidthProperty().bind(mainStage.widthProperty());
-        stagePane.maxHeightProperty().bind(mainStage.heightProperty());
+        // stagePane.maxWidthProperty().bind(mainStage.widthProperty());
+        // stagePane.maxHeightProperty().bind(mainStage.heightProperty());
 
         readBackground();
+
+        // System.out.println(stage.getWidth() + "x" + stage.getHeight());
+        // System.out.println(mainPane.getWidth() + "x" + mainPane.getHeight());
+        // System.out.println(mainPaneController.getTitlePane().getWidth() + "x" + mainPaneController.getTitlePane().getHeight());
+        mainPaneController.fitBackground();
 
         stage.setOnCloseRequest(windowEvent -> System.exit(0));
 
@@ -265,7 +270,7 @@ public class GUI extends Application {
             mainStage.setWidth(800);
             mainStage.setHeight(500);
             mainStage.setResizable(true);
-            mainPaneController.setTransparent(true);
+            mainPaneController.setTransparent();
         }else{
             mainStage.initStyle(StageStyle.UNDECORATED);
             if (bg != null && !bg.isEmpty()) {

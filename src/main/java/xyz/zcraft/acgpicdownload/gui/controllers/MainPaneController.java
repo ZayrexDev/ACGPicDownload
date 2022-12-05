@@ -6,7 +6,6 @@ import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -57,17 +56,23 @@ public class MainPaneController implements Initializable {
         background.setImage(new Image(stream));
         WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
         blurImg.setImage(snapshot);
-        blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
-        background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
+        // blurImg.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
+        // background.setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight()));
     }
 
-    private boolean transparent = false;
-    public void setTransparent(boolean transparent){
-        this.transparent = transparent;
-
-        if(transparent == true){
-            blurImg.setVisible(false);
-        }
+    public void setTransparent(){
+        blurImg.setVisible(false);
+        background.setVisible(false);
+        // background.fitWidthProperty().unbind();
+        // background.fitHeightProperty().unbind();
+        // blurImg.fitWidthProperty().unbind();
+        // blurImg.fitHeightProperty().unbind();
+        // background.setFitHeight(0);
+        // background.setFitWidth(0);
+        // blurImg.setFitWidth(0);
+        // blurImg.setFitHeight(0);
+        // blurImg.setViewport(new Rectangle2D(0, 0, 0, 0));
+        // background.setViewport(new Rectangle2D(0, 0, 0, 0));
     }
 
     public GUI getGui() {
@@ -76,12 +81,19 @@ public class MainPaneController implements Initializable {
 
     public void setGui(GUI gui) {
         this.gui = gui;
-        background.fitWidthProperty().bind(gui.mainStage.widthProperty());
-        background.fitHeightProperty().bind(gui.mainStage.heightProperty());
-        blurImg.fitWidthProperty().bind(gui.mainStage.widthProperty());
-        blurImg.fitHeightProperty().bind(gui.mainStage.heightProperty());
-        blurImg.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
-        background.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
+    }
+
+    public void fitBackground(){
+        // background.fitWidthProperty().bind(gui.mainStage.widthProperty());
+        // background.fitHeightProperty().bind(gui.mainStage.heightProperty());
+        // blurImg.fitWidthProperty().bind(background.fitWidthProperty());
+        // blurImg.fitHeightProperty().bind(background.fitHeightProperty());
+        background.setFitWidth(gui.mainStage.getWidth());
+        background.setFitHeight(gui.mainStage.getHeight());
+        blurImg.setFitWidth(gui.mainStage.getWidth());
+        blurImg.setFitHeight(gui.mainStage.getHeight());
+        // blurImg.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
+        // background.setViewport(new Rectangle2D(0, 0, gui.mainStage.getWidth(), gui.mainStage.getHeight()));
         WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
         blurImg.setImage(snapshot);
     }

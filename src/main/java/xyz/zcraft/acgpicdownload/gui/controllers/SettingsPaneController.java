@@ -54,6 +54,8 @@ public class SettingsPaneController extends MyPane {
     @FXML
     private MFXRadioButton bgFromFolder;
     @FXML
+    private MFXRadioButton bgTransparent;
+    @FXML
     private MFXTextField bgFolderField;
     @FXML
     private MFXButton bgChooseFolderBtn;
@@ -171,6 +173,10 @@ public class SettingsPaneController extends MyPane {
 
         if (bgFromFolder.isSelected()) {
             obj.put("bg", bgFolderField.getText());
+        }else if(bgTransparent.isSelected()){
+            obj.put("bg", "transparent");
+        }else{
+            obj.remove("bg");
         }
 
         try {
@@ -199,9 +205,12 @@ public class SettingsPaneController extends MyPane {
         else languageCombo.getSelectionModel().selectFirst();
 
         if (json.containsKey("bg")) {
-            bgFromDefault.setSelected(false);
-            bgFromFolder.setSelected(true);
-            bgFolderField.setText(json.getString("bg"));
+            if(json.getString("bg").equals("transparent")){
+                bgTransparent.setSelected(true);
+            }else{
+                bgFolderField.setText(json.getString("bg"));
+                bgFromFolder.setSelected(true);
+            }
         }
     }
 }
