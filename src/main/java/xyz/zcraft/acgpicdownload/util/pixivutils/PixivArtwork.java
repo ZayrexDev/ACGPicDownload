@@ -1,11 +1,11 @@
 package xyz.zcraft.acgpicdownload.util.pixivutils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PixivArtwork {
     @JSONField(name = "id")
@@ -61,6 +61,7 @@ public class PixivArtwork {
 
     private Set<String> translatedTags = new HashSet<>();
     private String imageUrl;
+    private GifData gifData;
 
     public String getImageUrl() {
         return imageUrl;

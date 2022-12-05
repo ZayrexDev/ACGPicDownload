@@ -1,17 +1,22 @@
 package xyz.zcraft.acgpicdownload.util.downloadutil;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter.Feature;
+import com.madgag.gif.fmsware.AnimatedGifEncoder;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
+import xyz.zcraft.acgpicdownload.util.pixivutils.GifData;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownloadUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
+import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipInputStream;
 
 public class DownloadUtil {
     private final int maxRetryCount;
@@ -28,7 +33,7 @@ public class DownloadUtil {
             URL url = new URL(link);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
 
-            if(referer != null){
+            if (referer != null) {
                 c.setRequestProperty("Referer", referer);
             }
 
@@ -46,7 +51,7 @@ public class DownloadUtil {
 
             is.close();
             fos.close();
-        }finally{
+        } finally {
             if (is != null) {
                 is.close();
             }
@@ -54,6 +59,26 @@ public class DownloadUtil {
                 fos.close();
             }
         }
+    }
+
+    public void saveGifToFile(File file, GifData gifData) throws IOException {
+        URL url = new URL(gifData.getSrc());
+        URLConnection urlConnection = url.openConnection();
+        urlConnection.setRequestProperty("Referer", PixivDownloadUtil.REFERER);
+
+        ZipInputStream zis = new ZipInputStream(urlConnection.getInputStream());
+        file.createNewFile();
+
+        AnimatedGifEncoder age = new AnimatedGifEncoder();
+        age.setDelay(JSONObject.parseObject(gifData.getOrigFrame().get(0).toString()).getInteger("delay"));
+        age.setRepeat(0);
+        age.start(new FileOutputStream(file));
+
+        while (zis.getNextEntry() != null) {
+            age.addFrame(ImageIO.read(zis));
+        }
+
+        age.finish();
     }
 
     public void download(Result r, File toDic, DownloadResult d, boolean saveFullResult, String referer) throws IOException {

@@ -17,8 +17,21 @@ public class PixivFetchUtil {
     private static final String USER_TAGS = "https://www.pixiv.net/ajax/tags/frequent/illust?%s";
     private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1";
     private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=%s&limit=%d";
+    private static final String GIF_DATA = "https://www.pixiv.net/ajax/illust/%s/ugoira_meta";
 
     private static final String[] MODES = {"all", "safe", "r18"};
+
+    public static GifData getGifData(PixivArtwork artwork, String proxyHost, Integer proxyPort) throws IOException {
+        Connection c = Jsoup.connect(String.format(GIF_DATA, artwork.getId()))
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+        JSONObject body = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body");
+        return body.to(GifData.class);
+    }
 
     public static PixivArtwork getArtwork(String id, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
@@ -30,7 +43,7 @@ public class PixivFetchUtil {
         if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
-        JSONObject jsonObject = JSONObject.parseObject(c.get().head().getElementById("meta-preload-data").attr("content")).getJSONObject("illust").getJSONObject(id);
+        JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(id);
         return jsonObject.to(PixivArtwork.class);
     }
 
@@ -46,11 +59,10 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
 
-        return parseArtworks(c.get().body().ownText(), From.Discovery);
+        return parseArtworks(c.get().body().ownText());
     }
 
     public static Set<String> fetchUser(String uid, String proxyHost, Integer proxyPort) throws IOException {
-        HashSet<String> set = new HashSet<>();
         Connection c = Jsoup.connect(String.format(USER, uid).concat("lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
@@ -61,9 +73,7 @@ public class PixivFetchUtil {
 
         JSONObject jsonObject = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body").getJSONObject("illusts");
 
-        set.addAll(jsonObject.keySet());
-
-        return set;
+        return new HashSet<>(jsonObject.keySet());
     }
 
     public static HashMap<String, String> getUserTagTranslations(String queryString, String proxyHost, Integer proxyPort) throws IOException {
@@ -178,7 +188,7 @@ public class PixivFetchUtil {
         return artworks;
     }
 
-    public static LinkedList<PixivArtwork> parseArtworks(String jsonString, From from) {
+    public static LinkedList<PixivArtwork> parseArtworks(String jsonString) {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
         JSONObject bodyObject = JSONObject.parse(jsonString).getJSONObject("body");
         JSONObject tran = bodyObject.getJSONObject("tagTranslation");
@@ -201,16 +211,16 @@ public class PixivFetchUtil {
         JSONObject tagObj = tran.getJSONObject(tag);
         if (tagObj == null) return tag;
         switch (origLang) {
-            case "zh-cn", "zh_cn", "zh": {
+            case "zh-cn", "zh_cn", "zh" -> {
                 return Objects.requireNonNullElse(tagObj.getString("zh"), tag);
             }
-            case "zh_tw", "zh-tw": {
+            case "zh_tw", "zh-tw" -> {
                 return Objects.requireNonNullElse(tagObj.getString("zh_tw"), tag);
             }
-            case "en": {
+            case "en" -> {
                 return Objects.requireNonNullElse(tagObj.getString("en"), tag);
             }
-            default: {
+            default -> {
                 return tag;
             }
         }
@@ -227,7 +237,7 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
 
-        return JSONObject.parseObject(c.get().head().getElementById("meta-preload-data").attr("content")).getJSONObject("illust").getJSONObject(artwork.getId()).getJSONObject("urls").getString("original");
+        return JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(artwork.getId()).getJSONObject("urls").getString("original");
     }
 
     public static List<PixivArtwork> getRelated(PixivArtwork artwork, int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
