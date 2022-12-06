@@ -187,15 +187,14 @@ public class PixivRelatedPaneController extends MyPane {
                     subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
                 });
 
-                LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>(
-                        List.of(
-                                PixivFetchUtil.getArtwork(
-                                        uidField.getText(),
-                                        cookieField.getText(),
-                                        ConfigManager.getConfig().getString("proxyHost"),
-                                        ConfigManager.getConfig().getInteger("proxyPort")
-                                ))
-                );
+                PixivArtwork artwork = PixivFetchUtil.getArtwork(
+                                                        uidField.getText(),
+                                                        cookieField.getText(),
+                                                        ConfigManager.getConfig().getString("proxyHost"),
+                                                        ConfigManager.getConfig().getInteger("proxyPort")
+                                                );
+                artwork.setFrom(From.Spec);
+                LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>(List.of(artwork));
 
                 if (relatedDepthSlider.getValue() > 0) {
                     List<PixivArtwork> temp2Artworks = new LinkedList<>();

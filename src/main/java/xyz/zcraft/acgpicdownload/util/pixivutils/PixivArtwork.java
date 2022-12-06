@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
 
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,6 +74,12 @@ public class PixivArtwork {
     }
 
     private From from;
+
+    public String getTypeString(){
+        if(illustType == 2) return ResourceBundleUtil.getString("fetch.pixiv.type.gif");
+        else if(illustType == 1 || illustType == 0) return ResourceBundleUtil.getString("fetch.pixiv.type.illust").concat("-" + pageCount);
+        else return "?";
+    }
 
     public PixivArtwork() {}
 

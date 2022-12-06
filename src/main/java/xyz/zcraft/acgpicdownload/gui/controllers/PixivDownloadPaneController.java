@@ -125,6 +125,8 @@ public class PixivDownloadPaneController extends MyPane {
                 ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
         MFXTableColumn<PixivDownload> statusColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.status"), true);
+        MFXTableColumn<PixivDownload> typeColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.download.column.type"), true);
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
         authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
@@ -132,6 +134,7 @@ public class PixivDownloadPaneController extends MyPane {
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getOriginalTagsString()));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
         statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getStatus().toString()));
+        typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
 
         titleColumn.setAlignment(Pos.CENTER);
         authorColumn.setAlignment(Pos.CENTER);
@@ -139,15 +142,16 @@ public class PixivDownloadPaneController extends MyPane {
         tagColumn.setAlignment(Pos.CENTER);
         idColumn.setAlignment(Pos.CENTER);
         statusColumn.setAlignment(Pos.CENTER);
+        typeColumn.setAlignment(Pos.CENTER);
 
-        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
-        authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.15).get());
-        fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.05).get());
-        tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
-        idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        statusColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
+        // titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
+        // authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.15).get());
+        // fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.05).get());
+        // tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
+        // idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
+        // statusColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
 
-        dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn, statusColumn));
+        dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn, statusColumn, typeColumn));
 
         dataTable.getFilters().addAll(List.of(
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.title"), o -> o.getArtwork()
@@ -163,6 +167,8 @@ public class PixivDownloadPaneController extends MyPane {
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.id"),
                         o -> o.getArtwork().getId()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.status"),
+                        o -> o.getStatus().toString())
+                , new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"),
                         o -> o.getStatus().toString())));
 
         dataTable.setItems(data);

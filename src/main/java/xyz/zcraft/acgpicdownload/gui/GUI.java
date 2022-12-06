@@ -347,36 +347,40 @@ public class GUI extends Application {
                 ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
         MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
+        MFXTableColumn<PixivArtwork> typeColumn = new MFXTableColumn<>(
+                ResourceBundleUtil.getString("gui.pixiv.download.column.type"), true);
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
         authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getUserName));
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getOriginalTagsString));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
+        typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTypeString));
 
         titleColumn.setAlignment(Pos.CENTER);
         authorColumn.setAlignment(Pos.CENTER);
         fromColumn.setAlignment(Pos.CENTER);
         tagColumn.setAlignment(Pos.CENTER);
         idColumn.setAlignment(Pos.CENTER);
+        typeColumn.setAlignment(Pos.CENTER);
 
-        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
+        // titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
+        // authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
+        // fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
+        // tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
+        // idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
 
-        dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn));
+        dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn,
+                typeColumn));
 
         dataTable.getFilters().addAll(List.of(
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),
-                        PixivArtwork::getUserName),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
-                        o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
-                        PixivArtwork::getOriginalTagsString),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId)));
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),PixivArtwork::getUserName),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),o -> o.getFrom().toString()),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),PixivArtwork::getOriginalTagsString),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"), PixivArtwork::getTypeString)
+        ));
 
         dataTable.setItems(data);
         dataTable.getSelectionModel().setAllowsMultipleSelection(true);
