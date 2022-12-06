@@ -6,9 +6,9 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0"
-            style="-fx-background-color: #ffffff88;" xmlns="http://javafx.com/javafx/19"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="1.7976931348623157E308"
+            maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0"
+            prefWidth="807.0" style="-fx-background-color: #ffffff88;" xmlns="http://javafx.com/javafx/19"
             fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivDiscoveryPaneController">
     <children>
         <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0"
@@ -58,8 +58,7 @@
                 <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="15.0">
                     <children>
                         <MFXComboBox fx:id="modeCombo" floatingText="%gui.pixiv.disc.mode" maxHeight="30.0"
-                                     minHeight="30.0"
-                                     prefHeight="30.0"/>
+                                     minHeight="30.0" prefHeight="30.0"/>
                         <Separator orientation="VERTICAL" prefHeight="200.0"/>
                         <Label text="%gui.pixiv.menu.maxCount"/>
                         <MFXSlider fx:id="maxCountSlider" min="1.0" value="100.0"/>
