@@ -90,7 +90,7 @@ public class Main {
     public static void setMFXLanguage() {
         for (Language v : Language.values()) {
             if (v.getLocale().equals(Locale.getDefault())) {
-                I18N.setLanguage(v);
+                I18N.setLanguage(Language.SIMPLIFIED_CHINESE);
                 return;
             }
         }

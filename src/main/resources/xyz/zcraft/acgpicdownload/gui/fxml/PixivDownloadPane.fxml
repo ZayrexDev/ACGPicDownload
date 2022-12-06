@@ -6,9 +6,9 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;"
-            stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
+            minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0"
+            style="-fx-background-color: #ffffff88;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19"
             fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivDownloadPaneController">
     <children>
         <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0"
@@ -45,6 +45,25 @@
                     </VBox.margin>
                 </HBox>
                 <Separator prefWidth="200.0"/>
+                <HBox alignment="CENTER" prefHeight="36.0" prefWidth="786.0" spacing="10.0">
+                    <children>
+                        <MFXTextField fx:id="namingRuleField" floatMode="BORDER"
+                                      floatingText="%gui.pixiv.download.namingRule" maxHeight="30.0"
+                                      maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
+                                      text="{$id}{_p$p}" HBox.hgrow="ALWAYS"/>
+                        <MFXButton fx:id="namingRuleHelpBtn" maxHeight="1.7976931348623157E308"
+                                   onAction="#namingRuleHelpBtnOnAction" HBox.hgrow="ALWAYS"/>
+                        <Separator orientation="VERTICAL" prefHeight="200.0"/>
+                        <MFXComboBox fx:id="multiPageCombo" floatMode="BORDER"
+                                     floatingText="%gui.pixiv.download.multiPageRule" maxHeight="30.0"
+                                     maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
+                                     HBox.hgrow="ALWAYS"/>
+                        <MFXTextField fx:id="folderNamingRuleField" floatMode="BORDER"
+                                      floatingText="%gui.pixiv.download.folderNamingRule" layoutX="136.0" layoutY="13.0"
+                                      maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
+                                      prefHeight="30.0" text="{$id}" HBox.hgrow="ALWAYS"/>
+                    </children>
+                </HBox>
                 <HBox alignment="CENTER" spacing="10.0">
                     <children>
                         <MFXTextField fx:id="outputDirField" floatMode="BORDER"
@@ -56,6 +75,9 @@
                         <Label text="%gui.pixiv.download.threadCount"/>
                         <MFXSlider fx:id="threadCountSlider" alternativeUnitIncrement="1.0" max="50.0" min="1.0"
                                    minorTicksCount="1" value="5.0"/>
+                        <Separator layoutX="345.0" layoutY="73.0" maxHeight="30.0" minHeight="30.0"
+                                   orientation="VERTICAL" prefHeight="30.0"/>
+                        <MFXButton onAction="#saveConfig" text="%gui.settings.save"/>
                     </children>
                 </HBox>
                 <HBox alignment="CENTER" spacing="10.0">

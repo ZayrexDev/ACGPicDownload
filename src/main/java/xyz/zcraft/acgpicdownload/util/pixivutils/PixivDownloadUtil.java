@@ -15,8 +15,8 @@ public class PixivDownloadUtil {
     public static final String REFERER = "https://www.pixiv.net";
 
     public synchronized static void startDownload(List<PixivDownload> artworksDownloads, String outputDir,
-                                                  Logger logger, int maxThread, Runnable onUpdate,
-                                                  String cookieString, String proxyHost, Integer proxyPort) {
+                                                  Logger logger, int maxThread, String cookieString,
+                                                  NamingRule namingRule, String proxyHost, Integer proxyPort) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
@@ -33,7 +33,7 @@ public class PixivDownloadUtil {
                 a.setStatus(DownloadStatus.INITIALIZE);
                 tpe.execute(() -> {
                     try {
-                        new DownloadUtil(1).downloadPixiv(a, outDir, cookieString, proxyHost, proxyPort);
+                        new DownloadUtil(1).downloadPixiv(a, outDir, cookieString, namingRule, proxyHost, proxyPort);
                     } catch (Exception e) {
                         Main.logError(e);
                         a.setStatus(DownloadStatus.FAILED);

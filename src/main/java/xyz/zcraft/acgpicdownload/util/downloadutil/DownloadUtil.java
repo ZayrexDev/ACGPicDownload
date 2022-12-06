@@ -5,10 +5,7 @@ import com.alibaba.fastjson2.JSONWriter.Feature;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
-import xyz.zcraft.acgpicdownload.util.pixivutils.GifData;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownloadUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.*;
 
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -173,16 +170,16 @@ public class DownloadUtil {
         }
     }
 
-    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, String proxyHost, Integer proxyPort)
+    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, String proxyHost, Integer proxyPort)
             throws IOException {
         if (a.getArtwork().getIllustType() == 2) {
-            downloadPixivGif(a, toDic, cookieString, proxyHost, proxyPort);
+            downloadPixivGif(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
         } else {
-            downloadPixivIllusion(a, toDic, cookieString, proxyHost, proxyPort);
+            downloadPixivIllusion(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
         }
     }
 
-    private void downloadPixivGif(PixivDownload a, File toDic, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+    private void downloadPixivGif(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, String proxyHost, Integer proxyPort) throws IOException {
         try {
             GifData gifData = PixivFetchUtil.getGifData(a.getArtwork(), cookieString, proxyHost, proxyPort);
             URL url = new URL(gifData.getSrc());
@@ -193,7 +190,7 @@ public class DownloadUtil {
             AnimatedGifEncoder age = new AnimatedGifEncoder();
             age.setRepeat(0);
             age.setDelay(gifData.getOrigFrame().getJSONObject(0).getInteger("delay"));
-            File f = new File(toDic, a.getArtwork().getId() + ".gif");
+            File f = new File(toDic, namingRule.name(a.getArtwork()) + ".gif");
 
             a.setStatus(DownloadStatus.STARTED);
             f.createNewFile();
@@ -214,12 +211,12 @@ public class DownloadUtil {
                 }
                 throw e;
             } else {
-                downloadPixivGif(a, toDic, cookieString, proxyHost, proxyPort);
+                downloadPixivGif(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
             }
         }
     }
 
-    private void downloadPixivIllusion(PixivDownload a, File toDic, String cookieString, String proxyHost,
+    private void downloadPixivIllusion(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, String proxyHost,
                                        Integer proxyPort)
             throws IOException {
         InputStream is = null;
@@ -228,11 +225,16 @@ public class DownloadUtil {
         try {
             LinkedList<String> pages = PixivFetchUtil.getFullPages(a.getArtwork(), cookieString, proxyHost, proxyPort);
 
+            if (pages.size() > 1 && namingRule.multiP() == 0) {
+                toDic = new File(toDic, namingRule.nameFolder(a.getArtwork()));
+            }
+
             if (!toDic.exists() && !toDic.mkdirs()) {
                 a.setStatus(DownloadStatus.FAILED);
             }
 
-            for (String s : pages) {
+            for (int i = 0, pagesSize = pages.size(); i < pagesSize; i++) {
+                String s = pages.get(i);
                 URL url = new URL(s);
                 URLConnection c = url.openConnection();
 
@@ -243,7 +245,7 @@ public class DownloadUtil {
 
                 is = c.getInputStream();
 
-                f = new File(toDic, s.substring(s.lastIndexOf("/") + 1));
+                f = new File(toDic, namingRule.name(a.getArtwork(), i) + s.substring(s.lastIndexOf(".")));
                 fos = new FileOutputStream(f);
 
                 byte[] buffer = new byte[10240];
@@ -274,7 +276,7 @@ public class DownloadUtil {
                 a.setStatus(DownloadStatus.FAILED);
                 throw e;
             } else {
-                downloadPixiv(a, toDic, cookieString, proxyHost, proxyPort);
+                downloadPixiv(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
             }
         }
     }

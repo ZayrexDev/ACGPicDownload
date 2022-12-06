@@ -1,5 +1,6 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
+import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
@@ -22,20 +23,22 @@ import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownloadUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.*;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PixivDownloadPaneController extends MyPane {
+    public MFXTextField namingRuleField;
+    public MFXComboBox<String> multiPageCombo;
+    public MFXTextField folderNamingRuleField;
+    public MFXButton namingRuleHelpBtn;
     @FXML
     private MFXTableView<PixivDownload> dataTable;
     @FXML
@@ -58,8 +61,8 @@ public class PixivDownloadPaneController extends MyPane {
                 outputDirField.getText(),
                 new Logger("GUI", System.out, Main.log),
                 (int) threadCountSlider.getValue(),
-                this::updateStatus,
                 ConfigManager.getTempConfig().get("cookie"),
+                new NamingRule(namingRuleField.getText(), multiPageCombo.getSelectedIndex(), folderNamingRuleField.getText()),
                 ConfigManager.getConfig().getString("proxyHost"),
                 ConfigManager.getConfig().getInteger("proxyPort")
         );
@@ -187,10 +190,21 @@ public class PixivDownloadPaneController extends MyPane {
 
         initTable();
 
+        multiPageCombo.getItems().addAll(
+                ResourceBundleUtil.getString("gui.pixiv.download.multiPageRule.separated"),
+                ResourceBundleUtil.getString("gui.pixiv.download.multiPageRule.gathered")
+        );
+
+        multiPageCombo.selectedIndexProperty().addListener((observableValue, number, t1) -> folderNamingRuleField.setDisable(t1.intValue() != 0));
+
+        multiPageCombo.selectFirst();
+
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
         selectDirBtn.setText("");
         selectDirBtn.setGraphic(new MFXFontIcon("mfx-folder"));
+        namingRuleHelpBtn.setText("");
+        namingRuleHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
 
         ScheduledService<Void> s = new ScheduledService<>() {
             @Override
@@ -207,6 +221,8 @@ public class PixivDownloadPaneController extends MyPane {
 
         s.setPeriod(Duration.seconds(1));
         s.start();
+
+        restoreConfig();
     }
 
     @javafx.fxml.FXML
@@ -238,6 +254,45 @@ public class PixivDownloadPaneController extends MyPane {
         if (sb.length() > 0) {
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
             Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
+        }
+    }
+
+    public void namingRuleHelpBtnOnAction() {
+    }
+
+    public void restoreConfig() {
+        JSONObject pixivConfig = Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject());
+        JSONObject downloadConfig = Objects.requireNonNullElse(pixivConfig.getJSONObject("download"), new JSONObject());
+
+        namingRuleField.setText(Objects.requireNonNullElse(downloadConfig.getString("namingRule"), "{$id}{_p$p}"));
+        multiPageCombo.selectIndex(Objects.requireNonNullElse(downloadConfig.getInteger("multiPageRule"), 0));
+        folderNamingRuleField.setText(Objects.requireNonNullElse(downloadConfig.getString("folderNamingRule"), "{$id}"));
+        outputDirField.setText(Objects.requireNonNullElse(downloadConfig.getString("path"), ""));
+        threadCountSlider.setValue(Objects.requireNonNullElse(downloadConfig.getInteger("thread"), 5));
+
+        pixivConfig.put("download", downloadConfig);
+        ConfigManager.getConfig().put("pixiv", pixivConfig);
+    }
+
+    public void saveConfig() {
+        JSONObject pixivConfig = Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject());
+        JSONObject downloadConfig = new JSONObject();
+
+        downloadConfig.put("namingRule", namingRuleField.getText());
+        downloadConfig.put("multiPageRule", multiPageCombo.getSelectedIndex());
+        downloadConfig.put("folderNamingRule", folderNamingRuleField.getText());
+        downloadConfig.put("path", outputDirField.getText());
+        downloadConfig.put("thread", (int) threadCountSlider.getValue());
+
+        pixivConfig.put("download", downloadConfig);
+        ConfigManager.getConfig().put("pixiv", pixivConfig);
+
+        try {
+            ConfigManager.saveConfig();
+            Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.notice.saved"), gui.mainPane);
+        } catch (IOException e) {
+            gui.showError(e);
+            Main.logError(e);
         }
     }
 }

@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.annotation.JSONField;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 public class PixivArtwork {
     @JSONField(name = "id")
@@ -64,6 +65,16 @@ public class PixivArtwork {
     private GifData gifData;
     private From from;
 
+    private JSONObject origJson;
+
+    public JSONObject getOrigJson() {
+        return origJson;
+    }
+
+    public void setOrigJson(JSONObject origJson) {
+        this.origJson = origJson;
+    }
+
     public PixivArtwork() {
     }
 
@@ -78,7 +89,7 @@ public class PixivArtwork {
     public String getTypeString() {
         if (illustType == 2) return ResourceBundleUtil.getString("fetch.pixiv.type.gif");
         else if (illustType == 1 || illustType == 0)
-            return ResourceBundleUtil.getString("fetch.pixiv.type.illust").concat("-" + pageCount);
+            return Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.type.illust")).concat("-" + pageCount);
         else return "?";
     }
 
