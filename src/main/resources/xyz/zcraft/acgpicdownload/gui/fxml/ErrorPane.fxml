@@ -6,40 +6,48 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.BoxBlur?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-<AnchorPane fx:id="errorPane" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.ErrorPaneController">
-   <children>
-      <ImageView fx:id="bg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <effect>
-            <BoxBlur />
-         </effect>
-      </ImageView>
-      <VBox alignment="TOP_RIGHT" prefHeight="197.0" prefWidth="600.0" spacing="10.0" style="-fx-border-color: black transparent black transparent; -fx-background-color: white;" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
-         <children>
-            <Label maxWidth="1.7976931348623157E308" text="%gui.err">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
-            <MFXScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-               <content>
-                  <Label fx:id="errorLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#copyErrorMsg" wrapText="true" />
-               </content>
-            </MFXScrollPane>
-            <HBox alignment="CENTER_RIGHT" spacing="10.0">
-               <children>
-                  <MFXButton alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" onAction="#openFAQ" style="-fx-border-color: black;" text="%gui.err.openFAQ" textAlignment="CENTER" />
-                  <MFXButton fx:id="errorOkBtn1" alignment="CENTER" contentDisplay="CENTER" layoutX="367.0" layoutY="10.0" maxWidth="-Infinity" onAction="#errorOkBtnOnAction" style="-fx-border-color: black;" text="%gui.err.ok" textAlignment="CENTER" />
-               </children>
-            </HBox>
-         </children>
-         <padding>
-            <Insets bottom="10.0" left="100.0" right="100.0" top="10.0" />
-         </padding>
-      </VBox>
-   </children>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="errorPane" stylesheets="@../default.css"
+            xmlns="http://javafx.com/javafx/19"
+            fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.ErrorPaneController">
+    <children>
+        <ImageView fx:id="bg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"
+                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                   AnchorPane.topAnchor="0.0">
+            <effect>
+                <BoxBlur/>
+            </effect>
+        </ImageView>
+        <VBox alignment="TOP_RIGHT" prefHeight="197.0" prefWidth="600.0" spacing="10.0"
+              style="-fx-border-color: black transparent black transparent; -fx-background-color: white;"
+              AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="100.0">
+            <children>
+                <Label maxWidth="1.7976931348623157E308" text="%gui.err">
+                    <font>
+                        <Font size="16.0"/>
+                    </font>
+                </Label>
+                <MFXScrollPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                    <content>
+                        <Label fx:id="errorLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                               onMouseClicked="#copyErrorMsg" wrapText="true"/>
+                    </content>
+                </MFXScrollPane>
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <MFXButton alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" onAction="#openFAQ"
+                                   style="-fx-border-color: black;" text="%gui.err.openFAQ" textAlignment="CENTER"/>
+                        <MFXButton fx:id="errorOkBtn1" alignment="CENTER" contentDisplay="CENTER" layoutX="367.0"
+                                   layoutY="10.0" maxWidth="-Infinity" onAction="#errorOkBtnOnAction"
+                                   style="-fx-border-color: black;" text="%gui.err.ok" textAlignment="CENTER"/>
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="100.0" right="100.0" top="10.0"/>
+            </padding>
+        </VBox>
+    </children>
 </AnchorPane>

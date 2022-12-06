@@ -8,26 +8,34 @@ public class IntegerLimit {
     private boolean hasMin = false;
     private boolean hasStep = false;
 
-    public boolean isValid(Integer value) {
-        if(hasMax && value > maxValue){
-            return false;
-        }
-        if(hasMin && value < minValue){
-            return false;
-        }
-        if(hasStep){
-            if(hasMax && (value - maxValue) % step != 0){
-                return false;
-            }else if(hasMin && (value - minValue) % step != 0){
-                return false;
-            }else{
-                return value % step == 0;
-            }
-        }
-        return true;
+    private IntegerLimit() {
     }
 
-    public static IntegerLimit biggerThan(Integer minValue, Integer step){
+    public IntegerLimit(Integer minValue, Integer maxValue) {
+        hasMax = true;
+        hasMin = true;
+        hasStep = false;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.step = 1;
+    }
+
+    public IntegerLimit(Integer minValue, Integer maxValue, Integer step) {
+        if (minValue != null) {
+            hasMin = true;
+            this.minValue = minValue;
+        }
+        if (maxValue != null) {
+            hasMax = true;
+            this.maxValue = maxValue;
+        }
+        if (step != null) {
+            hasStep = true;
+            this.step = step;
+        }
+    }
+
+    public static IntegerLimit biggerThan(Integer minValue, Integer step) {
         IntegerLimit t = new IntegerLimit();
         t.setMaxValue(minValue);
         t.setStep(step);
@@ -47,7 +55,7 @@ public class IntegerLimit {
         return t;
     }
 
-    public static IntegerLimit smallThan(Integer maxValue){
+    public static IntegerLimit smallThan(Integer maxValue) {
         IntegerLimit t = new IntegerLimit();
         t.setMaxValue(maxValue);
         t.setStep(1);
@@ -67,23 +75,31 @@ public class IntegerLimit {
         return t;
     }
 
-    private IntegerLimit(){}
-
-    public static IntegerLimit range(Integer minValue, Integer maxValue, Integer step){
-        return new IntegerLimit(minValue, maxValue,step);
+    public static IntegerLimit range(Integer minValue, Integer maxValue, Integer step) {
+        return new IntegerLimit(minValue, maxValue, step);
     }
 
     public static IntegerLimit range(Integer minValue, Integer maxValue) {
         return new IntegerLimit(minValue, maxValue);
     }
 
-    public IntegerLimit(Integer minValue, Integer maxValue) {
-        hasMax = true;
-        hasMin = true;
-        hasStep = false;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-        this.step = 1;
+    public boolean isValid(Integer value) {
+        if (hasMax && value > maxValue) {
+            return false;
+        }
+        if (hasMin && value < minValue) {
+            return false;
+        }
+        if (hasStep) {
+            if (hasMax && (value - maxValue) % step != 0) {
+                return false;
+            } else if (hasMin && (value - minValue) % step != 0) {
+                return false;
+            } else {
+                return value % step == 0;
+            }
+        }
+        return true;
     }
 
     public boolean isHasMax() {
@@ -97,23 +113,6 @@ public class IntegerLimit {
     public boolean isHasStep() {
         return hasStep;
     }
-
-    public IntegerLimit(Integer minValue, Integer maxValue, Integer step) {
-        if(minValue != null){
-            hasMin = true;
-            this.minValue = minValue;
-        }
-        if(maxValue != null){
-            hasMax = true;
-            this.maxValue = maxValue;
-        }
-        if(step != null){
-            hasStep = true;
-            this.step = step;
-        }
-    }
-
-
 
     @Override
     public String toString() {

@@ -11,10 +11,14 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
+import xyz.zcraft.acgpicdownload.gui.GUI;
+import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.*;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -25,7 +29,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 
-public class PixivDiscoveryPaneController extends MyPane{
+public class PixivDiscoveryPaneController extends MyPane {
+    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     private MFXSlider maxCountSlider;
@@ -47,7 +52,6 @@ public class PixivDiscoveryPaneController extends MyPane{
     private MFXComboBox<String> modeCombo;
     @javafx.fxml.FXML
     private MFXTableView<PixivArtwork> dataTable;
-    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     @javafx.fxml.FXML
     private MFXTextField cookieField;
 
@@ -151,11 +155,11 @@ public class PixivDiscoveryPaneController extends MyPane{
 
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.getDiscovery(
                         modeCombo.getSelectedIndex(),
-                        (int)maxCountSlider.getValue(),
+                        (int) maxCountSlider.getValue(),
                         cookieField.getText(),
                         ConfigManager.getConfig().getString("proxyHost"),
                         ConfigManager.getConfig().getInteger("proxyPort")
-                    );
+                );
 
                 if (relatedDepthSlider.getValue() > 0) {
                     List<PixivArtwork> temp2Artworks = new LinkedList<>();

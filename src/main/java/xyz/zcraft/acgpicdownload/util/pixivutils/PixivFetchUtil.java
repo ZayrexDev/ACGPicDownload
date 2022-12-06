@@ -22,10 +22,12 @@ public class PixivFetchUtil {
 
     private static final String[] MODES = {"all", "safe", "r18"};
 
-    public static GifData getGifData(PixivArtwork artwork, String proxyHost, Integer proxyPort) throws IOException {
+    public static GifData getGifData(PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(String.format(GIF_DATA, artwork.getId()).concat("?lang=")
-                .concat(getPixivLanguageTag()))
+                        .concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
+                .cookies(cookie)
                 .method(Method.GET)
                 .timeout(10 * 1000);
         if (proxyHost != null && proxyPort != null && proxyPort != 0) {
@@ -37,10 +39,12 @@ public class PixivFetchUtil {
         return gifData;
     }
 
-    public static LinkedList<String> getFullPages(PixivArtwork artwork, String proxyHost, Integer proxyPort) throws IOException {
+    public static LinkedList<String> getFullPages(PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(String.format(PAGES, artwork.getId()).concat("?lang=")
-                .concat(getPixivLanguageTag()))
+                        .concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
+                .cookies(cookie)
                 .method(Method.GET)
                 .timeout(10 * 1000);
         if (proxyHost != null && proxyPort != null && proxyPort != 0) {

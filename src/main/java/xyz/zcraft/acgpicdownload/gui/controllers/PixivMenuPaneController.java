@@ -11,10 +11,14 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
+import xyz.zcraft.acgpicdownload.gui.GUI;
+import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.*;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -26,6 +30,7 @@ import java.util.List;
 import java.util.*;
 
 public class PixivMenuPaneController extends MyPane {
+    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     private MFXSlider maxCountSlider;
@@ -55,7 +60,6 @@ public class PixivMenuPaneController extends MyPane {
     private MFXButton cookieHelpBtn;
     @javafx.fxml.FXML
     private MFXTableView<PixivArtwork> dataTable;
-    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     @javafx.fxml.FXML
     private MFXTextField cookieField;
 
@@ -70,7 +74,7 @@ public class PixivMenuPaneController extends MyPane {
 
     @javafx.fxml.FXML
     public void cookieHelpBtnOnAction() throws IOException, URISyntaxException {
-        if(Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)){
+        if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
             java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/%E8%8E%B7%E5%8F%96Cookie"));
         } else {
             java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/Get-cookie"));
@@ -210,7 +214,7 @@ public class PixivMenuPaneController extends MyPane {
     }
 
     @javafx.fxml.FXML
-    public void removeSelectedBtnOnAction(){
+    public void removeSelectedBtnOnAction() {
         int a = data.size();
         data.removeAll(dataTable.getSelectionModel().getSelectedValues());
         dataTable.getSelectionModel().clearSelection();
@@ -221,7 +225,7 @@ public class PixivMenuPaneController extends MyPane {
     }
 
     @javafx.fxml.FXML
-    public void sendSelectedToDownloadBtnOnAction(){
+    public void sendSelectedToDownloadBtnOnAction() {
         int a = data.size();
         for (PixivArtwork data : dataTable.getSelectionModel().getSelectedValues()) {
             gui.pixivDownloadPaneController.getData().add(new PixivDownload(data));
@@ -234,21 +238,21 @@ public class PixivMenuPaneController extends MyPane {
     }
 
     @javafx.fxml.FXML
-    public void clearSelected(){
+    public void clearSelected() {
         int i = dataTable.getSelectionModel().getSelectedValues().size();
         dataTable.getSelectionModel().clearSelection();
         Notice.showSuccess(
-                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.notice.clearSelected")),i),
+                String.format(Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.notice.clearSelected")), i),
                 gui.mainPane);
     }
 
     @javafx.fxml.FXML
-    public void copySelected(){
+    public void copySelected() {
         StringBuilder sb = new StringBuilder();
         for (PixivArtwork s : dataTable.getSelectionModel().getSelectedValues()) {
             sb.append(PixivFetchUtil.getArtworkPageUrl(s)).append("\n");
         }
-        if (sb.length() > 0){
+        if (sb.length() > 0) {
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
             Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
         }

@@ -18,6 +18,7 @@ import java.util.*;
 
 public class Fetch {
     private final LinkedList<Argument<?>> arguments = new LinkedList<>();
+    private final HashMap<String, String> argumentsTmp = new HashMap<>();
     public boolean enableConsoleProgressBar = false;
     private String sourceName;
     private String outputDir = new File("").getAbsolutePath();
@@ -27,7 +28,6 @@ public class Fetch {
     private int proxyPort;
     private int times = 1;
     private boolean saveFullResult = false;
-    private final HashMap<String, String> argumentsTmp = new HashMap<>();
 
     public static void usage(Logger logger) {
         logger.info(
@@ -230,12 +230,12 @@ public class Fetch {
         FetchUtil.replaceArgument(s, arguments);
 
         ArrayList<Result> r = FetchUtil.fetch(
-            s,
-            times,
-            logger,
-            enableConsoleProgressBar,
-            proxyHost,
-            proxyPort
+                s,
+                times,
+                logger,
+                enableConsoleProgressBar,
+                proxyHost,
+                proxyPort
         );
         if (r.size() == 0) {
             logger.info(ResourceBundleUtil.getString("cli.fetch.info.noPicGot"));

@@ -1,19 +1,27 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.github.palexdev.materialfx.controls.*;
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXSlider;
+import io.github.palexdev.materialfx.controls.MFXTableView;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.collections.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
+import xyz.zcraft.acgpicdownload.gui.GUI;
+import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.*;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -25,6 +33,7 @@ import java.util.List;
 import java.util.*;
 
 public class PixivUserPaneController extends MyPane {
+    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     private AnchorPane mainPane;
@@ -46,7 +55,6 @@ public class PixivUserPaneController extends MyPane {
     private Label operationLabel;
     @javafx.fxml.FXML
     private Label subOperationLabel;
-    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
 
     @javafx.fxml.FXML
     public void backBtnOnAction() {
@@ -198,8 +206,8 @@ public class PixivUserPaneController extends MyPane {
 
                 for (String s : queryString) {
                     pixivArtworks.addAll(
-                        PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
-                            ConfigManager.getConfig().getInteger("proxyPort")));
+                            PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
+                                    ConfigManager.getConfig().getInteger("proxyPort")));
                 }
 
                 if (relatedDepthSlider.getValue() > 0) {

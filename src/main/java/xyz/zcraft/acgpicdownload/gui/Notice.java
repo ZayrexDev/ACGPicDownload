@@ -18,13 +18,16 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class Notice {
+    private static final Color SU_BG = Color.rgb(212, 237, 218);
+    private static final Color SU_TEXT = Color.rgb(46, 107, 60);
+    private static final Color ERR_BG = Color.rgb(248, 215, 218);
+    private static final Color ERR_TEXT = Color.rgb(127, 46, 53);
     @javafx.fxml.FXML
     AnchorPane pane;
-
     @javafx.fxml.FXML
     Label msgLbl;
 
-    public static Notice getInstance(String message, Pane parent){
+    public static Notice getInstance(String message, Pane parent) {
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/Notice.fxml")));
         try {
             loader.load();
@@ -45,19 +48,6 @@ public class Notice {
 
         return controller;
     }
-
-    private AnchorPane getPane() {
-        return pane;
-    }
-
-    private Label getLabel() {
-        return msgLbl;
-    }
-
-    private static final Color SU_BG = Color.rgb(212, 237, 218);
-    private static final Color SU_TEXT = Color.rgb(46, 107, 60);
-    private static final Color ERR_BG = Color.rgb(248, 215, 218);
-    private static final Color ERR_TEXT = Color.rgb(127, 46, 53);
 
     public static void showSuccess(String message, Pane parent) {
         FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/Notice.fxml")));
@@ -112,7 +102,7 @@ public class Notice {
         AnchorPane.setLeftAnchor(p, d);
         AnchorPane.setRightAnchor(p, d);
 
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             parent.getChildren().addAll(p);
             p.setVisible(true);
             p.setTranslateY(-100);
@@ -130,6 +120,14 @@ public class Notice {
         Timeline tl = new Timeline(kf1, kf12, kf11);
         tl.setOnFinished((e) -> parent.getChildren().remove(p));
         tl.play();
+    }
+
+    private AnchorPane getPane() {
+        return pane;
+    }
+
+    private Label getLabel() {
+        return msgLbl;
     }
 
     public void setColors(Color backColor, Color textColor) {

@@ -21,14 +21,27 @@ import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.*;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
+import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
-import xyz.zcraft.acgpicdownload.gui.base.argpanes.*;
-import xyz.zcraft.acgpicdownload.util.*;
-import xyz.zcraft.acgpicdownload.util.downloadutil.*;
-import xyz.zcraft.acgpicdownload.util.fetchutil.*;
-import xyz.zcraft.acgpicdownload.util.sourceutil.*;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.*;
+import xyz.zcraft.acgpicdownload.gui.base.argpanes.ArgumentPane;
+import xyz.zcraft.acgpicdownload.gui.base.argpanes.LimitedIntegerArgumentPane;
+import xyz.zcraft.acgpicdownload.gui.base.argpanes.LimitedStringArgumentPane;
+import xyz.zcraft.acgpicdownload.gui.base.argpanes.StringArgumentPane;
+import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
+import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
+import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
+import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
+import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
+import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -296,16 +309,16 @@ public class FetchPaneController extends MyPane {
 
             ArrayList<Result> r1 = FetchUtil.fetch(s, (int) timesSlider.getValue(),
                     new Logger("GUI", System.out, Main.log),
-                     true,
-                      ConfigManager.getConfig().getString("proxyHost"),
-                      Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0),
-                      new ExceptionHandler() {
+                    true,
+                    ConfigManager.getConfig().getString("proxyHost"),
+                    Objects.requireNonNullElse(ConfigManager.getConfig().getInteger("proxyPort"), 0),
+                    new ExceptionHandler() {
                         @Override
                         public void handle(Exception e) {
                             gui.showError(e);
                             Main.logError(e);
                         }
-                      });
+                    });
             LinkedList<DownloadResult> drs = new LinkedList<>();
             for (Result result : r1) {
                 DownloadResult dr = new DownloadResult();
@@ -415,7 +428,7 @@ public class FetchPaneController extends MyPane {
     public void saveConfig() {
         JSONObject obj = ConfigManager.getConfig();
         obj = obj.getJSONObject("fetch");
-        if(obj == null) obj = new JSONObject();
+        if (obj == null) obj = new JSONObject();
         obj.put("times", (int) timesSlider.getValue());
         obj.put("output", outputDirField.getText());
         obj.put("threadCount", (int) threadCountSlider.getValue());

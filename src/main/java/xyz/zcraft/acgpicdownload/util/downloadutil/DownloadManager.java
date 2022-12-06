@@ -1,31 +1,31 @@
 package xyz.zcraft.acgpicdownload.util.downloadutil;
 
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 public class DownloadManager {
     private static final DecimalFormat df = new DecimalFormat("##.#%");
     private static final DecimalFormat df2 = new DecimalFormat("#.##");
     private static final int PROGRESS_BAR_SIZE = 25;
     private final DownloadResult[] process;
+    private final long startTime;
+    private final LinkedList<String> error = new LinkedList<>();
     long total = 0;
     long downloaded = 0;
     int failed = 0;
     int completed = 0;
     int started = 0;
-    private final long startTime;
-    private final LinkedList<String> error = new LinkedList<>();
     ThreadPoolExecutor tpe;
 
     int created = 0;
+    String speed;
     private boolean done = false;
     private long lastDownloaded = 0;
     private long lastTime = 0;
-    String speed;
     private int timesGot = 0;
     private double p = 0;
 

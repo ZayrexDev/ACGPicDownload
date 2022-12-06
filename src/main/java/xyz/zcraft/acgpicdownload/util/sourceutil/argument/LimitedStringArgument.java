@@ -28,7 +28,7 @@ public class LimitedStringArgument extends StringArgument {
     public void set(String value) {
         if (isValid(value)) {
             this.value = value;
-        }else{
+        } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }
     }

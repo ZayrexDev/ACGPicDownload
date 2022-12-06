@@ -18,10 +18,11 @@ import java.util.List;
 import java.util.Locale;
 
 public class Main {
-    private static boolean debug = false;
     public static PrintWriter debugOut;
     public static PrintStream log;
     public static PrintWriter err;
+    private static boolean debug = false;
+
     public static boolean isDebug() {
         return debug;
     }
@@ -70,7 +71,8 @@ public class Main {
         ArrayList<String> argList = new ArrayList<>(List.of(args));
         try {
             log = new PrintStream("out.log");
-        } catch (FileNotFoundException ignored) {}
+        } catch (FileNotFoundException ignored) {
+        }
         if (argList.size() == 0) {
             GUI.start(args);
         } else if (argList.get(0).equalsIgnoreCase("fetch")) {
@@ -85,9 +87,9 @@ public class Main {
         }
     }
 
-    public static void setMFXLanguage(){
+    public static void setMFXLanguage() {
         for (Language v : Language.values()) {
-            if(v.getLocale().equals(Locale.getDefault())){
+            if (v.getLocale().equals(Locale.getDefault())) {
                 I18N.setLanguage(v);
                 return;
             }

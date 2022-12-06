@@ -3,7 +3,6 @@ package xyz.zcraft.acgpicdownload.util.pixivutils;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
-
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
 import java.util.HashSet;
@@ -64,6 +63,10 @@ public class PixivArtwork {
     private Set<String> translatedTags = new HashSet<>();
     private String imageUrl;
     private GifData gifData;
+    private From from;
+
+    public PixivArtwork() {
+    }
 
     public String getImageUrl() {
         return imageUrl;
@@ -73,15 +76,12 @@ public class PixivArtwork {
         this.imageUrl = imageUrl;
     }
 
-    private From from;
-
-    public String getTypeString(){
-        if(illustType == 2) return ResourceBundleUtil.getString("fetch.pixiv.type.gif");
-        else if(illustType == 1 || illustType == 0) return ResourceBundleUtil.getString("fetch.pixiv.type.illust").concat("-" + pageCount);
+    public String getTypeString() {
+        if (illustType == 2) return ResourceBundleUtil.getString("fetch.pixiv.type.gif");
+        else if (illustType == 1 || illustType == 0)
+            return ResourceBundleUtil.getString("fetch.pixiv.type.illust").concat("-" + pageCount);
         else return "?";
     }
-
-    public PixivArtwork() {}
 
     public From getFrom() {
         return from;
@@ -164,16 +164,20 @@ public class PixivArtwork {
         return originalTags;
     }
 
+    public void setOriginalTags(JSONArray originalTags) {
+        this.originalTags = originalTags;
+    }
+
     public String getTagsString() {
-        if(translatedTags == null && translatedTags.size() == 0){
-            if(originalTags == null) return null;
+        if (translatedTags == null && translatedTags.size() == 0) {
+            if (originalTags == null) return null;
             StringBuilder sb = new StringBuilder();
             for (Object tag : originalTags) {
                 sb.append(tag);
                 sb.append(",");
             }
             return sb.toString();
-        }else{
+        } else {
             StringBuilder sb = new StringBuilder();
             for (Object tag : translatedTags) {
                 sb.append(tag);
@@ -181,10 +185,6 @@ public class PixivArtwork {
             }
             return sb.toString();
         }
-    }
-
-    public void setOriginalTags(JSONArray originalTags) {
-        this.originalTags = originalTags;
     }
 
     public String getUserId() {

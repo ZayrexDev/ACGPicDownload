@@ -173,9 +173,9 @@ public class SettingsPaneController extends MyPane {
 
         if (bgFromFolder.isSelected()) {
             obj.put("bg", bgFolderField.getText());
-        }else if(bgTransparent.isSelected()){
+        } else if (bgTransparent.isSelected()) {
             obj.put("bg", "transparent");
-        }else{
+        } else {
             obj.remove("bg");
         }
 
@@ -205,9 +205,9 @@ public class SettingsPaneController extends MyPane {
         else languageCombo.getSelectionModel().selectFirst();
 
         if (json.containsKey("bg")) {
-            if(json.getString("bg").equals("transparent")){
+            if (json.getString("bg").equals("transparent")) {
                 bgTransparent.setSelected(true);
-            }else{
+            } else {
                 bgFolderField.setText(json.getString("bg"));
                 bgFromFolder.setSelected(true);
             }

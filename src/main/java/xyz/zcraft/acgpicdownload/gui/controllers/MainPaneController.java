@@ -22,6 +22,7 @@ import xyz.zcraft.acgpicdownload.gui.GUI;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+
 public class MainPaneController implements Initializable {
     GUI gui;
     @javafx.fxml.FXML
@@ -45,6 +46,11 @@ public class MainPaneController implements Initializable {
 
     @javafx.fxml.FXML
     private HBox titlePane;
+    private boolean transparent = false;
+    private double origX;
+    private double origY;
+    private double origStageX;
+    private double origStageY;
 
     public AnchorPane getMainPane() {
         return mainPane;
@@ -64,7 +70,7 @@ public class MainPaneController implements Initializable {
         return transparent;
     }
 
-    public void setTransparent(){
+    public void setTransparent() {
         transparent = true;
         blurImg.setVisible(false);
         background.setVisible(false);
@@ -81,7 +87,7 @@ public class MainPaneController implements Initializable {
         this.gui = gui;
     }
 
-    public void fitBackground(){
+    public void fitBackground() {
         background.setFitWidth(gui.mainStage.getWidth());
         background.setFitHeight(gui.mainStage.getHeight());
         blurImg.setFitWidth(gui.mainStage.getWidth());
@@ -90,7 +96,6 @@ public class MainPaneController implements Initializable {
         blurImg.setImage(snapshot);
     }
 
-    private boolean transparent = false;
     public VBox getInitPane() {
         return initPane;
     }
@@ -127,24 +132,19 @@ public class MainPaneController implements Initializable {
 
         initPane.setVisible(true);
         closeBtn.setText("");
-        closeBtn.setGraphic(new MFXFontIcon("mfx-x",Color.WHITE));
+        closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.WHITE));
         minimizeBtn.setText("");
         minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.WHITE));
     }
 
     @FXML
-    private void mouseDragged(MouseEvent e){
+    private void mouseDragged(MouseEvent e) {
         gui.mainStage.setX(e.getScreenX() - origX + origStageX);
         gui.mainStage.setY(e.getScreenY() - origY + origStageY);
     }
 
-    private double origX;
-    private double origY;
-    private double origStageX;
-    private double origStageY;
-
     @FXML
-    private void startMoving(MouseEvent e){
+    private void startMoving(MouseEvent e) {
         origStageX = gui.mainStage.getX();
         origStageY = gui.mainStage.getY();
         origX = e.getScreenX();
@@ -152,7 +152,7 @@ public class MainPaneController implements Initializable {
     }
 
     @FXML
-    private void minimizeBtnOnAction(){
+    private void minimizeBtnOnAction() {
         gui.mainStage.setIconified(true);
     }
 

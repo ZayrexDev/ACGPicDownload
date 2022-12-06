@@ -109,7 +109,7 @@ public class WelcomePaneController implements Initializable {
         ttP.play();
     }
 
-    public void openSettingsPane(){
+    public void openSettingsPane() {
         hideMain();
         gui.openSettingsPane();
     }
