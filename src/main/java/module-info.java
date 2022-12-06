@@ -5,7 +5,7 @@ module xyz.zcraft.acgpicdownload {
     requires transitive javafx.base;
     requires transitive javafx.graphics;
     requires transitive MaterialFX;
-    requires animated.gif.lib;
+    requires transitive animated.gif.lib;
 
     opens xyz.zcraft.acgpicdownload to javafx.controls, javafx.base, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
     exports xyz.zcraft.acgpicdownload;

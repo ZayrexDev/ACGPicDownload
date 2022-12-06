@@ -18,11 +18,13 @@ public class PixivFetchUtil {
     private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1";
     private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=%s&limit=%d";
     private static final String GIF_DATA = "https://www.pixiv.net/ajax/illust/%s/ugoira_meta";
+    private static final String PAGES = "https://www.pixiv.net/ajax/illust/%s/pages";
 
     private static final String[] MODES = {"all", "safe", "r18"};
 
     public static GifData getGifData(PixivArtwork artwork, String proxyHost, Integer proxyPort) throws IOException {
-        Connection c = Jsoup.connect(String.format(GIF_DATA, artwork.getId()))
+        Connection c = Jsoup.connect(String.format(GIF_DATA, artwork.getId()).concat("?lang=")
+                .concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .timeout(10 * 1000);
@@ -30,7 +32,26 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
         JSONObject body = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body");
-        return body.to(GifData.class);
+        GifData gifData = body.to(GifData.class);
+        artwork.setGifData(gifData);
+        return gifData;
+    }
+
+    public static LinkedList<String> getFullPages(PixivArtwork artwork, String proxyHost, Integer proxyPort) throws IOException {
+        Connection c = Jsoup.connect(String.format(PAGES, artwork.getId()).concat("?lang=")
+                .concat(getPixivLanguageTag()))
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+        LinkedList<String> urls = new LinkedList<>();
+        JSONArray body = JSONObject.parseObject(c.get().body().ownText()).getJSONArray("body");
+        for (int i = 0; i < body.size(); i++) {
+            urls.add(body.getJSONObject(i).getJSONObject("urls").getString("original"));
+        }
+        return urls;
     }
 
     public static PixivArtwork getArtwork(String id, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
@@ -44,7 +65,15 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
         JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(id);
-        return jsonObject.to(PixivArtwork.class);
+        PixivArtwork pixivArtwork = jsonObject.to(PixivArtwork.class);
+        JSONArray jsonArray = jsonObject.getJSONObject("tags").getJSONArray("tags");
+        HashSet<String> tags = new HashSet<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            tags.add(jsonArray.getJSONObject(i).getString("tag"));
+        }
+        System.out.println(tags);
+        pixivArtwork.setTranslatedTags(tags);
+        return pixivArtwork;
     }
 
     public static List<PixivArtwork> getDiscovery(int mode, int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {

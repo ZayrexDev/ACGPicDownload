@@ -353,7 +353,7 @@ public class GUI extends Application {
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
         authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getUserName));
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
-        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getOriginalTagsString));
+        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTagsString));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
         typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTypeString));
 
@@ -377,7 +377,7 @@ public class GUI extends Application {
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),PixivArtwork::getUserName),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),PixivArtwork::getOriginalTagsString),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),PixivArtwork::getTagsString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"), PixivArtwork::getTypeString)
         ));

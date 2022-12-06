@@ -131,7 +131,7 @@ public class PixivDownloadPaneController extends MyPane {
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
         authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFrom()));
-        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getOriginalTagsString()));
+        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
         statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getStatus().toString()));
         typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
@@ -163,7 +163,7 @@ public class PixivDownloadPaneController extends MyPane {
                                 .toString()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.tag"),
                         o -> o.getArtwork()
-                                .getOriginalTagsString()),
+                                .getTagsString()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.id"),
                         o -> o.getArtwork().getId()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.status"),

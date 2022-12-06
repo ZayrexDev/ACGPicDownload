@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.zip.ZipInputStream;
 
 public class DownloadUtil {
@@ -228,49 +229,45 @@ public class DownloadUtil {
         InputStream is = null;
         FileOutputStream fos = null;
         File f = null;
+        LinkedList<String> pages = PixivFetchUtil.getFullPages(a.getArtwork(), proxyHost, proxyPort);
         try {
-            if (a.getArtwork().getImageUrl() == null || a.getArtwork().getImageUrl().isEmpty()) {
-                a.getArtwork()
-                        .setImageUrl(PixivFetchUtil.getImageUrl(a.getArtwork(), cookieString, proxyHost, proxyPort));
-            }
-
             if (!toDic.exists() && !toDic.mkdirs()) {
                 a.setStatus(DownloadStatus.FAILED);
             }
 
-            URL url = new URL(a.getArtwork().getImageUrl());
-            URLConnection c = url.openConnection();
+            for(String s : pages){
+                URL url = new URL(s);
+                URLConnection c = url.openConnection();
 
-            c.setRequestProperty("Referer", PixivDownloadUtil.REFERER);
+                c.setRequestProperty("Referer", PixivDownloadUtil.REFERER);
 
-            if (a != null) {
-                a.setTotalSize(c.getContentLengthLong());
-                a.setStatus(DownloadStatus.STARTED);
-            }
-
-            is = c.getInputStream();
-
-            String s = a.getArtwork().getImageUrl();
-
-            // f = new File(toDic,
-            // a.getArtwork().getId().concat("_p").concat(String.valueOf(a.getArtwork().getPageCount())));
-            f = new File(toDic, s.substring(s.lastIndexOf("/") + 1));
-            fos = new FileOutputStream(f);
-
-            byte[] buffer = new byte[10240];
-            int byteRead;
-            int total = 0;
-
-            while ((byteRead = is.read(buffer)) != -1) {
-                total += byteRead;
-                fos.write(buffer, 0, byteRead);
                 if (a != null) {
-                    a.setSizeDownloaded(total);
+                    a.setTotalSize(c.getContentLengthLong());
+                    a.setStatus(DownloadStatus.STARTED);
                 }
-            }
 
-            is.close();
-            fos.close();
+                is = c.getInputStream();
+
+                // f = new File(toDic,
+                // a.getArtwork().getId().concat("_p").concat(String.valueOf(a.getArtwork().getPageCount())));
+                f = new File(toDic, s.substring(s.lastIndexOf("/") + 1));
+                fos = new FileOutputStream(f);
+
+                byte[] buffer = new byte[10240];
+                int byteRead;
+                int total = 0;
+
+                while ((byteRead = is.read(buffer)) != -1) {
+                    total += byteRead;
+                    fos.write(buffer, 0, byteRead);
+                    if (a != null) {
+                        a.setSizeDownloaded(total);
+                    }
+                }
+
+                is.close();
+                fos.close();
+            }
 
             if (a != null) {
                 a.setStatus(DownloadStatus.COMPLETED);

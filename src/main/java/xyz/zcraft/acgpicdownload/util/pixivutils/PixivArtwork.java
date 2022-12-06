@@ -164,14 +164,23 @@ public class PixivArtwork {
         return originalTags;
     }
 
-    public String getOriginalTagsString() {
-        if(originalTags == null) return null;
-        StringBuilder sb = new StringBuilder();
-        for (Object tag : originalTags) {
-            sb.append(tag);
-            sb.append(",");
+    public String getTagsString() {
+        if(translatedTags == null && translatedTags.size() == 0){
+            if(originalTags == null) return null;
+            StringBuilder sb = new StringBuilder();
+            for (Object tag : originalTags) {
+                sb.append(tag);
+                sb.append(",");
+            }
+            return sb.toString();
+        }else{
+            StringBuilder sb = new StringBuilder();
+            for (Object tag : translatedTags) {
+                sb.append(tag);
+                sb.append(",");
+            }
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     public void setOriginalTags(JSONArray originalTags) {
@@ -312,5 +321,13 @@ public class PixivArtwork {
 
     public void setTranslatedTags(Set<String> translatedTags) {
         this.translatedTags = translatedTags;
+    }
+
+    public GifData getGifData() {
+        return gifData;
+    }
+
+    public void setGifData(GifData gifData) {
+        this.gifData = gifData;
     }
 }
