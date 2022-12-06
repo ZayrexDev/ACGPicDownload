@@ -71,7 +71,7 @@ public class PixivFetchUtil {
         JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(id);
         PixivArtwork pixivArtwork = jsonObject.to(PixivArtwork.class);
         JSONArray jsonArray = jsonObject.getJSONObject("tags").getJSONArray("tags");
-        HashSet<String> tags = new HashSet<>();
+        LinkedHashSet<String> tags = new LinkedHashSet<>();
         for (int i = 0; i < jsonArray.size(); i++) {
             tags.add(jsonArray.getJSONObject(i).getString("tag"));
         }
@@ -142,8 +142,16 @@ public class PixivFetchUtil {
 
         JSONObject obj = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body").getJSONObject("works");
 
+        HashMap<String, String> userTagTranslations = getUserTagTranslations(queryString, proxyHost, proxyPort);
+        LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
         for (String k : obj.keySet()) {
             PixivArtwork a = JSONObject.parseObject(obj.get(k).toString(), PixivArtwork.class);
+            for (Object originalTag : a.getOriginalTags()) {
+                String s = Objects.requireNonNullElse(userTagTranslations.get(originalTag.toString()), originalTag.toString());
+                translatedTags.add(s);
+                System.out.println(originalTag + " -> " + s);
+            }
+            a.setTranslatedTags(translatedTags);
             a.setFrom(From.User);
             artworks.add(a);
         }
@@ -245,13 +253,16 @@ public class PixivFetchUtil {
         if (tagObj == null) return tag;
         switch (origLang) {
             case "zh-cn", "zh_cn", "zh" -> {
-                return Objects.requireNonNullElse(tagObj.getString("zh"), tag);
+                String s = Objects.requireNonNullElse(tagObj.getString("zh"), tag);
+                return s.isEmpty() ? tag : s;
             }
             case "zh_tw", "zh-tw" -> {
-                return Objects.requireNonNullElse(tagObj.getString("zh_tw"), tag);
+                String s = Objects.requireNonNullElse(tagObj.getString("zh_tw"), tag);
+                return s.isEmpty() ? tag : s;
             }
             case "en" -> {
-                return Objects.requireNonNullElse(tagObj.getString("en"), tag);
+                String s = Objects.requireNonNullElse(tagObj.getString("en"), tag);
+                return s.isEmpty() ? tag : s;
             }
             default -> {
                 return tag;
@@ -259,6 +270,7 @@ public class PixivFetchUtil {
         }
     }
 
+    @Deprecated
     public static String getImageUrl(PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(getArtworkPageUrl(artwork))

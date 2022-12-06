@@ -5,8 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 public class PixivArtwork {
     @JSONField(name = "id")
@@ -60,7 +59,7 @@ public class PixivArtwork {
     @JSONField(name = "aiType")
     private int aiType;
 
-    private Set<String> translatedTags = new HashSet<>();
+    private LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
     private String imageUrl;
     private GifData gifData;
     private From from;
@@ -169,7 +168,7 @@ public class PixivArtwork {
     }
 
     public String getTagsString() {
-        if (translatedTags == null && translatedTags.size() == 0) {
+        if (translatedTags == null || translatedTags.size() == 0) {
             if (originalTags == null) return null;
             StringBuilder sb = new StringBuilder();
             for (Object tag : originalTags) {
@@ -315,11 +314,11 @@ public class PixivArtwork {
         this.aiType = aiType;
     }
 
-    public Set<String> getTranslatedTags() {
+    public LinkedHashSet<String> getTranslatedTags() {
         return translatedTags;
     }
 
-    public void setTranslatedTags(Set<String> translatedTags) {
+    public void setTranslatedTags(LinkedHashSet<String> translatedTags) {
         this.translatedTags = translatedTags;
     }
 
