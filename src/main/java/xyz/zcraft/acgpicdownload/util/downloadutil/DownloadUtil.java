@@ -229,8 +229,9 @@ public class DownloadUtil {
         InputStream is = null;
         FileOutputStream fos = null;
         File f = null;
-        LinkedList<String> pages = PixivFetchUtil.getFullPages(a.getArtwork(), proxyHost, proxyPort);
         try {
+            LinkedList<String> pages = PixivFetchUtil.getFullPages(a.getArtwork(), proxyHost, proxyPort);
+
             if (!toDic.exists() && !toDic.mkdirs()) {
                 a.setStatus(DownloadStatus.FAILED);
             }
