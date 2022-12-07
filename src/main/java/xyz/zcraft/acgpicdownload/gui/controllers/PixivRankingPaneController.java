@@ -142,6 +142,7 @@ public class PixivRankingPaneController extends MyPane {
             resToggle.setDisable(!(i == 0 || i == 1 || i == 5 || i == 6 || i == 7));
             minorCombo.getItems().clear();
             minors.clear();
+            minors.add("");
             minorCombo.getItems().add(ResourceBundleUtil.getString("gui.pixiv.ranking.minor.all"));
             if (i == 0 || i == 1 || i == 2 || i == 3) {
                 minors.add("illust");
@@ -243,15 +244,23 @@ public class PixivRankingPaneController extends MyPane {
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
 
-                for (int i = 0; i < ids.size(); i++) {
-                    subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i + 1) + "/" + ids.size());
-                    pixivArtworks.add(
-                            PixivFetchUtil.getArtwork(ids.get(i),
-                                    cookieField.getText(),
-                                    ConfigManager.getConfig().getString("proxyHost"),
-                                    ConfigManager.getConfig().getInteger("proxyPort")
-                            )
-                    );
+                int[] i = {0,0};
+                for (; i[0] < ids.size(); i[0]++) {
+                    Platform.runLater(()->subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i[0] + 1) + "/" + ids.size() + " " + (i[1]+1)));
+                    try{
+                        pixivArtworks.add(
+                                PixivFetchUtil.getArtwork(
+                                        ids.get(i[0]),
+                                        cookieField.getText(),
+                                        ConfigManager.getConfig().getString("proxyHost"),
+                                        ConfigManager.getConfig().getInteger("proxyPort")
+                                )
+                        );
+                        i[1] = 0;
+                    }catch(Exception e){
+                        i[1]++;
+                        i[0]--;
+                    }
                 }
 
                 Platform.runLater(() -> data.addAll(pixivArtworks));
