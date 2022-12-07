@@ -62,9 +62,9 @@
                                      maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
                                      prefHeight="30.0" HBox.hgrow="ALWAYS"/>
                         <MFXToggleButton fx:id="resToggle" text="%gui.pixiv.ranking.adult"/>
-                        <MFXComboBox fx:id="minorCombo" floatingText="%gui.pixiv.ranking.minor" maxHeight="30.0"
-                                     maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                     HBox.hgrow="ALWAYS"/>
+                        <MFXComboBox fx:id="minorCombo" floatMode="BORDER" floatingText="%gui.pixiv.ranking.minor"
+                                     maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
+                                     prefHeight="30.0" HBox.hgrow="ALWAYS"/>
                     </children>
                     <VBox.margin>
                         <Insets left="50.0" right="50.0"/>
