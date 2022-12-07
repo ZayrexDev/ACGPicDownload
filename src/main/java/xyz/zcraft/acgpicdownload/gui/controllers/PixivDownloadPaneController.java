@@ -29,8 +29,11 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -257,7 +260,13 @@ public class PixivDownloadPaneController extends MyPane {
         }
     }
 
-    public void namingRuleHelpBtnOnAction() {
+    public void namingRuleHelpBtnOnAction() throws URISyntaxException, IOException {
+        if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
+            Desktop.getDesktop()
+                    .browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/命名规则"));
+        } else {
+            Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/Naming-rules"));
+        }
     }
 
     public void restoreConfig() {
