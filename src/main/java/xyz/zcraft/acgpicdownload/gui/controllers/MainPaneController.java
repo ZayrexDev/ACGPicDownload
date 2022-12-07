@@ -67,7 +67,7 @@ public class MainPaneController implements Initializable {
         Image image = new Image(stream);
         Rectangle2D vp = null;
 
-        if(image.getWidth() / image.getHeight() > 8.0 / 5.0){
+        if(image.getWidth() / image.getHeight() > w / h){
             background.setFitHeight(h);
             blurImg.setFitHeight(h);
             vp = new Rectangle2D((image.getWidth() - (image.getHeight() / h * w)) / 2, 0, image.getWidth(), image.getHeight());

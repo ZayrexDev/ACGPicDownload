@@ -25,8 +25,6 @@ import xyz.zcraft.acgpicdownload.gui.controllers.*;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
@@ -69,9 +67,9 @@ public class GUI extends Application {
         } else if (e instanceof java.net.SocketTimeoutException) {
             return ResourceBundleUtil.getString("err.status.timeout");
         } else if ((e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused"))
-                || (e instanceof java.net.SocketException ex1 && ex1.getMessage().contains("Network is unreachable: no further information"))
-                || (e instanceof java.net.UnknownHostException)
-        ) {
+                || (e instanceof java.net.SocketException ex1
+                        && ex1.getMessage().contains("Network is unreachable: no further information"))
+                || (e instanceof java.net.UnknownHostException)) {
             String h = ConfigManager.getConfig().getString("proxyHost");
             Integer p = ConfigManager.getConfig().getInteger("proxyPort");
             String s = "";
@@ -128,12 +126,15 @@ public class GUI extends Application {
 
         dataTable.getFilters().addAll(List.of(
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), PixivArtwork::getUserName),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"), o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), PixivArtwork::getTagsString),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),
+                        PixivArtwork::getUserName),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
+                        o -> o.getFrom().toString()),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
+                        PixivArtwork::getTagsString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"), PixivArtwork::getTypeString)
-        ));
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"),
+                        PixivArtwork::getTypeString)));
 
         dataTable.setItems(data);
         dataTable.getSelectionModel().setAllowsMultipleSelection(true);
@@ -320,7 +321,6 @@ public class GUI extends Application {
         Scene s = new Scene(stagePane);
         String bg = ConfigManager.getConfig().getString("bg");
         InputStream imgMain = null;
-        BufferedImage read = null;
         mainStage.setScene(s);
         if (bg != null && bg.equals("transparent")) {
             s.setFill(null);
@@ -341,35 +341,19 @@ public class GUI extends Application {
                 List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
                         .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
                         .toList());
-                while (read == null || imgMain == null) {
-                    if (fl.size() > 0) {
-                        File file = fl.get(new Random().nextInt(fl.size()));
-                        imgMain = new FileInputStream(file);
-                        read = ImageIO.read(new FileInputStream(file));
-                        double rate = (double) read.getWidth() / (double) read.getHeight();
-                        // if (800 / rate > 500 || 800 / rate < 250) {
-                        //     fl.remove(file);
-                        //     imgMain.close();
-                        //     imgMain = null;
-                        //     read = null;
-                        // }
-                    } else {
-                        if (imgMain != null)
-                            imgMain.close();
-                        imgMain = ResourceLoader.loadStream("bg.png");
-                        read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
-                    }
+                if (fl.size() > 0) {
+                    File file = fl.get(new Random().nextInt(fl.size()));
+                    imgMain = new FileInputStream(file);
+                } else {
+                    imgMain = ResourceLoader.loadStream("bg.png");
                 }
             } else {
                 imgMain = ResourceLoader.loadStream("bg.png");
-                read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
             }
 
-            mainPaneController.setBackground(imgMain);
-            // double rate = (double) read.getWidth() / (double) read.getHeight();
             mainStage.setWidth(800);
-            // mainStage.setHeight(mainStage.getWidth() / rate + 29);
             mainStage.setHeight(500);
+            mainPaneController.setBackground(imgMain);
             mainStage.setResizable(false);
         }
     }
