@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.*;
@@ -20,8 +22,32 @@ public class PixivFetchUtil {
     private static final String GIF_DATA = "https://www.pixiv.net/ajax/illust/%s/ugoira_meta";
     private static final String PAGES = "https://www.pixiv.net/ajax/illust/%s/pages";
 
-    private static final String[] MODES = {"all", "safe", "r18"};
+    private static final String RANKING = "https://www.pixiv.net/ranking.php";
+    private static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
 
+    public static LinkedList<String> getRankingIDs(String major, String minor, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        String url = RANKING.concat("?mode=").concat(major).concat(minor != null && !minor.isEmpty() ? "&content=".concat(minor) : "");
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect(url)
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        Elements rankingItems = c.get().body().getElementsByClass("ranking-item");
+        LinkedList<String> ids = new LinkedList<>();
+        for (Element rankingItem : rankingItems) {
+            String href = rankingItem.getElementsByClass("ranking-image-item").get(0).getElementsByTag("a").get(0).attr("href");
+            String id = href.substring(href.lastIndexOf("/") + 1);
+            ids.add(id);
+        }
+
+        return ids;
+    }
     public static GifData getGifData(PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(String.format(GIF_DATA, artwork.getId()).concat("?lang=")
@@ -76,14 +102,13 @@ public class PixivFetchUtil {
         for (int i = 0; i < jsonArray.size(); i++) {
             tags.add(jsonArray.getJSONObject(i).getString("tag"));
         }
-        System.out.println(tags);
         pixivArtwork.setTranslatedTags(tags);
         return pixivArtwork;
     }
 
     public static List<PixivArtwork> getDiscovery(int mode, int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(String.format(DISCOVERY, MODES[mode], limit).concat("&lang=").concat(getPixivLanguageTag()))
+        Connection c = Jsoup.connect(String.format(DISCOVERY, DISCOVERY_MODES[mode], limit).concat("&lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)

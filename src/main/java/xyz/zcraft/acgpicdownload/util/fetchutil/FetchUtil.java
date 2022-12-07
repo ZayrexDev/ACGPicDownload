@@ -358,7 +358,6 @@ public class FetchUtil {
                     e.printStackTrace();
                 }
                 sb = new StringBuilder();
-                sb = new StringBuilder();
                 sb.append(ResourceBundleUtil.getString("cli.fetch")).append(" ").append(i).append("/").append(times);
                 if (failed != 0) {
                     sb.append(" ").append(ResourceBundleUtil.getString("cli.download.status.failed")).append(" : ")

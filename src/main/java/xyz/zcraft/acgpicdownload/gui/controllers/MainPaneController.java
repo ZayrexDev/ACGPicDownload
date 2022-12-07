@@ -65,7 +65,7 @@ public class MainPaneController implements Initializable {
     double h = 500 - 30;
     public void setBackground(InputStream stream) {
         Image image = new Image(stream);
-        Rectangle2D vp = null;
+        Rectangle2D vp;
 
         if(image.getWidth() / image.getHeight() > w / h){
             background.setFitHeight(h);
@@ -104,14 +104,6 @@ public class MainPaneController implements Initializable {
         this.gui = gui;
     }
 
-    public VBox getInitPane() {
-        return initPane;
-    }
-
-    public ImageView getBlurImg() {
-        return blurImg;
-    }
-
     public void setProgress(double p) {
         initProgressBar.setProgress(p == 1 ? -1 : p);
     }
@@ -133,11 +125,6 @@ public class MainPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // mainPane.widthProperty().addListener((observable, oldValue, newValue) -> blurImg
-        //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
-        // mainPane.heightProperty().addListener((observable, oldValue, newValue) -> blurImg
-        //         .setViewport(new Rectangle2D(0, 0, mainPane.getWidth(), mainPane.getHeight())));
-
         initPane.setVisible(true);
         closeBtn.setText("");
         closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.WHITE));

@@ -9,6 +9,7 @@ module xyz.zcraft.acgpicdownload {
 
     opens xyz.zcraft.acgpicdownload to javafx.controls, javafx.base, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
     exports xyz.zcraft.acgpicdownload;
+    exports xyz.zcraft.acgpicdownload.exceptions;
     exports xyz.zcraft.acgpicdownload.gui;
     opens xyz.zcraft.acgpicdownload.gui to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;
     opens xyz.zcraft.acgpicdownload.gui.controllers to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;

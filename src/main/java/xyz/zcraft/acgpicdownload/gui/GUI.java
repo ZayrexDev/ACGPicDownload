@@ -39,6 +39,7 @@ public class GUI extends Application {
     public PixivDiscoveryPaneController pixivDiscoveryPaneController;
     public PixivUserPaneController pixivUserPaneController;
     public PixivRelatedPaneController pixivRelatedPaneController;
+    public PixivRankingPaneController pixivRankingPaneController;
 
     public Stage mainStage;
     public Pane mainPane;
@@ -199,8 +200,7 @@ public class GUI extends Application {
         Thread initThread = new Thread(() -> {
             try {
                 FXMLLoader loader;
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"), ResourceBundleUtil.getResource());
                 welcomePane = loader.load();
                 welcomePaneController = loader.getController();
                 welcomePaneController.setGui(gui);
@@ -208,8 +208,7 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(welcomePane));
                 mainPaneController.setProgress(0.1);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 fetchPaneController = loader.getController();
                 fetchPaneController.setGui(gui);
@@ -217,8 +216,7 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
                 mainPaneController.setProgress(0.2);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivMenuPaneController = loader.getController();
                 pixivMenuPaneController.setGui(gui);
@@ -226,8 +224,7 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
                 mainPaneController.setProgress(0.3);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivUserPaneController = loader.getController();
                 pixivUserPaneController.setGui(gui);
@@ -235,8 +232,7 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
                 mainPaneController.setProgress(0.4);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivRelatedPaneController = loader.getController();
                 pixivRelatedPaneController.setGui(gui);
@@ -244,8 +240,7 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
                 mainPaneController.setProgress(0.5);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivDownloadPaneController = loader.getController();
                 pixivDownloadPaneController.setGui(gui);
@@ -253,8 +248,7 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
                 mainPaneController.setProgress(0.6);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivDiscoveryPaneController = loader.getController();
                 pixivDiscoveryPaneController.setGui(gui);
@@ -262,14 +256,21 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
                 mainPaneController.setProgress(0.7);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 settingsPaneController = loader.getController();
                 settingsPaneController.setGui(gui);
                 fill(settingsPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(settingsPaneController.getMainPane()));
                 mainPaneController.setProgress(0.8);
+
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRankingPane.fxml"), ResourceBundleUtil.getResource());
+                loader.load();
+                pixivRankingPaneController = loader.getController();
+                pixivRankingPaneController.setGui(gui);
+                fill(pixivRankingPaneController.getMainPane());
+                Platform.runLater(() -> mainPane.getChildren().add(pixivRankingPaneController.getMainPane()));
+                mainPaneController.setProgress(0.9);
 
                 // Load done
                 welcomePane.setVisible(false);
@@ -396,5 +397,9 @@ public class GUI extends Application {
             } catch (IOException ignored) {
             }
         });
+    }
+
+    public void openPixivRankingPane() {
+        pixivRankingPaneController.show();
     }
 }

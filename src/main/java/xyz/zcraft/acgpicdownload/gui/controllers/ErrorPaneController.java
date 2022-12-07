@@ -3,7 +3,6 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -100,7 +99,7 @@ public class ErrorPaneController {
         errorLabel.setText(message);
     }
 
-    public void errorOkBtnOnAction(ActionEvent actionEvent) {
+    public void errorOkBtnOnAction() {
         hide();
     }
 

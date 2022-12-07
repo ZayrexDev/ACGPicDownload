@@ -4,6 +4,10 @@
     <list size="1">
       <item index="0" class="java.lang.String" itemvalue="javafx.fxml.FXML" />
     </list>
+    <writeAnnotations>
+      <writeAnnotation name="javafx.fxml.FXML" />
+      <writeAnnotation name="com.alibaba.fastjson2.annotation.JSONField" />
+    </writeAnnotations>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">
