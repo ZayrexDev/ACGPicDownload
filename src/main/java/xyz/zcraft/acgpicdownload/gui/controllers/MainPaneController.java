@@ -6,6 +6,7 @@ import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -60,8 +61,24 @@ public class MainPaneController implements Initializable {
         return background;
     }
 
+    double w = 800;
+    double h = 500 - 30;
     public void setBackground(InputStream stream) {
-        background.setImage(new Image(stream));
+        Image image = new Image(stream);
+        Rectangle2D vp = null;
+
+        if(image.getWidth() / image.getHeight() > 8.0 / 5.0){
+            background.setFitHeight(h);
+            blurImg.setFitHeight(h);
+            vp = new Rectangle2D((image.getWidth() - (image.getHeight() / h * w)) / 2, 0, image.getWidth(), image.getHeight());
+        }else{
+            background.setFitWidth(w);
+            blurImg.setFitWidth(w);
+            vp = new Rectangle2D(0, (image.getHeight() - image.getWidth() / w * h) / 2, image.getWidth(),image.getHeight());
+        }
+
+        background.setImage(image);
+        background.setViewport(vp);
         WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
         blurImg.setImage(snapshot);
     }
@@ -85,15 +102,6 @@ public class MainPaneController implements Initializable {
 
     public void setGui(GUI gui) {
         this.gui = gui;
-    }
-
-    public void fitBackground() {
-        background.setFitWidth(gui.mainStage.getWidth());
-        background.setFitHeight(gui.mainStage.getHeight());
-        blurImg.setFitWidth(gui.mainStage.getWidth());
-        blurImg.setFitHeight(gui.mainStage.getHeight());
-        WritableImage snapshot = background.snapshot(new SnapshotParameters(), null);
-        blurImg.setImage(snapshot);
     }
 
     public VBox getInitPane() {

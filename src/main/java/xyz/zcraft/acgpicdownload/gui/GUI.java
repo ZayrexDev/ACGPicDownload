@@ -188,8 +188,6 @@ public class GUI extends Application {
 
         readBackground();
 
-        mainPaneController.fitBackground();
-
         stage.setOnCloseRequest(windowEvent -> {
             stage.hide();
             System.exit(0);
@@ -349,12 +347,12 @@ public class GUI extends Application {
                         imgMain = new FileInputStream(file);
                         read = ImageIO.read(new FileInputStream(file));
                         double rate = (double) read.getWidth() / (double) read.getHeight();
-                        if (800 / rate > 500 || 800 / rate < 250) {
-                            fl.remove(file);
-                            imgMain.close();
-                            imgMain = null;
-                            read = null;
-                        }
+                        // if (800 / rate > 500 || 800 / rate < 250) {
+                        //     fl.remove(file);
+                        //     imgMain.close();
+                        //     imgMain = null;
+                        //     read = null;
+                        // }
                     } else {
                         if (imgMain != null)
                             imgMain.close();
@@ -368,9 +366,10 @@ public class GUI extends Application {
             }
 
             mainPaneController.setBackground(imgMain);
-            double rate = (double) read.getWidth() / (double) read.getHeight();
+            // double rate = (double) read.getWidth() / (double) read.getHeight();
             mainStage.setWidth(800);
-            mainStage.setHeight(mainStage.getWidth() / rate + 29);
+            // mainStage.setHeight(mainStage.getWidth() / rate + 29);
+            mainStage.setHeight(500);
             mainStage.setResizable(false);
         }
     }
