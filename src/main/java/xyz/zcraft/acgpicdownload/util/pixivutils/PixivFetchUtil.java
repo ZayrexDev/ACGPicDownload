@@ -23,9 +23,148 @@ public class PixivFetchUtil {
     private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=%s&limit=%d";
     private static final String GIF_DATA = "https://www.pixiv.net/ajax/illust/%s/ugoira_meta";
     private static final String PAGES = "https://www.pixiv.net/ajax/illust/%s/pages";
+    private static final String SEARCH_TOP = "https://www.pixiv.net/ajax/search/top/%s";
+    private static final String SEARCH_ILLUST = "https://www.pixiv.net/ajax/search/illustrations/%s?word=%s&mode=%s&p=%d";
+    private static final String SEARCH_MANGA = "https://www.pixiv.net/ajax/search/manga/%s?word=%s&mode=%s&p=%d";
 
     private static final String RANKING = "https://www.pixiv.net/ranking.php";
     private static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
+
+    /**
+     * 搜索“顶部”作品
+     *
+     * @param keyword      搜索关键词
+     * @param cookieString 使用的cookie
+     * @param proxyHost    使用的代理地址
+     * @param proxyPort    使用的代理端口
+     * @return 作品列表
+     * @throws IOException 当无法获取
+     */
+    public static List<PixivArtwork> searchTopArtworks(String keyword, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect(String.format(SEARCH_TOP, keyword).concat("?lang=").concat(getPixivLanguageTag()))
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        String s = c.get().body().ownText();
+        JSONObject body = JSONObject.parseObject(s).getJSONObject("body");
+
+        JSONObject popular = body.getJSONObject("popular");
+
+        LinkedList<PixivArtwork> artworks = new LinkedList<>();
+        for (Object o : popular.getJSONArray("recent")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+        for (Object o : popular.getJSONArray("permanent")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+        for (Object o : body.getJSONObject("illustManga").getJSONArray("data")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+
+        return artworks;
+    }
+
+    public static List<PixivArtwork> searchIllustArtworks(String keyword, int mode, int page, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        String url = String.format(SEARCH_ILLUST, keyword, keyword, DISCOVERY_MODES[mode], page).concat("&lang=").concat(getPixivLanguageTag());
+        Connection c = Jsoup.connect(url)
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+
+        String s = c.get().body().ownText();
+        JSONObject body = JSONObject.parseObject(s).getJSONObject("body");
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        JSONObject popular = body.getJSONObject("popular");
+
+        LinkedList<PixivArtwork> artworks = new LinkedList<>();
+        for (Object o : popular.getJSONArray("recent")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+        for (Object o : popular.getJSONArray("permanent")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+        for (Object o : body.getJSONObject("illust").getJSONArray("data")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+
+        return artworks;
+    }
+
+    public static List<PixivArtwork> searchMangaArtworks(String keyword, int mode, int page, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        String url = String.format(SEARCH_MANGA, keyword, keyword, DISCOVERY_MODES[mode], page).concat("&lang=").concat(getPixivLanguageTag());
+        Connection c = Jsoup.connect(url)
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        String s = c.get().body().ownText();
+        JSONObject body = JSONObject.parseObject(s).getJSONObject("body");
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        JSONObject popular = body.getJSONObject("popular");
+
+        LinkedList<PixivArtwork> artworks = new LinkedList<>();
+        for (Object o : popular.getJSONArray("recent")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+        for (Object o : popular.getJSONArray("permanent")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+        for (Object o : body.getJSONObject("manga").getJSONArray("data")) {
+            PixivArtwork e = JSONObject.parseObject(o.toString(), PixivArtwork.class);
+            e.setSearch(keyword);
+            e.setFrom(From.Search);
+            artworks.add(e);
+        }
+
+        return artworks;
+    }
 
     /**
      * 从pixiv获取指定排行榜的作品id
@@ -61,7 +200,6 @@ public class PixivFetchUtil {
 
         return ids;
     }
-
 
     /**
      * 获取给定{@link PixivArtwork}的{@link GifData}

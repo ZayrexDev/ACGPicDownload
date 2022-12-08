@@ -33,6 +33,7 @@ public class GUI extends Application {
     public PixivUserPaneController pixivUserPaneController;
     public PixivRelatedPaneController pixivRelatedPaneController;
     public PixivRankingPaneController pixivRankingPaneController;
+    public PixivSearchPaneController pixivSearchPaneController;
 
     public Stage mainStage;
     public Pane mainPane;
@@ -211,6 +212,14 @@ public class GUI extends Application {
                 Platform.runLater(() -> mainPane.getChildren().add(pixivRankingPaneController.getMainPane()));
                 mainPaneController.setProgress(0.9);
 
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivSearchPane.fxml"), ResourceBundleUtil.getResource());
+                loader.load();
+                pixivSearchPaneController = loader.getController();
+                pixivSearchPaneController.setGui(gui);
+                fill(pixivSearchPaneController.getMainPane());
+                Platform.runLater(() -> mainPane.getChildren().add(pixivSearchPaneController.getMainPane()));
+                mainPaneController.setProgress(0.95);
+
                 // Load done
                 welcomePane.setVisible(false);
                 mainPaneController.setProgress(1);
@@ -340,5 +349,9 @@ public class GUI extends Application {
 
     public void openPixivRankingPane() {
         pixivRankingPaneController.show();
+    }
+
+    public void openPixivSearchPane() {
+        pixivSearchPaneController.show();
     }
 }

@@ -67,6 +67,15 @@ public class PixivArtwork {
 
     private JSONObject origJson;
     private String ranking;
+    private String search;
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
 
     public PixivArtwork() {
     }
@@ -142,6 +151,8 @@ public class PixivArtwork {
     public String getFromString() {
         if (from.equals(From.Ranking)) {
             return from.toString().concat(" ").concat(ranking);
+        } else if (from.equals(From.Search)) {
+            return from.toString().concat(" ").concat(search);
         } else {
             return from.toString();
         }

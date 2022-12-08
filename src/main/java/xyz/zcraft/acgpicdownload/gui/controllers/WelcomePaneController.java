@@ -150,4 +150,9 @@ public class WelcomePaneController implements Initializable {
         closePixivPane();
         gui.openPixivRankingPane();
     }
+
+    public void pixivSearchBtnOnAction() {
+        closePixivPane();
+        gui.openPixivSearchPane();
+    }
 }

@@ -56,6 +56,8 @@
                            onAction="#pixivRankingBtnOnAction" text="%gui.welcome.pixiv.ranking" textAlignment="RIGHT"/>
                 <MFXButton alignment="CENTER_RIGHT" layoutX="20.0" layoutY="121.0" maxWidth="1.7976931348623157E308"
                            onAction="#pixivRelatedBtnOnAction" text="%gui.welcome.pixiv.related" textAlignment="RIGHT"/>
+                <MFXButton alignment="CENTER_RIGHT" layoutX="20.0" layoutY="121.0" maxWidth="1.7976931348623157E308"
+                           onAction="#pixivSearchBtnOnAction" text="%gui.welcome.pixiv.search" textAlignment="RIGHT"/>
                 <MFXButton alignment="CENTER_RIGHT" layoutX="20.0" layoutY="60.0" maxWidth="1.7976931348623157E308"
                            onAction="#pixivDownloadBtnOnAction" text="%gui.welcome.pixiv.download"
                            textAlignment="RIGHT"/>

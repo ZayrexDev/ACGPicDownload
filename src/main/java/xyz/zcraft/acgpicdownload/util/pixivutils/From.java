@@ -11,6 +11,7 @@ public enum From {
     Spec,
     Discovery,
     Ranking,
+    Search,
     User,
     Other;
 
@@ -24,6 +25,8 @@ public enum From {
             return ResourceBundleUtil.getString("fetch.pixiv.from.recommendUser");
         } else if (this == RecommendTag) {
             return ResourceBundleUtil.getString("fetch.pixiv.from.recommendTag");
+        } else if (this == Search) {
+            return ResourceBundleUtil.getString("fetch.pixiv.from.search");
         } else if (this == Spec) {
             return ResourceBundleUtil.getString("fetch.pixiv.from.spec");
         } else if (this == User) {
