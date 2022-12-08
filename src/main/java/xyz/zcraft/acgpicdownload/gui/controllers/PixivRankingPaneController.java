@@ -139,7 +139,12 @@ public class PixivRankingPaneController extends MyPane {
 
         majorCombo.selectedIndexProperty().addListener((observableValue, number, t1) -> {
             int i = t1.intValue();
-            resToggle.setDisable(!(i == 0 || i == 1 || i == 5 || i == 6 || i == 7));
+            if(i == 0 || i == 1 || i == 5 || i == 6 || i == 7){
+                resToggle.setDisable(false);
+            }else{
+                resToggle.setSelected(false);
+                resToggle.setDisable(true);
+            }
             minorCombo.getItems().clear();
             minors.clear();
             minors.add("");
@@ -156,6 +161,8 @@ public class PixivRankingPaneController extends MyPane {
                 minors.add("manga");
                 minorCombo.getItems().add(ResourceBundleUtil.getString("gui.pixiv.ranking.minor.manga"));
             }
+
+            minorCombo.selectFirst();
         });
 
         majorCombo.selectFirst();
