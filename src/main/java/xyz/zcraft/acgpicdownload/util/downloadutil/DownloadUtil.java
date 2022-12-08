@@ -180,7 +180,7 @@ public class DownloadUtil {
     }
 
     private void downloadPixivGif(PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
-            boolean fullResult, String proxyHost, Integer proxyPort) throws IOException {
+                                  boolean fullResult, String proxyHost, Integer proxyPort) throws IOException {
         try {
             GifData gifData = PixivFetchUtil.getGifData(a.getArtwork(), cookieString, proxyHost, proxyPort);
             URL url = new URL(gifData.getSrc());
@@ -203,9 +203,9 @@ public class DownloadUtil {
             age.finish();
 
             if (fullResult && a.getArtwork().getOrigJson() != null) {
-                BufferedOutputStream jsonos = null;
                 File jsonf = new File(toDic, namingRule.name(a.getArtwork()).concat(".json"));
-                jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
+                BufferedOutputStream jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
+                ;
 
                 String str = a.getArtwork().getOrigJson().toJSONString(Feature.PrettyFormat);
                 jsonos.write(str.getBytes(StandardCharsets.UTF_8));
@@ -229,7 +229,7 @@ public class DownloadUtil {
     }
 
     private void downloadPixivIllusion(PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
-            boolean fullResult, String proxyHost, Integer proxyPort)
+                                       boolean fullResult, String proxyHost, Integer proxyPort)
             throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
@@ -257,9 +257,9 @@ public class DownloadUtil {
 
                 is = c.getInputStream();
 
-                if(pagesSize == 1){
+                if (pagesSize == 1) {
                     f = new File(toDic, namingRule.name(a.getArtwork()) + s.substring(s.lastIndexOf(".")));
-                }else{
+                } else {
                     f = new File(toDic, namingRule.name(a.getArtwork(), (i + 1)) + s.substring(s.lastIndexOf(".")));
                 }
                 fos = new FileOutputStream(f);
@@ -279,9 +279,8 @@ public class DownloadUtil {
             }
 
             if (fullResult && a.getArtwork().getOrigJson() != null) {
-                BufferedOutputStream jsonos = null;
                 File jsonf = new File(toDic, namingRule.name(a.getArtwork()).concat(".json"));
-                jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
+                BufferedOutputStream jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
 
                 String str = a.getArtwork().getOrigJson().toJSONString(Feature.PrettyFormat);
                 jsonos.write(str.getBytes(StandardCharsets.UTF_8));
