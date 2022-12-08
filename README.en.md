@@ -17,6 +17,10 @@ A convenient tool to download pictures from various pixiv and APIs.
 
 # Screenshots
 
+![image](https://user-images.githubusercontent.com/73475219/206454350-7717927e-3a20-4a31-a6c2-fa3fbec00314.png)
+![image](https://user-images.githubusercontent.com/73475219/206454924-8974dec0-f46e-4bbf-92c3-1d888bd16ba3.png)
+![image](https://user-images.githubusercontent.com/73475219/206455033-dc49237b-b8f1-4a39-bfa5-3f64b6f71fb1.png)
+
 # Usage
 
 - Download the latest Release in [Releases](https://github.com/zxzxy/ACGPicDownload/releases)
