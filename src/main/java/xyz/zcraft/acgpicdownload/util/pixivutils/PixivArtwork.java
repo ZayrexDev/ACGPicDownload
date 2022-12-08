@@ -128,6 +128,23 @@ public class PixivArtwork {
         return originalTags;
     }
 
+    private String ranking;
+
+    public String getFromString(){
+        if(from.equals(From.Ranking)){
+            return from.toString().concat(" ").concat(ranking);
+        }else{
+            return from.toString();
+        }
+    }
+    public String getRanking() {
+        return ranking;
+    }
+
+    public void setRanking(String ranking) {
+        this.ranking = ranking;
+    }
+
     public String getTagsString() {
         if (translatedTags == null || translatedTags.size() == 0) {
             if (originalTags == null) return null;
@@ -334,5 +351,4 @@ public class PixivArtwork {
     public GifData getGifData() {
         return gifData;
     }
-
 }

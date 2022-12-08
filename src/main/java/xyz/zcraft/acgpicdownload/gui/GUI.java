@@ -58,6 +58,9 @@ public class GUI extends Application {
                 case 400, 401 -> {
                     return ResourceBundleUtil.getString("err.status.401");
                 }
+                case 403 -> {
+                    return ResourceBundleUtil.getString("err.status.403");
+                }
                 case 404 -> {
                     return ResourceBundleUtil.getString("err.status.404");
                 }
@@ -104,7 +107,7 @@ public class GUI extends Application {
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
         authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getUserName));
-        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
+        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFromString));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTagsString));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
         typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTypeString));
@@ -130,7 +133,7 @@ public class GUI extends Application {
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),
                         PixivArtwork::getUserName),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
-                        o -> o.getFrom().toString()),
+                        PixivArtwork::getFromString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
                         PixivArtwork::getTagsString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId),

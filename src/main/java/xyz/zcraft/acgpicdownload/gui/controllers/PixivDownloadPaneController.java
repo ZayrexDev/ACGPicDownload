@@ -13,12 +13,15 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
+import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
@@ -42,6 +45,7 @@ public class PixivDownloadPaneController extends MyPane {
     public MFXComboBox<String> multiPageCombo;
     public MFXTextField folderNamingRuleField;
     public MFXButton namingRuleHelpBtn;
+    public MFXButton saveConfigBtn;
     @FXML
     private MFXTableView<PixivDownload> dataTable;
     @FXML
@@ -141,7 +145,7 @@ public class PixivDownloadPaneController extends MyPane {
 
         titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
         authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
-        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFrom()));
+        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFromString()));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
         statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getStatus().toString()));
@@ -170,8 +174,7 @@ public class PixivDownloadPaneController extends MyPane {
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), o -> o.getArtwork()
                         .getUserName()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.from"),
-                        o -> o.getArtwork().getFrom()
-                                .toString()),
+                        o -> o.getArtwork().getFromString().toString()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.tag"),
                         o -> o.getArtwork()
                                 .getTagsString()),
@@ -208,6 +211,8 @@ public class PixivDownloadPaneController extends MyPane {
         selectDirBtn.setGraphic(new MFXFontIcon("mfx-folder"));
         namingRuleHelpBtn.setText("");
         namingRuleHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
+        saveConfigBtn.setText("");
+        saveConfigBtn.setGraphic(new ImageView(new Image(ResourceLoader.loadStream("icon/save.png"),18,18,true,false)));
 
         ScheduledService<Void> s = new ScheduledService<>() {
             @Override

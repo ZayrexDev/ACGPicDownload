@@ -10,6 +10,7 @@ public enum From {
     Related,
     Spec,
     Discovery,
+    Ranking,
     User,
     Other;
 
@@ -29,6 +30,8 @@ public enum From {
             return ResourceBundleUtil.getString("fetch.pixiv.from.user");
         } else if (this == Discovery) {
             return ResourceBundleUtil.getString("fetch.pixiv.from.disc");
+        } else if (this == Ranking) {
+            return ResourceBundleUtil.getString("fetch.pixiv.from.ranking");
         } else if (this == Related) {
             return ResourceBundleUtil.getString("fetch.pixiv.from.related");
         } else {

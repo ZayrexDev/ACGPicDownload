@@ -181,6 +181,8 @@ public class PixivRelatedPaneController extends MyPane {
     }
 
     public void fetchBtnOnAction() {
+        if (uidField.getText().startsWith("https://www.pixiv.net/artworks/"))
+            uidField.setText(uidField.getText().substring(uidField.getText().lastIndexOf("/") + 1));
         loadingPane.setVisible(true);
         operationLabel.setText(ResourceBundleUtil.getString(""));
         ft.stop();

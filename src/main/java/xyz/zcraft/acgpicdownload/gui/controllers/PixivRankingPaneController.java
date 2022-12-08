@@ -16,6 +16,7 @@ import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.From;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
@@ -253,20 +254,23 @@ public class PixivRankingPaneController extends MyPane {
 
                 int[] i = {0,0};
                 for (; i[0] < ids.size(); i[0]++) {
-                    Platform.runLater(()->subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i[0] + 1) + "/" + ids.size() + " " + (i[1]+1)));
+                    Platform.runLater(()->subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i[0] + 1) + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.retries") + " " + (i[1]+1)));
                     try{
-                        pixivArtworks.add(
-                                PixivFetchUtil.getArtwork(
+                        PixivArtwork a =  PixivFetchUtil.getArtwork(
                                         ids.get(i[0]),
                                         cookieField.getText(),
                                         ConfigManager.getConfig().getString("proxyHost"),
                                         ConfigManager.getConfig().getInteger("proxyPort")
-                                )
-                        );
+                                );
+                        a.setFrom(From.Ranking);
+                        String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected()?"*":"") + "-" + minorCombo.getSelectedItem() + "#" + (i[0] + 1);
+                        a.setRanking(rankingInfo);
+                        pixivArtworks.add(a);
                         i[1] = 0;
                     }catch(Exception e){
                         i[1]++;
-                        i[0]--;
+                        if(i[1] <= 5)
+                            i[0]--;
                     }
                 }
 
