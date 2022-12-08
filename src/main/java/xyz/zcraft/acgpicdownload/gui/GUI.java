@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import xyz.zcraft.acgpicdownload.gui.controllers.*;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-
 import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
@@ -65,7 +64,7 @@ public class GUI extends Application {
             return ResourceBundleUtil.getString("err.status.timeout");
         } else if ((e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused"))
                 || (e instanceof java.net.SocketException ex1
-                && ex1.getMessage().contains("Network is unreachable: no further information"))
+                        && ex1.getMessage().contains("Network is unreachable: no further information"))
                 || (e instanceof java.net.UnknownHostException)) {
             String h = ConfigManager.getConfig().getString("proxyHost");
             Integer p = ConfigManager.getConfig().getInteger("proxyPort");
@@ -260,7 +259,7 @@ public class GUI extends Application {
     private void readBackground() throws IOException {
         Scene s = new Scene(stagePane);
         String bg = ConfigManager.getConfig().getString("bg");
-        InputStream imgMain;
+        InputStream imgMain = null;
         mainStage.setScene(s);
         if (bg != null && bg.equals("transparent")) {
             s.setFill(null);

@@ -16,8 +16,8 @@ public class PixivDownloadUtil {
 
     public synchronized static void startDownload(List<PixivDownload> artworksDownloads, String outputDir,
                                                   Logger logger, int maxThread, String cookieString,
-                                                  NamingRule namingRule, boolean fullResult,
-                                                  String proxyHost, Integer proxyPort) {
+                                                  NamingRule namingRule,boolean fullResult,
+                                                   String proxyHost, Integer proxyPort) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));

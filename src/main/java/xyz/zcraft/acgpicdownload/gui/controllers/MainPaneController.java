@@ -26,8 +26,6 @@ import java.util.ResourceBundle;
 
 public class MainPaneController implements Initializable {
     GUI gui;
-    double w = 800;
-    double h = 500 - 30;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
@@ -46,6 +44,7 @@ public class MainPaneController implements Initializable {
     private MFXButton closeBtn;
     @javafx.fxml.FXML
     private MFXButton minimizeBtn;
+
     @javafx.fxml.FXML
     private HBox titlePane;
     private boolean transparent = false;
@@ -62,18 +61,20 @@ public class MainPaneController implements Initializable {
         return background;
     }
 
+    double w = 800;
+    double h = 500 - 30;
     public void setBackground(InputStream stream) {
         Image image = new Image(stream);
         Rectangle2D vp;
 
-        if (image.getWidth() / image.getHeight() > w / h) {
+        if(image.getWidth() / image.getHeight() > w / h){
             background.setFitHeight(h);
             blurImg.setFitHeight(h);
             vp = new Rectangle2D((image.getWidth() - (image.getHeight() / h * w)) / 2, 0, image.getWidth(), image.getHeight());
-        } else {
+        }else{
             background.setFitWidth(w);
             blurImg.setFitWidth(w);
-            vp = new Rectangle2D(0, (image.getHeight() - image.getWidth() / w * h) / 2, image.getWidth(), image.getHeight());
+            vp = new Rectangle2D(0, (image.getHeight() - image.getWidth() / w * h) / 2, image.getWidth(),image.getHeight());
         }
 
         background.setImage(image);

@@ -6,8 +6,7 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;"
             stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19"
             fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.SettingsPaneController">

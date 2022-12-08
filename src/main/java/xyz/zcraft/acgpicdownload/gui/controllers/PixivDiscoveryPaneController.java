@@ -1,8 +1,7 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
-import io.github.palexdev.materialfx.controls.MFXComboBox;
-import io.github.palexdev.materialfx.controls.MFXSlider;
+import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
 import xyz.zcraft.acgpicdownload.Main;
@@ -17,6 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.*;
 
 public class PixivDiscoveryPaneController extends PixivFetchPane {

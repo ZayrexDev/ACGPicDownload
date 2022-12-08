@@ -1,12 +1,12 @@
 module xyz.zcraft.acgpicdownload {
     requires transitive javafx.controls;
     requires transitive com.alibaba.fastjson2;
+    requires transitive org.jsoup;
     requires transitive javafx.base;
     requires transitive javafx.graphics;
     requires transitive MaterialFX;
-    requires transitive org.jetbrains.annotations;
-    requires animated.gif.lib;
-    requires org.jsoup;
+    requires transitive animated.gif.lib;
+    requires jakarta.validation;
 
     opens xyz.zcraft.acgpicdownload to javafx.controls, javafx.base, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
     opens xyz.zcraft.acgpicdownload.gui to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;

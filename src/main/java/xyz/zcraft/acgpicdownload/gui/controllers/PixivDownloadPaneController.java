@@ -177,7 +177,7 @@ public class PixivDownloadPaneController extends MyPane {
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), o -> o.getArtwork()
                         .getUserName()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.from"),
-                        o -> o.getArtwork().getFromString()),
+                        o -> o.getArtwork().getFromString().toString()),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.tag"),
                         o -> o.getArtwork()
                                 .getTagsString()),
@@ -215,7 +215,7 @@ public class PixivDownloadPaneController extends MyPane {
         namingRuleHelpBtn.setText("");
         namingRuleHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
         saveConfigBtn.setText("");
-        saveConfigBtn.setGraphic(new ImageView(new Image(ResourceLoader.loadStream("icon/save.png"), 18, 18, true, false)));
+        saveConfigBtn.setGraphic(new ImageView(new Image(ResourceLoader.loadStream("icon/save.png"),18,18,true,false)));
 
         ScheduledService<Void> s = new ScheduledService<>() {
             @Override

@@ -1,6 +1,13 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
 import com.alibaba.fastjson2.JSONObject;
+
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -13,12 +20,6 @@ import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.From;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class PixivRankingPaneController extends PixivFetchPane {
     private static final String[][] MAJORS = {
@@ -56,9 +57,9 @@ public class PixivRankingPaneController extends PixivFetchPane {
 
         majorCombo.selectedIndexProperty().addListener((observableValue, number, t1) -> {
             int i = t1.intValue();
-            if (i == 0 || i == 1 || i == 5 || i == 6 || i == 7) {
+            if(i == 0 || i == 1 || i == 5 || i == 6 || i == 7){
                 resToggle.setDisable(false);
-            } else {
+            }else{
                 resToggle.setSelected(false);
                 resToggle.setDisable(true);
             }
@@ -116,24 +117,24 @@ public class PixivRankingPaneController extends PixivFetchPane {
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
 
-                int[] i = {0, 0};
+                int[] i = {0,0};
                 for (; i[0] < ids.size(); i[0]++) {
-                    Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i[0] + 1) + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.retries") + " " + (i[1] + 1)));
-                    try {
-                        PixivArtwork a = PixivFetchUtil.getArtwork(
-                                ids.get(i[0]),
-                                cookieField.getText(),
-                                ConfigManager.getConfig().getString("proxyHost"),
-                                ConfigManager.getConfig().getInteger("proxyPort")
-                        );
+                    Platform.runLater(()->subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i[0] + 1) + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.retries") + " " + (i[1]+1)));
+                    try{
+                        PixivArtwork a =  PixivFetchUtil.getArtwork(
+                                        ids.get(i[0]),
+                                        cookieField.getText(),
+                                        ConfigManager.getConfig().getString("proxyHost"),
+                                        ConfigManager.getConfig().getInteger("proxyPort")
+                                );
                         a.setFrom(From.Ranking);
-                        String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected() ? "*" : "") + "-" + minorCombo.getSelectedItem() + "#" + (i[0] + 1);
+                        String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected()?"*":"") + "-" + minorCombo.getSelectedItem() + "#" + (i[0] + 1);
                         a.setRanking(rankingInfo);
                         pixivArtworks.add(a);
                         i[1] = 0;
-                    } catch (Exception e) {
+                    }catch(Exception e){
                         i[1]++;
-                        if (i[1] <= 5)
+                        if(i[1] <= 5)
                             i[0]--;
                     }
                 }

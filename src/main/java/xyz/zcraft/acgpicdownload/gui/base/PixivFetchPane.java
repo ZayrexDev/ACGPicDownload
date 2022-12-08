@@ -1,6 +1,19 @@
 package xyz.zcraft.acgpicdownload.gui.base;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
 import com.alibaba.fastjson2.JSONObject;
+
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
@@ -22,18 +35,11 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import java.util.*;
+public abstract class PixivFetchPane extends MyPane{
+    abstract public void fetchBtnOnAction();
 
-public abstract class PixivFetchPane extends MyPane {
-    protected final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     protected FadeTransition ft = new FadeTransition();
+    protected final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
     @javafx.fxml.FXML
     protected AnchorPane loadingPane;
     @javafx.fxml.FXML
@@ -50,8 +56,6 @@ public abstract class PixivFetchPane extends MyPane {
     protected MFXTableView<PixivArtwork> dataTable;
     @javafx.fxml.FXML
     protected MFXTextField cookieField;
-
-    abstract public void fetchBtnOnAction();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

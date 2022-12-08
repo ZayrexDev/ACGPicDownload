@@ -1,6 +1,14 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
 import com.alibaba.fastjson2.JSONObject;
+
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -13,13 +21,6 @@ import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.From;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class PixivRelatedPaneController extends PixivFetchPane {
     @javafx.fxml.FXML

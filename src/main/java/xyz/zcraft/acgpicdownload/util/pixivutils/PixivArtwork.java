@@ -66,10 +66,6 @@ public class PixivArtwork {
     private From from;
 
     private JSONObject origJson;
-    private String ranking;
-
-    public PixivArtwork() {
-    }
 
     public JSONObject getOrigJson() {
         return origJson;
@@ -79,6 +75,8 @@ public class PixivArtwork {
         this.origJson = origJson;
     }
 
+    public PixivArtwork() {
+    }
     public String getTypeString() {
         if (illustType == 2) return ResourceBundleUtil.getString("fetch.pixiv.type.gif");
         else if (illustType == 1 || illustType == 0)
@@ -118,11 +116,6 @@ public class PixivArtwork {
     public int getIllustType() {
         return illustType;
     }
-
-    public void setIllustType(int illustType) {
-        this.illustType = illustType;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -135,18 +128,15 @@ public class PixivArtwork {
         return originalTags;
     }
 
-    public void setOriginalTags(JSONArray originalTags) {
-        this.originalTags = originalTags;
-    }
+    private String ranking;
 
-    public String getFromString() {
-        if (from.equals(From.Ranking)) {
+    public String getFromString(){
+        if(from.equals(From.Ranking)){
             return from.toString().concat(" ").concat(ranking);
-        } else {
+        }else{
             return from.toString();
         }
     }
-
     public String getRanking() {
         return ranking;
     }
@@ -173,21 +163,21 @@ public class PixivArtwork {
             return sb.toString();
         }
     }
-
     public String getUserName() {
         return userName;
     }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public LinkedHashSet<String> getTranslatedTags() {
         return translatedTags;
     }
-
     public void setTranslatedTags(LinkedHashSet<String> translatedTags) {
         this.translatedTags = translatedTags;
+    }
+    public void setGifData(GifData gifData) {
+        this.gifData = gifData;
+    }
+
+    public void setIllustType(int illustType) {
+        this.illustType = illustType;
     }
 
     public int getxRestrict() {
@@ -222,12 +212,20 @@ public class PixivArtwork {
         this.description = description;
     }
 
+    public void setOriginalTags(JSONArray originalTags) {
+        this.originalTags = originalTags;
+    }
+
     public String getUserId() {
         return userId;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public int getWidth() {
@@ -352,9 +350,5 @@ public class PixivArtwork {
 
     public GifData getGifData() {
         return gifData;
-    }
-
-    public void setGifData(GifData gifData) {
-        this.gifData = gifData;
     }
 }
