@@ -6,20 +6,18 @@
 
 一个从P站和图片API爬 ~~二次元涩图~~ 图片的工具
 
-# 注意
-
-这个项目仍然处于**不稳定**状态，所以可能会出现一些蜜汁小bug qwq
-
 # 特性
 
+- 支持爬取P站的主页，发现，用户，榜单和相关作品
 - 简单易用
 - 支持自定义下载源 ([添加自定义下载源](https://github.com/zxzxy/ACGPicDownload/wiki/%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%8B%E8%BD%BD%E6%BA%90))
 - 支持定时执行 ([子指令 schedule](https://github.com/zxzxy/ACGPicDownload/wiki/%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B#%E5%AD%90%E6%8C%87%E4%BB%A4-schedule))
 - 高度可自定义的下载连接与文件名
 
 GUI:
-![image](https://user-images.githubusercontent.com/73475219/205441785-f02d653d-dbdc-48c1-943e-fb9f553be9ca.png)
-![image](https://user-images.githubusercontent.com/73475219/205441671-9c0b8bc5-ac45-46cd-a9c0-aaf71ad1ba09.png)
+![image](https://user-images.githubusercontent.com/73475219/206439234-27aae535-a61f-4a9d-bf63-3ec4622434b5.png)
+![image](https://user-images.githubusercontent.com/73475219/206440352-2d1196fb-e022-4749-b2f7-1953aac023f3.png)
+![image](https://user-images.githubusercontent.com/73475219/206438395-89e1eec5-f734-484f-94d9-2b82a6c63f69.png)
 
 命令行:
 ![2022-11-18 19-42-43_2](https://user-images.githubusercontent.com/73475219/202701179-2b8439ac-0f0a-4f12-9fbc-9574a1620411.gif)
