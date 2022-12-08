@@ -12,10 +12,8 @@ import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
-import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.PixivFetchPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
@@ -37,15 +35,6 @@ public class PixivRankingPaneController extends PixivFetchPane {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
-
-        ft.setNode(loadingPane);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        ft.setAutoReverse(false);
-        ft.setRate(0.05);
-        ft.setDuration(Duration.millis(5));
-
-        GUI.initTable(data, dataTable);
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));

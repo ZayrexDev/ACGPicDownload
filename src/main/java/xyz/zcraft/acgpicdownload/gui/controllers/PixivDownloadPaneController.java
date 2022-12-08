@@ -58,6 +58,8 @@ public class PixivDownloadPaneController extends MyPane {
     @FXML
     private MFXSlider threadCountSlider;
     @FXML
+    private MFXToggleButton fullResultToggle;
+    @FXML
     private MFXButton backBtn;
     @FXML
     private Label statusLabel;
@@ -70,6 +72,7 @@ public class PixivDownloadPaneController extends MyPane {
                 (int) threadCountSlider.getValue(),
                 ConfigManager.getTempConfig().get("cookie"),
                 new NamingRule(namingRuleField.getText(), multiPageCombo.getSelectedIndex(), folderNamingRuleField.getText()),
+                fullResultToggle.isSelected(),
                 ConfigManager.getConfig().getString("proxyHost"),
                 ConfigManager.getConfig().getInteger("proxyPort")
         );
@@ -283,9 +286,7 @@ public class PixivDownloadPaneController extends MyPane {
         folderNamingRuleField.setText(Objects.requireNonNullElse(downloadConfig.getString("folderNamingRule"), "{$id}"));
         outputDirField.setText(Objects.requireNonNullElse(downloadConfig.getString("path"), ""));
         threadCountSlider.setValue(Objects.requireNonNullElse(downloadConfig.getInteger("thread"), 5));
-
-        pixivConfig.put("download", downloadConfig);
-        ConfigManager.getConfig().put("pixiv", pixivConfig);
+        fullResultToggle.setSelected(downloadConfig.getBooleanValue("full"));
     }
 
     public void saveConfig() {
@@ -297,6 +298,7 @@ public class PixivDownloadPaneController extends MyPane {
         downloadConfig.put("folderNamingRule", folderNamingRuleField.getText());
         downloadConfig.put("path", outputDirField.getText());
         downloadConfig.put("thread", (int) threadCountSlider.getValue());
+        downloadConfig.put("full", fullResultToggle.isSelected());
 
         pixivConfig.put("download", downloadConfig);
         ConfigManager.getConfig().put("pixiv", pixivConfig);

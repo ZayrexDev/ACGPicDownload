@@ -170,16 +170,17 @@ public class DownloadUtil {
         }
     }
 
-    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, String proxyHost, Integer proxyPort)
+    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, boolean fullResult, String proxyHost, Integer proxyPort)
             throws IOException {
         if (a.getArtwork().getIllustType() == 2) {
-            downloadPixivGif(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
+            downloadPixivGif(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
         } else {
-            downloadPixivIllusion(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
+            downloadPixivIllusion(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
         }
     }
 
-    private void downloadPixivGif(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, String proxyHost, Integer proxyPort) throws IOException {
+    private void downloadPixivGif(PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
+            boolean fullResult, String proxyHost, Integer proxyPort) throws IOException {
         try {
             GifData gifData = PixivFetchUtil.getGifData(a.getArtwork(), cookieString, proxyHost, proxyPort);
             URL url = new URL(gifData.getSrc());
@@ -201,6 +202,17 @@ public class DownloadUtil {
 
             age.finish();
 
+            if (fullResult && a.getArtwork().getOrigJson() != null) {
+                BufferedOutputStream jsonos = null;
+                File jsonf = new File(toDic, namingRule.name(a.getArtwork()).concat(".json"));
+                jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
+
+                String str = a.getArtwork().getOrigJson().toJSONString(Feature.PrettyFormat);
+                jsonos.write(str.getBytes(StandardCharsets.UTF_8));
+                jsonos.flush();
+                jsonos.close();
+            }
+
             a.setStatus(DownloadStatus.COMPLETED);
         } catch (Exception e) {
             Main.logError(e);
@@ -211,13 +223,13 @@ public class DownloadUtil {
                 }
                 throw e;
             } else {
-                downloadPixivGif(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
+                downloadPixivGif(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
             }
         }
     }
 
-    private void downloadPixivIllusion(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, String proxyHost,
-                                       Integer proxyPort)
+    private void downloadPixivIllusion(PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
+            boolean fullResult, String proxyHost, Integer proxyPort)
             throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
@@ -266,6 +278,17 @@ public class DownloadUtil {
                 fos.close();
             }
 
+            if (fullResult && a.getArtwork().getOrigJson() != null) {
+                BufferedOutputStream jsonos = null;
+                File jsonf = new File(toDic, namingRule.name(a.getArtwork()).concat(".json"));
+                jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
+
+                String str = a.getArtwork().getOrigJson().toJSONString(Feature.PrettyFormat);
+                jsonos.write(str.getBytes(StandardCharsets.UTF_8));
+                jsonos.flush();
+                jsonos.close();
+            }
+
             a.setStatus(DownloadStatus.COMPLETED);
         } catch (IOException e) {
             Main.logError(e);
@@ -280,7 +303,7 @@ public class DownloadUtil {
                 a.setStatus(DownloadStatus.FAILED);
                 throw e;
             } else {
-                downloadPixiv(a, toDic, cookieString, namingRule, proxyHost, proxyPort);
+                downloadPixiv(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
             }
         }
     }

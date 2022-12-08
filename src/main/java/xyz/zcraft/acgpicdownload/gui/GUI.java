@@ -1,18 +1,12 @@
 package xyz.zcraft.acgpicdownload.gui;
 
 import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXTableColumn;
-import io.github.palexdev.materialfx.controls.MFXTableView;
-import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
 import io.github.palexdev.materialfx.enums.ScrimPriority;
-import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -23,8 +17,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import xyz.zcraft.acgpicdownload.gui.controllers.*;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
-
 import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
@@ -86,63 +78,6 @@ public class GUI extends Application {
         }
 
         return null;
-    }
-
-    public static void initTable(ObservableList<PixivArtwork> data, MFXTableView<PixivArtwork> dataTable) {
-        data.clear();
-        data.add(new PixivArtwork());
-
-        MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.title"), true);
-        MFXTableColumn<PixivArtwork> authorColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), true);
-        MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.from"), true);
-        MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
-        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
-        MFXTableColumn<PixivArtwork> typeColumn = new MFXTableColumn<>(
-                ResourceBundleUtil.getString("gui.pixiv.download.column.type"), true);
-
-        titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
-        authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getUserName));
-        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFromString));
-        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTagsString));
-        idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
-        typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTypeString));
-
-        titleColumn.setAlignment(Pos.CENTER);
-        authorColumn.setAlignment(Pos.CENTER);
-        fromColumn.setAlignment(Pos.CENTER);
-        tagColumn.setAlignment(Pos.CENTER);
-        idColumn.setAlignment(Pos.CENTER);
-        typeColumn.setAlignment(Pos.CENTER);
-
-        // titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        // authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        // fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        // tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        // idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-
-        dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn,
-                typeColumn));
-
-        dataTable.getFilters().addAll(List.of(
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),
-                        PixivArtwork::getUserName),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
-                        PixivArtwork::getFromString),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
-                        PixivArtwork::getTagsString),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"),
-                        PixivArtwork::getTypeString)));
-
-        dataTable.setItems(data);
-        dataTable.getSelectionModel().setAllowsMultipleSelection(true);
-        data.clear();
     }
 
     public void openPixivMenuPane() {

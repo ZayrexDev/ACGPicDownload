@@ -265,7 +265,6 @@ public class PixivFetchUtil {
             for (Object originalTag : a.getOriginalTags()) {
                 String s = Objects.requireNonNullElse(userTagTranslations.get(originalTag.toString()), originalTag.toString());
                 translatedTags.add(s);
-                System.out.println(originalTag + " -> " + s);
             }
             a.setTranslatedTags(translatedTags);
             a.setFrom(From.User);

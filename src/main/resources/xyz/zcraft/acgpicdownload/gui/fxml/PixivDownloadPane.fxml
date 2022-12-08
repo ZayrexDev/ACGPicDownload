@@ -1,103 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.materialfx.controls.*?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXSlider?>
+<?import io.github.palexdev.materialfx.controls.MFXTableView?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0"
-            style="-fx-background-color: #ffffff88;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19"
-            fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivDownloadPaneController">
+
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0" style="-fx-background-color: #ffffff88;" stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivDownloadPaneController">
     <children>
-        <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0"
-              stylesheets="@../default.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox layoutX="250.0" layoutY="65.0" prefHeight="446.0" prefWidth="744.0" spacing="10.0" stylesheets="@../default.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <children>
-                        <MFXButton fx:id="backBtn" onAction="#backBtnOnAction"/>
+                        <MFXButton fx:id="backBtn" onAction="#backBtnOnAction" />
                         <HBox alignment="BOTTOM_LEFT">
                             <children>
                                 <Label onMouseClicked="#backToMenu" text="%gui.path.home" textFill="#595959">
                                     <cursor>
-                                        <Cursor fx:constant="HAND"/>
+                                        <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Label>
-                                <Label text="/" textFill="#595959"/>
+                                <Label text="/" textFill="#595959" />
                                 <Label onMouseClicked="#backBtnOnAction" text="%gui.path.pixiv" textFill="#595959">
                                     <cursor>
-                                        <Cursor fx:constant="HAND"/>
+                                        <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Label>
-                                <Label text="/" textFill="#595959"/>
+                                <Label text="/" textFill="#595959" />
                                 <Label text="%gui.pixiv.download.title">
                                     <font>
-                                        <Font size="16.0"/>
+                                        <Font size="16.0" />
                                     </font>
                                 </Label>
                             </children>
                         </HBox>
                     </children>
                     <VBox.margin>
-                        <Insets/>
+                        <Insets />
                     </VBox.margin>
                 </HBox>
-                <Separator prefWidth="200.0"/>
+                <Separator prefWidth="200.0" />
                 <HBox alignment="CENTER" prefHeight="36.0" prefWidth="786.0" spacing="10.0">
                     <children>
-                        <MFXTextField fx:id="namingRuleField" floatMode="BORDER"
-                                      floatingText="%gui.pixiv.download.namingRule" maxHeight="30.0"
-                                      maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                      text="{$id}{_p$p}" HBox.hgrow="ALWAYS"/>
-                        <MFXButton fx:id="namingRuleHelpBtn" maxHeight="1.7976931348623157E308"
-                                   onAction="#namingRuleHelpBtnOnAction" HBox.hgrow="ALWAYS"/>
-                        <Separator orientation="VERTICAL" prefHeight="200.0"/>
-                        <MFXComboBox fx:id="multiPageCombo" floatMode="BORDER"
-                                     floatingText="%gui.pixiv.download.multiPageRule" maxHeight="30.0"
-                                     maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                     HBox.hgrow="ALWAYS"/>
-                        <MFXTextField fx:id="folderNamingRuleField" floatMode="BORDER"
-                                      floatingText="%gui.pixiv.download.folderNamingRule" layoutX="136.0" layoutY="13.0"
-                                      maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
-                                      prefHeight="30.0" text="{$id}" HBox.hgrow="ALWAYS"/>
+                        <MFXTextField fx:id="namingRuleField" floatMode="BORDER" floatingText="%gui.pixiv.download.namingRule" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" text="{$id}{_p$p}" HBox.hgrow="ALWAYS" />
+                        <MFXButton fx:id="namingRuleHelpBtn" maxHeight="1.7976931348623157E308" onAction="#namingRuleHelpBtnOnAction" HBox.hgrow="ALWAYS" />
+                        <Separator orientation="VERTICAL" prefHeight="200.0" />
+                        <MFXComboBox fx:id="multiPageCombo" floatMode="BORDER" floatingText="%gui.pixiv.download.multiPageRule" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" HBox.hgrow="ALWAYS" />
+                        <MFXTextField fx:id="folderNamingRuleField" floatMode="BORDER" floatingText="%gui.pixiv.download.folderNamingRule" layoutX="136.0" layoutY="13.0" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" text="{$id}" HBox.hgrow="ALWAYS" />
                     </children>
                 </HBox>
                 <HBox alignment="CENTER" spacing="10.0">
                     <children>
-                        <MFXTextField fx:id="outputDirField" floatMode="BORDER"
-                                      floatingText="%gui.pixiv.download.outputDir" maxHeight="30.0" minHeight="30.0"
-                                      prefHeight="30.0" prefWidth="250.0"/>
-                        <MFXButton fx:id="selectDirBtn" buttonType="RAISED" depthLevel="LEVEL1"
-                                   onAction="#selectDirBtnOnAction" text=""/>
-                        <Separator maxHeight="30.0" minHeight="30.0" orientation="VERTICAL" prefHeight="30.0"/>
-                        <Label text="%gui.pixiv.download.threadCount"/>
-                        <MFXSlider fx:id="threadCountSlider" alternativeUnitIncrement="1.0" max="50.0" min="1.0"
-                                   minorTicksCount="1" value="5.0"/>
-                        <Separator layoutX="345.0" layoutY="73.0" maxHeight="30.0" minHeight="30.0"
-                                   orientation="VERTICAL" prefHeight="30.0"/>
-                        <MFXButton onAction="#saveConfig" fx:id="saveConfigBtn" text="%gui.settings.save"/>
+                        <MFXTextField fx:id="outputDirField" floatMode="BORDER" floatingText="%gui.pixiv.download.outputDir" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="250.0" />
+                        <MFXButton fx:id="selectDirBtn" buttonType="RAISED" depthLevel="LEVEL1" onAction="#selectDirBtnOnAction" text="" />
+                        <Separator maxHeight="30.0" minHeight="30.0" orientation="VERTICAL" prefHeight="30.0" />
+                        <Label text="%gui.pixiv.download.threadCount" />
+                        <MFXSlider fx:id="threadCountSlider" alternativeUnitIncrement="1.0" max="50.0" min="1.0" minorTicksCount="1" value="5.0" />
+                        <Separator layoutX="345.0" layoutY="73.0" maxHeight="30.0" minHeight="30.0" orientation="VERTICAL" prefHeight="30.0" />
+                  <MFXToggleButton fx:id="fullResultToggle" text="%gui.pixiv.download.full" />
+                  <Separator layoutX="645.0" layoutY="10.0" maxHeight="30.0" minHeight="30.0" orientation="VERTICAL" prefHeight="30.0" />
+                        <MFXButton fx:id="saveConfigBtn" onAction="#saveConfig" text="%gui.settings.save" />
                     </children>
                 </HBox>
                 <HBox alignment="CENTER" spacing="10.0">
                     <children>
-                        <MFXButton onAction="#startDownload" text="%gui.pixiv.download.start"/>
-                        <Separator maxHeight="30.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0"/>
-                        <MFXButton onAction="#delCompleted" text="%gui.pixiv.download.deleteFinished"/>
-                        <MFXButton onAction="#delSelected" text="%gui.pixiv.download.delSelected"/>
-                        <Separator maxHeight="20.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0"/>
-                        <MFXButton onAction="#copySelected" text="%gui.pixiv.menu.copySelected"/>
-                        <MFXButton onAction="#clearSelected" text="%gui.pixiv.menu.clearSelected"/>
+                        <MFXButton onAction="#startDownload" text="%gui.pixiv.download.start" />
+                        <Separator maxHeight="30.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0" />
+                        <MFXButton onAction="#delCompleted" text="%gui.pixiv.download.deleteFinished" />
+                        <MFXButton onAction="#delSelected" text="%gui.pixiv.download.delSelected" />
+                        <Separator maxHeight="20.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0" />
+                        <MFXButton onAction="#copySelected" text="%gui.pixiv.menu.copySelected" />
+                        <MFXButton onAction="#clearSelected" text="%gui.pixiv.menu.clearSelected" />
                     </children>
                 </HBox>
-                <Label fx:id="statusLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308"
-                       textAlignment="CENTER"/>
-                <MFXTableView fx:id="dataTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                              stylesheets="@../default.css" VBox.vgrow="ALWAYS"/>
+                <Label fx:id="statusLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" textAlignment="CENTER" />
+                <MFXTableView fx:id="dataTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../default.css" VBox.vgrow="ALWAYS" />
             </children>
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
         </VBox>
     </children>
