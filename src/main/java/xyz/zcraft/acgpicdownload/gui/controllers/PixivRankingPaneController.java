@@ -195,6 +195,8 @@ public class PixivRankingPaneController extends MyPane {
         int a = data.size();
         dataTable.getSelectionModel().getSelectedValues().forEach(data -> gui.pixivDownloadPaneController.getData().add(new PixivDownload(data)));
         data.removeAll(dataTable.getSelectionModel().getSelectedValues());
+        dataTable.getSelectionModel().clearSelection();
+
         Notice.showSuccess(
                 String.format(Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.notice.sent")), a - data.size()),
                 gui.mainPane

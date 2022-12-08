@@ -245,7 +245,12 @@ public class DownloadUtil {
 
                 is = c.getInputStream();
 
-                f = new File(toDic, namingRule.name(a.getArtwork(), i) + s.substring(s.lastIndexOf(".")));
+                System.out.println(pagesSize);
+                if(pagesSize == 1){
+                    f = new File(toDic, namingRule.name(a.getArtwork()) + s.substring(s.lastIndexOf(".")));
+                }else{
+                    f = new File(toDic, namingRule.name(a.getArtwork(), i) + s.substring(s.lastIndexOf(".")));
+                }
                 fos = new FileOutputStream(f);
 
                 byte[] buffer = new byte[10240];
