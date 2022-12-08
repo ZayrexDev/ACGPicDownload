@@ -28,11 +28,6 @@ public class Source implements Cloneable {
     @JSONField(name = "returnType")
     private String returnType;
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
     public Source() {
     }
 
@@ -45,6 +40,11 @@ public class Source implements Cloneable {
         this.sourceKey = sourceKey;
         this.defaultArgs = defaultArgs;
         this.returnType = returnType;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     public String getName() {

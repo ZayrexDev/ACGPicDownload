@@ -7,34 +7,24 @@ import com.alibaba.fastjson2.JSONObject;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.exceptions.SourceConfigException;
 import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadUtil;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerLimit;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
+import xyz.zcraft.acgpicdownload.util.sourceutil.argument.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class SourceManager {
     private static final ArrayList<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
-    private static ArrayList<Source> sources;
-
     private static final String GITHUB_LINK = "https://raw.githubusercontent.com/zxzxy/ACGPicDownload/master/src/main/resources/xyz/zcraft/acgpicdownload/util/sourceutil/sources.json";
+    private static ArrayList<Source> sources;
 
     public static void readConfig() throws IOException, JSONException {
         sources = parse(readStringFromConfig());
     }
 
-    public static void updateFromGithub() throws IOException{
+    public static void updateFromGithub() throws IOException {
         File f = new File("sources.json");
-        if(f.exists()) f.delete();
+        if (f.exists()) f.delete();
         DownloadUtil.download(f, GITHUB_LINK, null);
     }
 
@@ -84,7 +74,7 @@ public class SourceManager {
                 verifySource(s);
                 s.setArguments(parseArguments(s.getDefaultArgs()));
                 sources.add(s);
-            } catch (SourceConfigException|JSONException e) {
+            } catch (SourceConfigException | JSONException e) {
                 System.err.println("Failed to parse source " + s.getName() + " : " + e);
                 Main.logError(e);
             }
@@ -121,9 +111,9 @@ public class SourceManager {
         return null;
     }
 
-    public static ArrayList<Argument<?>> parseArguments(JSONObject args) throws SourceConfigException, JSONException{
+    public static ArrayList<Argument<?>> parseArguments(JSONObject args) throws SourceConfigException, JSONException {
         ArrayList<Argument<?>> t = new ArrayList<>();
-        if(args == null){
+        if (args == null) {
             return t;
         }
 
@@ -139,22 +129,21 @@ public class SourceManager {
 
         if (arg.containsKey("type")) {
             if (arg.get("type").equals("int")) {
-                if(arg.containsKey("min") || arg.containsKey("max") || arg.containsKey("step")){
-                    IntegerLimit l = new IntegerLimit(arg.getInteger("min"),arg.getInteger("max"),arg.getInteger("step"));
-                    LimitedIntegerArgument lia = new LimitedIntegerArgument(name,l);
-                    if(arg.containsKey("value")){
+                if (arg.containsKey("min") || arg.containsKey("max") || arg.containsKey("step")) {
+                    IntegerLimit l = new IntegerLimit(arg.getInteger("min"), arg.getInteger("max"), arg.getInteger("step"));
+                    LimitedIntegerArgument lia = new LimitedIntegerArgument(name, l);
+                    if (arg.containsKey("value")) {
                         lia.set(arg.getInteger("value"));
                     }
                     t = lia;
-                }else{
+                } else {
                     t = new IntegerArgument(name);
                 }
-            }else if(arg.get("type").equals("string")){
+            } else if (arg.get("type").equals("string")) {
                 if (arg.containsKey("from")) {
                     Object obj = arg.get("from");
-                    if(obj instanceof JSONArray){
+                    if (obj instanceof JSONArray arr) {
                         HashSet<String> tmp = new HashSet<>();
-                        JSONArray arr = (JSONArray) obj;
                         arr.forEach(new Consumer<Object>() {
                             @Override
                             public void accept(Object arg0) {
@@ -162,7 +151,7 @@ public class SourceManager {
                             }
                         });
                         LimitedStringArgument lsa = new LimitedStringArgument(name, tmp);
-                        if(arg.containsKey("value")){
+                        if (arg.containsKey("value")) {
                             lsa.set(arg.getString("value"));
                         }
                         t = lsa;
@@ -173,9 +162,9 @@ public class SourceManager {
             }
         }
 
-        if(t == null){
+        if (t == null) {
             throw new SourceConfigException();
-        }else{
+        } else {
             return t;
         }
     }

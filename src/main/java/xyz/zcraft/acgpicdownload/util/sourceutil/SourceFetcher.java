@@ -24,7 +24,6 @@ public class SourceFetcher {
         Connection conn = Jsoup.connect(source.getUrl().replaceAll("\\|", "%7C")).followRedirects(true).ignoreContentType(true);
 
         if (proxyHost != null && proxyPort != 0) {
-            System.out.println("Proxy set to " + proxyHost + ":" + proxyPort);
             conn.proxy(proxyHost, proxyPort);
         }
 
@@ -45,9 +44,9 @@ public class SourceFetcher {
             String t;
             int a = s.lastIndexOf("?");
             int b = s.lastIndexOf("/");
-           if(a > b){
-                t = s.substring(b + 1,a);
-            }else{
+            if (a > b) {
+                t = s.substring(b + 1, a);
+            } else {
                 t = s.substring(b + 1);
             }
             return new ArrayList<>(List.of(new Result(t, s, null)));
@@ -107,9 +106,9 @@ public class SourceFetcher {
                 } else {
                     int a = arg0.getUrl().lastIndexOf("?");
                     int b = arg0.getUrl().lastIndexOf("/");
-                    if(a > b){
-                        arg0.setFileName(arg0.getUrl().substring(b + 1,a));
-                    }else{
+                    if (a > b) {
+                        arg0.setFileName(arg0.getUrl().substring(b + 1, a));
+                    } else {
                         arg0.setFileName(arg0.getUrl().substring(b + 1));
                     }
                 }

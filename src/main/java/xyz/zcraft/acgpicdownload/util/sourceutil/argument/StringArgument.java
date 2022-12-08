@@ -21,7 +21,6 @@ public class StringArgument extends Argument<String> {
     }
 
 
-
     @Override
     public String toString() {
         return "StringArgument {" + "name=" + name + ", value=" + value + "}";

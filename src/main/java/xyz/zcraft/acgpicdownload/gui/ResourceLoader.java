@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class ResourceLoader {
-    public static URL loadURL(String fileName){
+    public static URL loadURL(String fileName) {
         return ResourceLoader.class.getResource(fileName);
     }
 

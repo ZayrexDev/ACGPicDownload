@@ -1,11 +1,12 @@
 package xyz.zcraft.acgpicdownload.util.pixivutils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+
+import java.util.LinkedHashSet;
+import java.util.Objects;
 
 public class PixivArtwork {
     @JSONField(name = "id")
@@ -59,20 +60,29 @@ public class PixivArtwork {
     @JSONField(name = "aiType")
     private int aiType;
 
-    private Set<String> translatedTags = new HashSet<>();
+    private LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
     private String imageUrl;
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
+    private GifData gifData;
     private From from;
 
-    public PixivArtwork() {}
+    private JSONObject origJson;
+
+    public JSONObject getOrigJson() {
+        return origJson;
+    }
+
+    public void setOrigJson(JSONObject origJson) {
+        this.origJson = origJson;
+    }
+
+    public PixivArtwork() {
+    }
+    public String getTypeString() {
+        if (illustType == 2) return ResourceBundleUtil.getString("fetch.pixiv.type.gif");
+        else if (illustType == 1 || illustType == 0)
+            return Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.type.illust")).concat("-" + pageCount);
+        else return "?";
+    }
 
     public From getFrom() {
         return from;
@@ -106,6 +116,65 @@ public class PixivArtwork {
     public int getIllustType() {
         return illustType;
     }
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public JSONArray getOriginalTags() {
+        return originalTags;
+    }
+
+    private String ranking;
+
+    public String getFromString(){
+        if(from.equals(From.Ranking)){
+            return from.toString().concat(" ").concat(ranking);
+        }else{
+            return from.toString();
+        }
+    }
+    public String getRanking() {
+        return ranking;
+    }
+
+    public void setRanking(String ranking) {
+        this.ranking = ranking;
+    }
+
+    public String getTagsString() {
+        if (translatedTags == null || translatedTags.size() == 0) {
+            if (originalTags == null) return null;
+            StringBuilder sb = new StringBuilder();
+            for (Object tag : originalTags) {
+                sb.append(tag);
+                sb.append(",");
+            }
+            return sb.toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (Object tag : translatedTags) {
+                sb.append(tag);
+                sb.append(",");
+            }
+            return sb.toString();
+        }
+    }
+    public String getUserName() {
+        return userName;
+    }
+    public LinkedHashSet<String> getTranslatedTags() {
+        return translatedTags;
+    }
+    public void setTranslatedTags(LinkedHashSet<String> translatedTags) {
+        this.translatedTags = translatedTags;
+    }
+    public void setGifData(GifData gifData) {
+        this.gifData = gifData;
+    }
 
     public void setIllustType(int illustType) {
         this.illustType = illustType;
@@ -135,34 +204,12 @@ public class PixivArtwork {
         this.sl = sl;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public JSONArray getOriginalTags() {
-        return originalTags;
-    }
-
-    public String getOriginalTagsString() {
-        if(originalTags == null) return null;
-        StringBuilder sb = new StringBuilder();
-        for (Object tag : originalTags) {
-            sb.append(tag);
-            sb.append(",");
-        }
-        return sb.toString();
     }
 
     public void setOriginalTags(JSONArray originalTags) {
@@ -175,10 +222,6 @@ public class PixivArtwork {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
     }
 
     public void setUserName(String userName) {
@@ -297,11 +340,15 @@ public class PixivArtwork {
         this.aiType = aiType;
     }
 
-    public Set<String> getTranslatedTags() {
-        return translatedTags;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setTranslatedTags(Set<String> translatedTags) {
-        this.translatedTags = translatedTags;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public GifData getGifData() {
+        return gifData;
     }
 }

@@ -3,7 +3,6 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -17,11 +16,11 @@ import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -37,13 +36,13 @@ public class ErrorPaneController {
     private Pane parent;
 
     public static ErrorPaneController getInstance(Pane parent) {
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")),ResourceBundleUtil.getResource());
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/ErrorPane.fxml")), ResourceBundleUtil.getResource());
         try {
             loader.load();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return ((ErrorPaneController)loader.getController()).setParent(parent);
+        return ((ErrorPaneController) loader.getController()).setParent(parent);
     }
 
     public ErrorPaneController setParent(Pane parent) {
@@ -56,9 +55,9 @@ public class ErrorPaneController {
     }
 
     @javafx.fxml.FXML
-    private void copyErrorMsg(){
+    private void copyErrorMsg() {
         Toolkit.getDefaultToolkit().getSystemClipboard()
-                                .setContents(new StringSelection(errorLabel.getText()), null);
+                .setContents(new StringSelection(errorLabel.getText()), null);
         Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), parent);
     }
 
@@ -75,7 +74,7 @@ public class ErrorPaneController {
         ft.play();
     }
 
-    public void setBlur(Image img){
+    public void setBlur(Image img) {
         bg.setImage(img);
     }
 
@@ -100,12 +99,12 @@ public class ErrorPaneController {
         errorLabel.setText(message);
     }
 
-    public void errorOkBtnOnAction(ActionEvent actionEvent) {
+    public void errorOkBtnOnAction() {
         hide();
     }
 
     @FXML
-    public void openFAQ() throws IOException, URISyntaxException{
+    public void openFAQ() throws IOException, URISyntaxException {
         if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
             java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/常见问题"));
         } else {

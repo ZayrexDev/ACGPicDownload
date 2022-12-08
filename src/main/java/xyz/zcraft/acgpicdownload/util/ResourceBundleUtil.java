@@ -10,11 +10,11 @@ public class ResourceBundleUtil {
         loadDefault();
     }
 
-    public static void load(String language){
+    public static void load(String language) {
         BUNDLE = ResourceBundle.getBundle("xyz.zcraft.acgpicdownload.languages.String", Locale.forLanguageTag(language));
     }
 
-    public static void loadDefault(){
+    public static void loadDefault() {
         BUNDLE = ResourceBundle.getBundle("xyz.zcraft.acgpicdownload.languages.String", Locale.getDefault());
     }
 

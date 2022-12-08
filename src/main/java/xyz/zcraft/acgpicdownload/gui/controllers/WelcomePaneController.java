@@ -109,7 +109,7 @@ public class WelcomePaneController implements Initializable {
         ttP.play();
     }
 
-    public void openSettingsPane(){
+    public void openSettingsPane() {
         hideMain();
         gui.openSettingsPane();
     }
@@ -144,5 +144,10 @@ public class WelcomePaneController implements Initializable {
     public void pixivRelatedBtnOnAction() {
         closePixivPane();
         gui.openPixivRelatedPane();
+    }
+
+    public void pixivRankingBtnOnAction() {
+        closePixivPane();
+        gui.openPixivRankingPane();
     }
 }

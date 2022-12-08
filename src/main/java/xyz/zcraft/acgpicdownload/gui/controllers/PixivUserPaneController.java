@@ -1,52 +1,39 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
-import io.github.palexdev.materialfx.controls.*;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
-import javafx.animation.FadeTransition;
-import javafx.application.Platform;
-import javafx.collections.*;
-import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
-import javafx.util.Duration;
-import xyz.zcraft.acgpicdownload.Main;
-import xyz.zcraft.acgpicdownload.gui.*;
-import xyz.zcraft.acgpicdownload.gui.base.MyPane;
-import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.*;
-
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.Set;
 
-public class PixivUserPaneController extends MyPane {
-    FadeTransition ft = new FadeTransition();
-    @javafx.fxml.FXML
-    private AnchorPane mainPane;
-    @javafx.fxml.FXML
-    private MFXButton backBtn;
-    @javafx.fxml.FXML
-    private MFXTextField cookieField;
-    @javafx.fxml.FXML
-    private MFXButton cookieHelpBtn;
+import com.alibaba.fastjson2.JSONObject;
+
+import io.github.palexdev.materialfx.controls.MFXSlider;
+import io.github.palexdev.materialfx.controls.MFXTextField;
+import io.github.palexdev.materialfx.font.MFXFontIcon;
+import javafx.application.Platform;
+import xyz.zcraft.acgpicdownload.Main;
+import xyz.zcraft.acgpicdownload.gui.ConfigManager;
+import xyz.zcraft.acgpicdownload.gui.Notice;
+import xyz.zcraft.acgpicdownload.gui.base.PixivFetchPane;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+
+public class PixivUserPaneController extends PixivFetchPane {
     @javafx.fxml.FXML
     private MFXTextField uidField;
     @javafx.fxml.FXML
     private MFXSlider relatedDepthSlider;
-    @javafx.fxml.FXML
-    private MFXTableView<PixivArtwork> dataTable;
-    @javafx.fxml.FXML
-    private AnchorPane loadingPane;
-    @javafx.fxml.FXML
-    private Label operationLabel;
-    @javafx.fxml.FXML
-    private Label subOperationLabel;
-    private final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
 
     @javafx.fxml.FXML
     public void backBtnOnAction() {
@@ -100,15 +87,6 @@ public class PixivUserPaneController extends MyPane {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
 
-        ft.setNode(loadingPane);
-        ft.setFromValue(0);
-        ft.setToValue(1);
-        ft.setAutoReverse(false);
-        ft.setRate(0.05);
-        ft.setDuration(Duration.millis(5));
-
-        GUI.initTable(data, dataTable);
-
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
         cookieHelpBtn.setText("");
@@ -143,6 +121,7 @@ public class PixivUserPaneController extends MyPane {
         int a = data.size();
         dataTable.getSelectionModel().getSelectedValues().forEach(data -> gui.pixivDownloadPaneController.getData().add(new PixivDownload(data)));
         data.removeAll(dataTable.getSelectionModel().getSelectedValues());
+        dataTable.getSelectionModel().clearSelection();
         Notice.showSuccess(
                 String.format(Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.notice.sent")), a - data.size()),
                 gui.mainPane
@@ -172,6 +151,8 @@ public class PixivUserPaneController extends MyPane {
     }
 
     public void fetchBtnOnAction() {
+        if(uidField.getText().startsWith("https://www.pixiv.net/users/"))
+            uidField.setText(uidField.getText().substring(uidField.getText().lastIndexOf("/") + 1));
         loadingPane.setVisible(true);
         operationLabel.setText(ResourceBundleUtil.getString(""));
         ft.stop();
@@ -198,8 +179,8 @@ public class PixivUserPaneController extends MyPane {
 
                 for (String s : queryString) {
                     pixivArtworks.addAll(
-                        PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
-                            ConfigManager.getConfig().getInteger("proxyPort")));
+                            PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
+                                    ConfigManager.getConfig().getInteger("proxyPort")));
                 }
 
                 if (relatedDepthSlider.getValue() > 0) {

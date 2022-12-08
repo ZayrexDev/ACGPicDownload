@@ -41,8 +41,8 @@ public class FetchUtil {
         int r;
 
         while (((l = orig.indexOf("{")) != -1) && (r = orig.indexOf("}") + 1) != 0) {
-            String[] a = { orig.substring(l, r) };
-            boolean[] have = { false };
+            String[] a = {orig.substring(l, r)};
+            boolean[] have = {false};
 
             String str = a[0];
             args.forEach((t, o) -> {
@@ -108,7 +108,7 @@ public class FetchUtil {
     }
 
     public static void startDownload(ArrayList<Result> r, String outputDir, Logger logger,
-            boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
+                                     boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
@@ -142,9 +142,9 @@ public class FetchUtil {
     }
 
     public static void startDownloadWithResults(DownloadManager dm, ArrayList<DownloadResult> r, String outputDir,
-            Logger logger,
-            boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate,
-            boolean monitor) {
+                                                Logger logger,
+                                                boolean saveFullResult, boolean enableConsoleProgressBar, int maxThread, Runnable onUpdate,
+                                                boolean monitor) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
@@ -173,13 +173,13 @@ public class FetchUtil {
             }
         }
 
-        if(monitor){
-            startMonitoring(r.toArray(new DownloadResult[] {}), tpe, enableConsoleProgressBar, logger, onUpdate);
+        if (monitor) {
+            startMonitoring(r.toArray(new DownloadResult[]{}), tpe, enableConsoleProgressBar, logger, onUpdate);
         }
     }
 
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
-            boolean enableConsoleProgressBar, Logger logger, Runnable onUpdate) {
+                                       boolean enableConsoleProgressBar, Logger logger, Runnable onUpdate) {
         DownloadManager manager = new DownloadManager(result, tpe);
         Thread t = new Thread(() -> {
             int lastLength = 0;
@@ -221,7 +221,7 @@ public class FetchUtil {
     }
 
     public static void startMonitoring(DownloadResult[] result, ThreadPoolExecutor tpe,
-            boolean enableConsoleProgressBar, Logger logger) {
+                                       boolean enableConsoleProgressBar, Logger logger) {
         DownloadManager manager = new DownloadManager(result);
         Thread t = new Thread(() -> {
             int lastLength = 0;
@@ -278,7 +278,7 @@ public class FetchUtil {
     }
 
     public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar,
-            String proxyHost, int proxyPort) {
+                                          String proxyHost, int proxyPort) {
         logger.info(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.info.fetch")),
                 s.getUrl()));
 
@@ -292,7 +292,7 @@ public class FetchUtil {
         logger.printr(sb.toString());
         lastLength = printTaskBar(sb.toString(), 0, "", lastLength, logger);
 
-        for (int i = 0; i < times;) {
+        for (int i = 0; i < times; ) {
             if (times > 1 && enableConsoleProgressBar) {
                 try {
                     Thread.sleep(2000);
@@ -335,7 +335,7 @@ public class FetchUtil {
     }
 
     public static ArrayList<Result> fetch(Source s, int times, Logger logger, boolean enableConsoleProgressBar,
-            String proxyHost, int proxyPort, ExceptionHandler exceptionHandler) {
+                                          String proxyHost, int proxyPort, ExceptionHandler exceptionHandler) {
         logger.info(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.info.fetch")),
                 s.getUrl()));
 
@@ -349,7 +349,7 @@ public class FetchUtil {
         logger.printr(sb.toString());
         lastLength = printTaskBar(sb.toString(), 0, "", lastLength, logger);
 
-        for (int i = 0; i < times;) {
+        for (int i = 0; i < times; ) {
             if (times > 1 && enableConsoleProgressBar) {
                 try {
                     Thread.sleep(2000);
@@ -357,7 +357,6 @@ public class FetchUtil {
                     Main.logError(e);
                     e.printStackTrace();
                 }
-                sb = new StringBuilder();
                 sb = new StringBuilder();
                 sb.append(ResourceBundleUtil.getString("cli.fetch")).append(" ").append(i).append("/").append(times);
                 if (failed != 0) {
@@ -400,7 +399,7 @@ public class FetchUtil {
         int a = (int) (PROGRESS_BAR_LENGTH * progress);
         int b = PROGRESS_BAR_LENGTH - a;
         sb.append(" |").append("=".repeat(Math.min(
-                PROGRESS_BAR_LENGTH, a))).append(" ".repeat(Math.max(0, b)))
+                        PROGRESS_BAR_LENGTH, a))).append(" ".repeat(Math.max(0, b)))
                 .append("|");
         if (progress > 1 || progress < 0) {
             sb.append("...");

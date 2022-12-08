@@ -5,6 +5,9 @@ import com.alibaba.fastjson2.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import jakarta.validation.constraints.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,10 +20,115 @@ public class PixivFetchUtil {
     private static final String USER_TAGS = "https://www.pixiv.net/ajax/tags/frequent/illust?%s";
     private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1";
     private static final String DISCOVERY = "https://www.pixiv.net/ajax/discovery/artworks?mode=%s&limit=%d";
+    private static final String GIF_DATA = "https://www.pixiv.net/ajax/illust/%s/ugoira_meta";
+    private static final String PAGES = "https://www.pixiv.net/ajax/illust/%s/pages";
 
-    private static final String[] MODES = {"all", "safe", "r18"};
+    private static final String RANKING = "https://www.pixiv.net/ranking.php";
+    private static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
 
-    public static PixivArtwork getArtwork(String id, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+    /**
+     * 从pixiv获取指定排行榜的作品id
+     *
+     * @param major          排行榜类型
+     * @param minor          作品类型
+     * @param cookieString   使用的cookie，无cookie访问限制级榜单会403
+     * @param proxyHost      使用的代理地址
+     * @param proxyPort      使用的代理端口
+     * @return               ID列表
+     * @throws IOException
+     */
+    public static LinkedList<String> getRankingIDs(@NotBlank String major,String minor, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        String url = RANKING.concat("?mode=").concat(major).concat(minor != null && !minor.isEmpty() ? "&content=".concat(minor) : "");
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect(url)
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        Elements rankingItems = c.get().body().getElementsByClass("ranking-item");
+        LinkedList<String> ids = new LinkedList<>();
+        for (Element rankingItem : rankingItems) {
+            String href = rankingItem.getElementsByClass("ranking-image-item").get(0).getElementsByTag("a").get(0).attr("href");
+            String id = href.substring(href.lastIndexOf("/") + 1);
+            ids.add(id);
+        }
+
+        return ids;
+    }
+
+
+    /**
+     * 获取给定{@link PixivArtwork}的{@link GifData}
+     *
+     * @param artwork      作品数据
+     * @param cookieString 使用的cookie
+     * @param proxyHost    代理地址
+     * @param proxyPort    代理端口
+     * @return Gif数据
+     * @throws IOException
+     */
+    public static GifData getGifData(@NotBlank PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect(String.format(GIF_DATA, artwork.getId()).concat("?lang=")
+                        .concat(getPixivLanguageTag()))
+                .ignoreContentType(true)
+                .cookies(cookie)
+                .method(Method.GET)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+        JSONObject body = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body");
+        GifData gifData = body.to(GifData.class);
+        artwork.setGifData(gifData);
+        return gifData;
+    }
+
+    /**
+     * 获取给定作品的所有页
+     *
+     * @param artwork      作品数据
+     * @param cookieString 使用的cookie
+     * @param proxyHost    代理地址
+     * @param proxyPort    代理端口
+     * @return             所有页的列表
+     * @throws IOException
+     */
+    public static LinkedList<String> getFullPages(@NotBlank PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect(String.format(PAGES, artwork.getId()).concat("?lang=")
+                        .concat(getPixivLanguageTag()))
+                .ignoreContentType(true)
+                .cookies(cookie)
+                .method(Method.GET)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+        LinkedList<String> urls = new LinkedList<>();
+        JSONArray body = JSONObject.parseObject(c.get().body().ownText()).getJSONArray("body");
+        for (int i = 0; i < body.size(); i++) {
+            urls.add(body.getJSONObject(i).getJSONObject("urls").getString("original"));
+        }
+        return urls;
+    }
+
+    /**
+     * 获取指定id的作品
+     *
+     * @param id 作品ID
+     * @param cookieString 使用的cookie
+     * @param proxyHost 代理地址
+     * @param proxyPort 代理端口
+     * @return  作品数据
+     * @throws IOException
+     */
+    public static PixivArtwork getArtwork(@NotBlank String id, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(getArtworkPageUrl(id))
                 .ignoreContentType(true)
@@ -30,13 +138,38 @@ public class PixivFetchUtil {
         if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
-        JSONObject jsonObject = JSONObject.parseObject(c.get().head().getElementById("meta-preload-data").attr("content")).getJSONObject("illust").getJSONObject(id);
-        return jsonObject.to(PixivArtwork.class);
+        JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(id);
+        PixivArtwork pixivArtwork = jsonObject.to(PixivArtwork.class);
+        pixivArtwork.setOrigJson(jsonObject);
+        JSONArray jsonArray = jsonObject.getJSONObject("tags").getJSONArray("tags");
+        LinkedHashSet<String> tags = new LinkedHashSet<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            tags.add(jsonArray.getJSONObject(i).getString("tag"));
+        }
+        pixivArtwork.setTranslatedTags(tags);
+        return pixivArtwork;
     }
 
-    public static List<PixivArtwork> getDiscovery(int mode, int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+    /**
+     * 抓取发现页
+     *
+     * @param mode 模式(0=全部，1=安全，2=限制级)
+     * @param limit 最大返回数量（1~100）
+     * @param cookieString 使用的cookie，必须有效，否则无法获取
+     * @param proxyHost 使用的代理地址
+     * @param proxyPort 使用的代理端口
+     * @return
+     * @throws IOException
+     */
+    public static List<PixivArtwork> getDiscovery(
+        @Max(2) @Min(0) int mode,
+        @Max(100) @Min(1) int limit,
+        @NotBlank String cookieString,
+        String proxyHost,
+        Integer proxyPort
+    ) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(String.format(DISCOVERY, MODES[mode], limit).concat("&lang=").concat(getPixivLanguageTag()))
+        Connection c = Jsoup.connect(String.format(DISCOVERY, DISCOVERY_MODES[mode], limit).concat("&lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
@@ -46,11 +179,19 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
 
-        return parseArtworks(c.get().body().ownText(), From.Discovery);
+        return parseArtworks(c.get().body().ownText());
     }
 
-    public static Set<String> fetchUser(String uid, String proxyHost, Integer proxyPort) throws IOException {
-        HashSet<String> set = new HashSet<>();
+    /**
+     * 抓取指定作者的全部作品
+     *
+     * @param uid 作者UID
+     * @param proxyHost 代理地址
+     * @param proxyPort 代理端口
+     * @return 作者的作品ID
+     * @throws IOException
+     */
+    public static Set<String> fetchUser(@NotBlank String uid, String proxyHost, Integer proxyPort) throws IOException {
         Connection c = Jsoup.connect(String.format(USER, uid).concat("lang=").concat(getPixivLanguageTag()))
                 .ignoreContentType(true)
                 .method(Method.GET)
@@ -61,12 +202,19 @@ public class PixivFetchUtil {
 
         JSONObject jsonObject = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body").getJSONObject("illusts");
 
-        set.addAll(jsonObject.keySet());
-
-        return set;
+        return new HashSet<>(jsonObject.keySet());
     }
 
-    public static HashMap<String, String> getUserTagTranslations(String queryString, String proxyHost, Integer proxyPort) throws IOException {
+    /**
+     * 获取指定作者的作品的tag翻译
+     *
+     * @param queryString 使用{@link #buildQueryString(ids)}获取的访问字符串
+     * @param proxyHost 代理地址
+     * @param proxyPort 代理端口
+     * @return tag翻译的键值对
+     * @throws IOException
+     */
+    public static HashMap<String, String> getUserTagTranslations(@NotBlank String queryString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> tagTranslation = new HashMap<>();
         Connection c = Jsoup.connect(String.format(USER_TAGS, queryString))
                 .ignoreContentType(true)
@@ -86,7 +234,17 @@ public class PixivFetchUtil {
         return tagTranslation;
     }
 
-    public static List<PixivArtwork> getUserArtworks(String queryString, String uid, String proxyHost, Integer proxyPort) throws IOException {
+    /**
+     * 获取指定作者的作品
+     *
+     * @param queryString 使用{@link #buildQueryString(ids)}获取的访问字符串
+     * @param uid 作者UID
+     * @param proxyHost 代理地址
+     * @param proxyPort 代理端口
+     * @return 作品列表
+     * @throws IOException
+     */
+    public static List<PixivArtwork> getUserArtworks(@NotBlank String queryString,@NotBlank String uid, String proxyHost, Integer proxyPort) throws IOException {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
         Connection c = Jsoup.connect(String.format(USER_WORKS, uid, queryString))
                 .ignoreContentType(true)
@@ -99,15 +257,29 @@ public class PixivFetchUtil {
 
         JSONObject obj = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body").getJSONObject("works");
 
+        HashMap<String, String> userTagTranslations = getUserTagTranslations(queryString, proxyHost, proxyPort);
+        LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
         for (String k : obj.keySet()) {
-            PixivArtwork a = JSONObject.parseObject(obj.get(k).toString(), PixivArtwork.class);
+            JSONObject jsonObject = obj.getJSONObject(k);
+            PixivArtwork a = jsonObject.to(PixivArtwork.class);
+            for (Object originalTag : a.getOriginalTags()) {
+                String s = Objects.requireNonNullElse(userTagTranslations.get(originalTag.toString()), originalTag.toString());
+                translatedTags.add(s);
+            }
+            a.setTranslatedTags(translatedTags);
             a.setFrom(From.User);
+            a.setOrigJson(jsonObject);
             artworks.add(a);
         }
 
         return artworks;
     }
 
+    /**
+     * 根据默认语言返回pixiv所接受的语言标签
+     *
+     * @return pixiv所接受的语言标签
+     */
     public static String getPixivLanguageTag() {
         switch (Locale.getDefault().toLanguageTag().toLowerCase()) {
             case "zh-cn", "zh_cn", "zh" -> {
@@ -122,6 +294,12 @@ public class PixivFetchUtil {
         }
     }
 
+    /**
+     * 根据作品ID构建查询字符串
+     *
+     * @param ids
+     * @return 查询字符串列表
+     */
     public static List<String> buildQueryString(Set<String> ids) {
         LinkedList<String> list = new LinkedList<>();
         StringBuilder s = new StringBuilder();
@@ -144,6 +322,15 @@ public class PixivFetchUtil {
         return list;
     }
 
+    /**
+     * 抓取主页作品
+     *
+     * @param cookieString 使用的cookie
+     * @param proxyHost    代理地址
+     * @param proxyPort    代理端口
+     * @return 作品列表
+     * @throws IOException
+     */
     public static List<PixivArtwork> fetchMenu(String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(TOP.concat("&lang=").concat(getPixivLanguageTag()))
@@ -159,6 +346,13 @@ public class PixivFetchUtil {
         return parseArtworks(c.get().body().ownText(), true);
     }
 
+    /**
+     * 根据json解析作品
+     *
+     * @param jsonString 原json字符串
+     * @param classify 是否进行分类
+     * @return 解析的作品
+     */
     public static LinkedList<PixivArtwork> parseArtworks(String jsonString, boolean classify) {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
         JSONObject bodyObject = JSONObject.parse(jsonString).getJSONObject("body");
@@ -166,10 +360,12 @@ public class PixivFetchUtil {
         JSONArray illust = bodyObject.getJSONObject("thumbnails").getJSONArray("illust");
 
         for (int i = 0; i < illust.size(); i++) {
-            PixivArtwork a = illust.getObject(i, PixivArtwork.class);
+            JSONObject jsonObject = illust.getJSONObject(i);
+            PixivArtwork a = jsonObject.to(PixivArtwork.class);
             for (Object t : a.getOriginalTags()) {
                 a.getTranslatedTags().add(translateTag(t.toString(), tran));
             }
+            a.setOrigJson(jsonObject);
             artworks.add(a);
         }
 
@@ -178,14 +374,22 @@ public class PixivFetchUtil {
         return artworks;
     }
 
-    public static LinkedList<PixivArtwork> parseArtworks(String jsonString, From from) {
+    /**
+     * 根据json解析作品
+     *
+     * @param jsonString 原json字符串
+     * @return 解析的作品
+     */
+    public static LinkedList<PixivArtwork> parseArtworks(String jsonString) {
         LinkedList<PixivArtwork> artworks = new LinkedList<>();
         JSONObject bodyObject = JSONObject.parse(jsonString).getJSONObject("body");
         JSONObject tran = bodyObject.getJSONObject("tagTranslation");
         JSONArray illust = bodyObject.getJSONObject("thumbnails").getJSONArray("illust");
 
         for (int i = 0; i < illust.size(); i++) {
-            PixivArtwork a = illust.getObject(i, PixivArtwork.class);
+            JSONObject jsonObject = illust.getJSONObject(i);
+            PixivArtwork a = jsonObject.to(PixivArtwork.class);
+            a.setOrigJson(jsonObject);
             a.setFrom(From.Discovery);
             for (Object t : a.getOriginalTags()) {
                 a.getTranslatedTags().add(translateTag(t.toString(), tran));
@@ -196,26 +400,49 @@ public class PixivFetchUtil {
         return artworks;
     }
 
+    /**
+     * 根据给定的翻译源对指定的tag进行翻译
+     *
+     * @param tag 原tag
+     * @param tran 翻译源
+     * @return 翻译后的tag或原tag
+     */
     public static String translateTag(String tag, JSONObject tran) {
         String origLang = Locale.getDefault().toLanguageTag().toLowerCase();
         JSONObject tagObj = tran.getJSONObject(tag);
         if (tagObj == null) return tag;
         switch (origLang) {
-            case "zh-cn", "zh_cn", "zh": {
-                return Objects.requireNonNullElse(tagObj.getString("zh"), tag);
+            case "zh-cn", "zh_cn", "zh" -> {
+                String s = Objects.requireNonNullElse(tagObj.getString("zh"), tag);
+                return s.isEmpty() ? tag : s;
             }
-            case "zh_tw", "zh-tw": {
-                return Objects.requireNonNullElse(tagObj.getString("zh_tw"), tag);
+            case "zh_tw", "zh-tw" -> {
+                String s = Objects.requireNonNullElse(tagObj.getString("zh_tw"), tag);
+                return s.isEmpty() ? tag : s;
             }
-            case "en": {
-                return Objects.requireNonNullElse(tagObj.getString("en"), tag);
+            case "en" -> {
+                String s = Objects.requireNonNullElse(tagObj.getString("en"), tag);
+                return s.isEmpty() ? tag : s;
             }
-            default: {
+            default -> {
                 return tag;
             }
         }
     }
 
+    /**
+     * 获取作品的图片URL
+     *
+     * @deprecated 此方法只能获取单张图片，无法获取多页。已改用{@link #getFullPages(PixivArtwork, String, String, Integer)}
+     *
+     * @param artwork 作品数据
+     * @param cookieString 使用的cookie
+     * @param proxyHost 代理地址
+     * @param proxyPort 代理端口
+     * @return 单页作品，动图作品的第一帧，多页作品的第一张的图片地址
+     * @throws IOException
+     */
+    @Deprecated
     public static String getImageUrl(PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(getArtworkPageUrl(artwork))
@@ -227,10 +454,21 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
 
-        return JSONObject.parseObject(c.get().head().getElementById("meta-preload-data").attr("content")).getJSONObject("illust").getJSONObject(artwork.getId()).getJSONObject("urls").getString("original");
+        return JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(artwork.getId()).getJSONObject("urls").getString("original");
     }
 
-    public static List<PixivArtwork> getRelated(PixivArtwork artwork, int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+    /**
+     * 获取相关作品
+     *
+     * @param artwork 源作品
+     * @param limit 限制（1~50）
+     * @param cookieString 使用的cookie
+     * @param proxyHost 代理地址
+     * @param proxyPort 代理端口
+     * @return 所有相关作品
+     * @throws IOException
+     */
+    public static List<PixivArtwork> getRelated(@NotNull PixivArtwork artwork,@Min(1) @Max(50) int limit, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(String.format(RELATED, artwork.getId(), limit))
                 .ignoreContentType(true)
@@ -249,8 +487,10 @@ public class PixivFetchUtil {
         JSONArray illusts = JSONObject.parse(jsonString).getJSONObject("body").getJSONArray("illusts");
 
         for (int i = 0; i < illusts.size(); i++) {
-            PixivArtwork object = illusts.getObject(i, PixivArtwork.class);
+            JSONObject jsonObject = illusts.getJSONObject(i);
+            PixivArtwork object = jsonObject.to(PixivArtwork.class);
             if (object.getTitle() == null) continue;
+            object.setOrigJson(jsonObject);
             object.setFrom(From.Related);
             artworks.add(object);
         }
@@ -258,14 +498,32 @@ public class PixivFetchUtil {
         return artworks;
     }
 
-    public static String getArtworkPageUrl(PixivArtwork artwork) {
+    /**
+     * 返回作品页面URL
+     *
+     * @param artwork 作品源
+     * @return 作品页面URL
+     */
+    public static String getArtworkPageUrl(@NotNull PixivArtwork artwork) {
         return ARTWORK + artwork.getId();
     }
 
-    public static String getArtworkPageUrl(String id) {
+    /**
+     * 返回作品页面URL
+     *
+     * @param id 作品id
+     * @return 作品页面URL
+     */
+    public static String getArtworkPageUrl(@NotBlank String id) {
         return ARTWORK + id;
     }
 
+    /**
+     * 根据cookie字符串解析cookie键值对
+     *
+     * @param cookieString cookie字符串
+     * @return cookie键值对
+     */
     public static HashMap<String, String> parseCookie(String cookieString) {
         String[] t = cookieString.split(";");
         HashMap<String, String> cookieMap = new HashMap<>();
@@ -279,6 +537,11 @@ public class PixivFetchUtil {
         return cookieMap;
     }
 
+    /**
+     * 为作品分类
+     * @param orig 作品列表
+     * @param pageJson
+     */
     public static void classifyArtwork(List<PixivArtwork> orig, JSONObject pageJson) {
         LinkedList<String> recommendIDs = new LinkedList<>();
         LinkedList<String> recommendTagIDs = new LinkedList<>();
@@ -323,6 +586,18 @@ public class PixivFetchUtil {
         }
     }
 
+    /**
+     * 筛选作品
+     *
+     * @param orig          作品列表
+     * @param limit         最多数量
+     * @param follow        是否包含关注
+     * @param recommend     是否包含推荐
+     * @param recommendTag  是否包含推荐tag
+     * @param recommendUser 是否包含推荐用户
+     * @param other         是否包含其它
+     * @return
+     */
     public static List<PixivArtwork> selectArtworks(List<PixivArtwork> orig, int limit, boolean follow, boolean recommend, boolean recommendTag, boolean recommendUser, boolean other) {
         LinkedList<PixivArtwork> art = new LinkedList<>();
         for (PixivArtwork artwork : orig) {

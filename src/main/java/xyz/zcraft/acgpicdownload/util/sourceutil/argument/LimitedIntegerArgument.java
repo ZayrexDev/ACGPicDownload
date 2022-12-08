@@ -1,27 +1,27 @@
 package xyz.zcraft.acgpicdownload.util.sourceutil.argument;
 
 public class LimitedIntegerArgument extends IntegerArgument {
-    public IntegerLimit getLimit() {
-        return limit;
-    }
-
-    private IntegerLimit limit;
-
-    @Override
-    public String toString() {
-        return "LimitedIntegerArgument {limit=" + limit + ", name" + name + ", value" + value + "}";
-    }
+    private final IntegerLimit limit;
 
     public LimitedIntegerArgument(String name, IntegerLimit limit) {
         super(name);
         this.limit = limit;
     }
 
+    public IntegerLimit getLimit() {
+        return limit;
+    }
+
+    @Override
+    public String toString() {
+        return "LimitedIntegerArgument {limit=" + limit + ", name" + name + ", value" + value + "}";
+    }
+
     @Override
     public void set(Integer value) {
-        if(limit.isValid(value)){
+        if (limit.isValid(value)) {
             this.value = value;
-        }else{
+        } else {
             throw new IllegalArgumentException("Illegal value:" + value);
         }
     }

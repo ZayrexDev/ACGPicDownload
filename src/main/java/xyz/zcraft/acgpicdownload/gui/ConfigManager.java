@@ -8,9 +8,8 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ConfigManager {
-    private static JSONObject config;
-
     private static final HashMap<String, String> tempConfig = new HashMap<>();
+    private static JSONObject config;
 
     public static HashMap<String, String> getTempConfig() {
         return tempConfig;
@@ -25,12 +24,12 @@ public class ConfigManager {
     }
 
     public static Object getSubValue(String sub, String key, Object defaultValue) {
-        if(config.getJSONObject("sub") == null) return defaultValue;
+        if (config.getJSONObject("sub") == null) return defaultValue;
         return Objects.requireNonNullElse(config.getJSONObject("sub").get(key), defaultValue);
     }
 
-    public static double getDoubleIfExist(String key,double defaultValue) {
-        if(config.containsKey(key)) return config.getDouble(key);
+    public static double getDoubleIfExist(String key, double defaultValue) {
+        if (config.containsKey(key)) return config.getDouble(key);
         return defaultValue;
     }
 

@@ -1,8 +1,5 @@
 package xyz.zcraft.acgpicdownload.gui.base;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -13,10 +10,13 @@ import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 
-public class MyPane implements Initializable{
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class MyPane implements Initializable {
+    private final TranslateTransition tt = new TranslateTransition();
+    private final TranslateTransition tt2 = new TranslateTransition();
     protected GUI gui;
-    private TranslateTransition tt = new TranslateTransition();
-    private TranslateTransition tt2 = new TranslateTransition();
     @FXML
     protected AnchorPane mainPane;
 
@@ -24,7 +24,7 @@ public class MyPane implements Initializable{
         tt.stop();
         tt.setRate(0.01 * ConfigManager.getDoubleIfExist("aniSpeed", 1.0));
         tt.setFromY(mainPane.getHeight());
-        tt.setOnFinished((e)->tt2.play());
+        tt.setOnFinished((e) -> tt2.play());
         tt.setToY(-10);
         tt2.setFromY(-10);
         tt2.setOnFinished(null);

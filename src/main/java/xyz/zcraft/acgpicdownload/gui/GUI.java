@@ -1,18 +1,12 @@
 package xyz.zcraft.acgpicdownload.gui;
 
 import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXTableColumn;
-import io.github.palexdev.materialfx.controls.MFXTableView;
-import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
 import io.github.palexdev.materialfx.enums.ScrimPriority;
-import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -20,24 +14,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import xyz.zcraft.acgpicdownload.gui.controllers.*;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class GUI extends Application {
@@ -50,9 +31,11 @@ public class GUI extends Application {
     public PixivDiscoveryPaneController pixivDiscoveryPaneController;
     public PixivUserPaneController pixivUserPaneController;
     public PixivRelatedPaneController pixivRelatedPaneController;
+    public PixivRankingPaneController pixivRankingPaneController;
 
     public Stage mainStage;
     public Pane mainPane;
+    public Pane stagePane;
     public Pane welcomePane;
 
     public GUI gui;
@@ -67,6 +50,9 @@ public class GUI extends Application {
                 case 400, 401 -> {
                     return ResourceBundleUtil.getString("err.status.401");
                 }
+                case 403 -> {
+                    return ResourceBundleUtil.getString("err.status.403");
+                }
                 case 404 -> {
                     return ResourceBundleUtil.getString("err.status.404");
                 }
@@ -76,7 +62,10 @@ public class GUI extends Application {
             }
         } else if (e instanceof java.net.SocketTimeoutException) {
             return ResourceBundleUtil.getString("err.status.timeout");
-        } else if (e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused")) {
+        } else if ((e instanceof java.net.ConnectException ex && ex.getMessage().contains("Connection refused"))
+                || (e instanceof java.net.SocketException ex1
+                        && ex1.getMessage().contains("Network is unreachable: no further information"))
+                || (e instanceof java.net.UnknownHostException)) {
             String h = ConfigManager.getConfig().getString("proxyHost");
             Integer p = ConfigManager.getConfig().getInteger("proxyPort");
             String s = "";
@@ -130,25 +119,19 @@ public class GUI extends Application {
 
         stage.setTitle("ACGPicDownload");
 
-        FXMLLoader mainLoader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"), ResourceBundleUtil.getResource());
-        mainPane = mainLoader.load();
+        FXMLLoader mainLoader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"),
+                ResourceBundleUtil.getResource());
+        stagePane = mainLoader.load();
         mainPaneController = mainLoader.getController();
+        mainPane = mainPaneController.getMainPane();
         mainPaneController.setGui(gui);
 
-        BufferedImage read = readBackground();
+        readBackground();
 
-        Scene s = new Scene(mainPane);
-
-        stage.setScene(s);
-
-        double rate = (double) read.getWidth() / (double) read.getHeight();
-
-        stage.setWidth(800);
-        // stage.setHeight(500);/
-        stage.setHeight(stage.getWidth() / rate + 29);
-        stage.setResizable(false);
-
-        stage.setOnCloseRequest(windowEvent -> System.exit(0));
+        stage.setOnCloseRequest(windowEvent -> {
+            stage.hide();
+            System.exit(0);
+        });
 
         stage.show();
 
@@ -167,6 +150,7 @@ public class GUI extends Application {
                 loader.load();
                 fetchPaneController = loader.getController();
                 fetchPaneController.setGui(gui);
+                fill(fetchPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
                 mainPaneController.setProgress(0.2);
 
@@ -174,6 +158,7 @@ public class GUI extends Application {
                 loader.load();
                 pixivMenuPaneController = loader.getController();
                 pixivMenuPaneController.setGui(gui);
+                fill(pixivMenuPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
                 mainPaneController.setProgress(0.3);
 
@@ -181,6 +166,7 @@ public class GUI extends Application {
                 loader.load();
                 pixivUserPaneController = loader.getController();
                 pixivUserPaneController.setGui(gui);
+                fill(pixivUserPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
                 mainPaneController.setProgress(0.4);
 
@@ -188,21 +174,23 @@ public class GUI extends Application {
                 loader.load();
                 pixivRelatedPaneController = loader.getController();
                 pixivRelatedPaneController.setGui(gui);
+                fill(pixivUserPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
                 mainPaneController.setProgress(0.5);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"),ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivDownloadPaneController = loader.getController();
                 pixivDownloadPaneController.setGui(gui);
+                fill(pixivDownloadPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
                 mainPaneController.setProgress(0.6);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"),
-                        ResourceBundleUtil.getResource());
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"), ResourceBundleUtil.getResource());
                 loader.load();
                 pixivDiscoveryPaneController = loader.getController();
                 pixivDiscoveryPaneController.setGui(gui);
+                fill(pixivDiscoveryPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
                 mainPaneController.setProgress(0.7);
 
@@ -210,8 +198,17 @@ public class GUI extends Application {
                 loader.load();
                 settingsPaneController = loader.getController();
                 settingsPaneController.setGui(gui);
+                fill(settingsPaneController.getMainPane());
                 Platform.runLater(() -> mainPane.getChildren().add(settingsPaneController.getMainPane()));
                 mainPaneController.setProgress(0.8);
+
+                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRankingPane.fxml"), ResourceBundleUtil.getResource());
+                loader.load();
+                pixivRankingPaneController = loader.getController();
+                pixivRankingPaneController.setGui(gui);
+                fill(pixivRankingPaneController.getMainPane());
+                Platform.runLater(() -> mainPane.getChildren().add(pixivRankingPaneController.getMainPane()));
+                mainPaneController.setProgress(0.9);
 
                 // Load done
                 welcomePane.setVisible(false);
@@ -231,7 +228,7 @@ public class GUI extends Application {
                     PrintWriter pw = new PrintWriter(sw);
                     e.printStackTrace(pw);
                     MFXGenericDialog content = MFXGenericDialogBuilder.build()
-                            .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw.toString())
+                            .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw)
                             .setShowClose(true)
                             .setHeaderText(ResourceBundleUtil.getString("cli.fetch.err")).get();
                     content.addActions(Map.entry(new MFXButton("OK"), event -> System.exit(1)));
@@ -249,7 +246,8 @@ public class GUI extends Application {
                     pw.close();
                     try {
                         sw.close();
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) {
+                    }
                 });
             }
         });
@@ -258,41 +256,45 @@ public class GUI extends Application {
         initThread.start();
     }
 
-    private BufferedImage readBackground() throws FileNotFoundException, IOException {
+    private void readBackground() throws IOException {
+        Scene s = new Scene(stagePane);
+        String bg = ConfigManager.getConfig().getString("bg");
         InputStream imgMain = null;
-        BufferedImage read = null;
-        File bgFolder = new File("bg");
-        if(!bgFolder.exists()) bgFolder.mkdirs();
-        List<File> fl = new ArrayList<>(Stream.of(bgFolder.listFiles())
-                            .filter((f)->f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
-                            .toList());
-        while(read == null || imgMain == null){
-            if (fl.size() > 0) {
-                File file = fl.get(new Random().nextInt(fl.size()));
-                imgMain = new FileInputStream(file);
-                read = ImageIO.read(new FileInputStream(file));
-                double rate = (double) read.getWidth() / (double) read.getHeight();
-                if (800 / rate > 500 || 800 / rate < 250) {
-                    fl.remove(file);
-                    if (imgMain != null)
-                        imgMain.close();
-                    imgMain = null;
-                    read = null;
+        mainStage.setScene(s);
+        if (bg != null && bg.equals("transparent")) {
+            s.setFill(null);
+            mainStage.initStyle(StageStyle.TRANSPARENT);
+            mainPane.setStyle("-fx-background: rgba(255,255,255,0.5);");
+            mainPaneController.getTitlePane().setStyle("-fx-background: rgba(255,255,255,0.5);");
+            stagePane.setStyle("-fx-background: rgba(255,255,255,0.5);");
+            mainStage.setWidth(800);
+            mainStage.setHeight(500);
+            mainStage.setResizable(true);
+            mainPaneController.setTransparent();
+        } else {
+            mainStage.initStyle(StageStyle.UNDECORATED);
+            if (bg != null && !bg.isEmpty()) {
+                File bgFolder = new File(bg);
+                if (!bgFolder.exists())
+                    bgFolder.mkdirs();
+                List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
+                        .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
+                        .toList());
+                if (fl.size() > 0) {
+                    File file = fl.get(new Random().nextInt(fl.size()));
+                    imgMain = new FileInputStream(file);
+                } else {
+                    imgMain = ResourceLoader.loadStream("bg.png");
                 }
             } else {
-                if (imgMain != null)
-                    imgMain.close();
                 imgMain = ResourceLoader.loadStream("bg.png");
-                read = ImageIO.read(ResourceLoader.loadStream("bg.png"));
             }
+
+            mainStage.setWidth(800);
+            mainStage.setHeight(500);
+            mainPaneController.setBackground(imgMain);
+            mainStage.setResizable(false);
         }
-
-        mainPaneController.setBackground(imgMain);
-        return read;
-    }
-
-    public SettingsPaneController getSettingsPaneController() {
-        return settingsPaneController;
     }
 
     public void openSettingsPane() {
@@ -305,48 +307,6 @@ public class GUI extends Application {
 
     public void openPixivRelatedPane() {
         pixivRelatedPaneController.show();
-    }
-
-    public static void initTable(ObservableList<PixivArtwork> data, MFXTableView<PixivArtwork> dataTable) {
-        data.clear();
-        data.add(new PixivArtwork());
-
-        MFXTableColumn<PixivArtwork> titleColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.title"), true);
-        MFXTableColumn<PixivArtwork> authorColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), true);
-        MFXTableColumn<PixivArtwork> fromColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.from"), true);
-        MFXTableColumn<PixivArtwork> tagColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.tag"), true);
-        MFXTableColumn<PixivArtwork> idColumn = new MFXTableColumn<>(ResourceBundleUtil.getString("gui.pixiv.download.column.id"), true);
-
-        titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getTitle));
-        authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getUserName));
-        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getFrom));
-        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getOriginalTagsString));
-        idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivArtwork::getId));
-
-        titleColumn.setAlignment(Pos.CENTER);
-        authorColumn.setAlignment(Pos.CENTER);
-        fromColumn.setAlignment(Pos.CENTER);
-        tagColumn.setAlignment(Pos.CENTER);
-        idColumn.setAlignment(Pos.CENTER);
-
-        titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-
-        dataTable.getTableColumns().addAll(List.of(titleColumn,authorColumn, fromColumn, tagColumn, idColumn));
-
-        dataTable.getFilters().addAll(List.of(
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"), PixivArtwork::getUserName),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"), o -> o.getFrom().toString()),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"), PixivArtwork::getOriginalTagsString),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId)));
-
-        dataTable.setItems(data);
-        dataTable.getSelectionModel().setAllowsMultipleSelection(true);
-        data.clear();
     }
 
     public void showError(Exception e) {
@@ -367,10 +327,17 @@ public class GUI extends Application {
             gui.fill(epc.getErrorPane());
             gui.mainPane.getChildren().addAll(epc.getErrorPane());
             epc.setErrorMessage(sb.toString());
-            epc.setBlur(mainPane.snapshot(new SnapshotParameters(), null));
+            epc.setBlur(mainPaneController.isTransparent() ? null : mainPane.snapshot(new SnapshotParameters(), null));
             epc.show();
             pw.close();
-            try {sw.close();} catch (IOException ignored) {}
+            try {
+                sw.close();
+            } catch (IOException ignored) {
+            }
         });
+    }
+
+    public void openPixivRankingPane() {
+        pixivRankingPaneController.show();
     }
 }
