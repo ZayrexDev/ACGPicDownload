@@ -1,21 +1,6 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.ResourceBundle;
-import java.util.Set;
-
 import com.alibaba.fastjson2.JSONObject;
-
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -28,6 +13,15 @@ import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.*;
 
 public class PixivUserPaneController extends PixivFetchPane {
     @javafx.fxml.FXML
@@ -151,7 +145,7 @@ public class PixivUserPaneController extends PixivFetchPane {
     }
 
     public void fetchBtnOnAction() {
-        if(uidField.getText().startsWith("https://www.pixiv.net/users/"))
+        if (uidField.getText().startsWith("https://www.pixiv.net/users/"))
             uidField.setText(uidField.getText().substring(uidField.getText().lastIndexOf("/") + 1));
         loadingPane.setVisible(true);
         operationLabel.setText(ResourceBundleUtil.getString(""));
