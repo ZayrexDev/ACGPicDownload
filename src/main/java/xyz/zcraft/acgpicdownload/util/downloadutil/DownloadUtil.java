@@ -245,11 +245,10 @@ public class DownloadUtil {
 
                 is = c.getInputStream();
 
-                System.out.println(pagesSize);
                 if(pagesSize == 1){
                     f = new File(toDic, namingRule.name(a.getArtwork()) + s.substring(s.lastIndexOf(".")));
                 }else{
-                    f = new File(toDic, namingRule.name(a.getArtwork(), i) + s.substring(s.lastIndexOf(".")));
+                    f = new File(toDic, namingRule.name(a.getArtwork(), (i + 1)) + s.substring(s.lastIndexOf(".")));
                 }
                 fos = new FileOutputStream(f);
 
