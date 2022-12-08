@@ -158,4 +158,181 @@ public class PixivArtwork {
     public void setGifData(GifData gifData) {
         this.gifData = gifData;
     }
+
+    public void setIllustType(int illustType) {
+        this.illustType = illustType;
+    }
+
+    public int getxRestrict() {
+        return xRestrict;
+    }
+
+    public void setxRestrict(int xRestrict) {
+        this.xRestrict = xRestrict;
+    }
+
+    public int getRestrict() {
+        return restrict;
+    }
+
+    public void setRestrict(int restrict) {
+        this.restrict = restrict;
+    }
+
+    public int getSl() {
+        return sl;
+    }
+
+    public void setSl(int sl) {
+        this.sl = sl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setOriginalTags(JSONArray originalTags) {
+        this.originalTags = originalTags;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getPageCount() {
+        return pageCount;
+    }
+
+    public void setPageCount(int pageCount) {
+        this.pageCount = pageCount;
+    }
+
+    public boolean isBookmarkable() {
+        return bookmarkable;
+    }
+
+    public void setBookmarkable(boolean bookmarkable) {
+        this.bookmarkable = bookmarkable;
+    }
+
+    public Object getBookmarkData() {
+        return bookmarkData;
+    }
+
+    public void setBookmarkData(Object bookmarkData) {
+        this.bookmarkData = bookmarkData;
+    }
+
+    public String getAlt() {
+        return alt;
+    }
+
+    public void setAlt(String alt) {
+        this.alt = alt;
+    }
+
+    public JSONObject getTitleCaptionTranslation() {
+        return titleCaptionTranslation;
+    }
+
+    public void setTitleCaptionTranslation(JSONObject titleCaptionTranslation) {
+        this.titleCaptionTranslation = titleCaptionTranslation;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public boolean isUnlisted() {
+        return unlisted;
+    }
+
+    public void setUnlisted(boolean unlisted) {
+        this.unlisted = unlisted;
+    }
+
+    public boolean isMasked() {
+        return masked;
+    }
+
+    public void setMasked(boolean masked) {
+        this.masked = masked;
+    }
+
+    public JSONObject getUrls() {
+        return urls;
+    }
+
+    public void setUrls(JSONObject urls) {
+        this.urls = urls;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public int getAiType() {
+        return aiType;
+    }
+
+    public void setAiType(int aiType) {
+        this.aiType = aiType;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public GifData getGifData() {
+        return gifData;
+    }
+
 }
