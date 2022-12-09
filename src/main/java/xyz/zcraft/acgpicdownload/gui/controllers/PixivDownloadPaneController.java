@@ -162,13 +162,6 @@ public class PixivDownloadPaneController extends MyPane {
         statusColumn.setAlignment(Pos.CENTER);
         typeColumn.setAlignment(Pos.CENTER);
 
-        // titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
-        // authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.15).get());
-        // fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.05).get());
-        // tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
-        // idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        // statusColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-
         dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn, statusColumn, typeColumn));
 
         dataTable.getFilters().addAll(List.of(

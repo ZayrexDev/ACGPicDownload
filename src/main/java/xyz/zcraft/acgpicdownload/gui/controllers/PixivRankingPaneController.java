@@ -5,6 +5,7 @@ import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -90,6 +91,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
         minorCombo.selectFirst();
     }
 
+    @FXML
     @Override
     public void fetchBtnOnAction() {
         var major = MAJORS[majorCombo.getSelectedIndex()][resToggle.isSelected() ? 1 : 0];

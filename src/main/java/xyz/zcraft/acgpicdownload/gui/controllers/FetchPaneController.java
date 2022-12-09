@@ -129,10 +129,6 @@ public class FetchPaneController extends MyPane {
         dataTable.update();
     }
 
-    public void show() {
-        super.show();
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);

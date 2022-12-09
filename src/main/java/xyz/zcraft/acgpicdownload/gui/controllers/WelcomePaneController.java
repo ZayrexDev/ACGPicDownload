@@ -16,8 +16,8 @@ import java.util.Calendar;
 import java.util.ResourceBundle;
 
 public class WelcomePaneController implements Initializable {
-    TranslateTransition tt = new TranslateTransition();
-    TranslateTransition ttP = new TranslateTransition();
+    final TranslateTransition tt = new TranslateTransition();
+    final TranslateTransition ttP = new TranslateTransition();
     @javafx.fxml.FXML
     private VBox controls;
     @javafx.fxml.FXML

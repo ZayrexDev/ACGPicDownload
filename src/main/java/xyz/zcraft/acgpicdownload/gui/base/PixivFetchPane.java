@@ -36,7 +36,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public abstract class PixivFetchPane extends MyPane {
     protected final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
-    protected FadeTransition ft = new FadeTransition();
+    protected final FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     protected AnchorPane loadingPane;
     @javafx.fxml.FXML
@@ -146,12 +146,6 @@ public abstract class PixivFetchPane extends MyPane {
         tagColumn.setAlignment(Pos.CENTER);
         idColumn.setAlignment(Pos.CENTER);
         typeColumn.setAlignment(Pos.CENTER);
-
-        // titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        // authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        // fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        // tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        // idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
 
         dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn,
                 typeColumn));

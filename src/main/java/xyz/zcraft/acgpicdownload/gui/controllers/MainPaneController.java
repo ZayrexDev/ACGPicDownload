@@ -106,6 +106,7 @@ public class MainPaneController implements Initializable {
         titleLbl.setTextFill(Color.BLACK);
         closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.BLACK));
         minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.BLACK));
+        maximizeBtn.setGraphic(new MFXFontIcon("mfx-expand", Color.BLACK));
     }
 
     public GUI getGui() {

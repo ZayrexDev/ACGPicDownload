@@ -5,6 +5,7 @@ import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -40,6 +41,7 @@ public class PixivRelatedPaneController extends PixivFetchPane {
         cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
     }
 
+    @FXML
     @Override
     public void fetchBtnOnAction() {
         if (idField.getText().startsWith("https://www.pixiv.net/artworks/"))

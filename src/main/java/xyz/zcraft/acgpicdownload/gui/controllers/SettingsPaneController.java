@@ -55,10 +55,6 @@ public class SettingsPaneController extends MyPane {
     @FXML
     private MFXButton bgChooseFolderBtn;
 
-    public void show() {
-        super.show();
-    }
-
     public void hide() {
         super.hide();
         gui.welcomePaneController.showMain();
@@ -72,14 +68,6 @@ public class SettingsPaneController extends MyPane {
     @javafx.fxml.FXML
     public void saveConfigBtnOnAction() {
         saveConfig();
-    }
-
-    public String getProxyHost() {
-        return "127.0.0.1";
-    }
-
-    public int getProxyPort() {
-        return 7890;
     }
 
     @FXML

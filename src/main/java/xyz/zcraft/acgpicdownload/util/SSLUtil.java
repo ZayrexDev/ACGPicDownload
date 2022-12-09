@@ -1,7 +1,6 @@
 package xyz.zcraft.acgpicdownload.util;
 
 import javax.net.ssl.*;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 public class SSLUtil {
@@ -16,11 +15,7 @@ public class SSLUtil {
     }
 
     public static void ignoreSsl() throws Exception {
-        HostnameVerifier hv = new HostnameVerifier() {
-            public boolean verify(String urlHostName, SSLSession session) {
-                return true;
-            }
-        };
+        HostnameVerifier hv = (urlHostName, session) -> true;
         trustAllHttpsCertificates();
         HttpsURLConnection.setDefaultHostnameVerifier(hv);
     }
@@ -38,12 +33,10 @@ public class SSLUtil {
             return true;
         }
 
-        public void checkServerTrusted(X509Certificate[] certs, String authType)
-                throws CertificateException {
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {
         }
 
-        public void checkClientTrusted(X509Certificate[] certs, String authType)
-                throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {
         }
     }
 }
