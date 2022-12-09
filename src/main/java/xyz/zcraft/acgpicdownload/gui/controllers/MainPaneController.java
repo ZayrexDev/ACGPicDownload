@@ -4,6 +4,7 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXProgressBar;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
@@ -25,6 +26,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainPaneController implements Initializable {
+    public MFXButton maximizeBtn;
     GUI gui;
     double w = 800;
     double h = 500 - 30;
@@ -61,18 +63,26 @@ public class MainPaneController implements Initializable {
     public ImageView getBackground() {
         return background;
     }
-
+    private Image image;
     public void setBackground(InputStream stream) {
-        Image image = new Image(stream);
+        image = new Image(stream);
+        fitBackground();
+    }
+
+    private void fitBackground() {
         Rectangle2D vp;
 
         if (image.getWidth() / image.getHeight() > w / h) {
             background.setFitHeight(h);
             blurImg.setFitHeight(h);
+            background.setFitWidth(0);
+            blurImg.setFitWidth(0);
             vp = new Rectangle2D((image.getWidth() - (image.getHeight() / h * w)) / 2, 0, image.getWidth(), image.getHeight());
         } else {
             background.setFitWidth(w);
             blurImg.setFitWidth(w);
+            background.setFitHeight(0);
+            blurImg.setFitHeight(0);
             vp = new Rectangle2D(0, (image.getHeight() - image.getWidth() / w * h) / 2, image.getWidth(), image.getHeight());
         }
 
@@ -129,6 +139,8 @@ public class MainPaneController implements Initializable {
         closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.WHITE));
         minimizeBtn.setText("");
         minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.WHITE));
+        maximizeBtn.setText("");
+        maximizeBtn.setGraphic(new MFXFontIcon("mfx-expand", Color.WHITE));
     }
 
     @FXML
@@ -157,5 +169,31 @@ public class MainPaneController implements Initializable {
 
     public HBox getTitlePane() {
         return titlePane;
+    }
+
+    double resizeX;
+    double resizeY;
+    double resizeW;
+    double resizeH;
+    public void resizeStart(MouseEvent event) {
+        resizeX = event.getScreenX();
+        resizeY = event.getScreenY();
+        resizeW = gui.mainStage.getWidth();
+        resizeH = gui.mainStage.getHeight();
+    }
+
+    public void resize(MouseEvent event) {
+        gui.mainStage.setWidth(resizeW + event.getScreenX() - resizeX);
+        gui.mainStage.setHeight(resizeH + event.getScreenY() - resizeY);
+        this.w = resizeW + event.getScreenX() - resizeX;
+        this.h = resizeH + event.getScreenY() - resizeY - 30;
+        fitBackground();
+    }
+
+    public void maximizeBtnOnAction() {
+        gui.mainStage.setMaximized(!gui.mainStage.isMaximized());
+        this.w = gui.mainStage.getWidth();
+        this.h = gui.mainStage.getHeight() - 30;
+        fitBackground();
     }
 }

@@ -6,6 +6,8 @@ import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
 import io.github.palexdev.materialfx.enums.ScrimPriority;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -279,7 +281,6 @@ public class GUI extends Application {
             stagePane.setStyle("-fx-background: rgba(255,255,255,0.5);");
             mainStage.setWidth(800);
             mainStage.setHeight(500);
-            mainStage.setResizable(true);
             mainPaneController.setTransparent();
         } else {
             mainStage.initStyle(StageStyle.UNDECORATED);
@@ -303,7 +304,6 @@ public class GUI extends Application {
             mainStage.setWidth(800);
             mainStage.setHeight(500);
             mainPaneController.setBackground(imgMain);
-            mainStage.setResizable(false);
         }
     }
 
