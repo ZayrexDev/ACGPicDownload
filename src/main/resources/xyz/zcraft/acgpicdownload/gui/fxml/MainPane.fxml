@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.effect.GaussianBlur?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
@@ -35,16 +34,16 @@
                             <children>
                                 <MFXButton fx:id="minimizeBtn" maxHeight="30.0" maxWidth="30.0" minHeight="30.0"
                                            minWidth="30.0" onAction="#minimizeBtnOnAction" prefHeight="30.0"
-                                           prefWidth="30.0" rippleAnimateBackground="false"
+                                           prefWidth="30.0" rippleColor="#bdbdbd71"
                                            style="-fx-background-color: transparent;" text="-" textFill="WHITE"/>
                                 <MFXButton fx:id="maximizeBtn" layoutX="367.0" layoutY="10.0" maxHeight="30.0"
                                            maxWidth="30.0" minHeight="30.0" minWidth="30.0"
                                            onAction="#maximizeBtnOnAction" prefHeight="30.0" prefWidth="30.0"
-                                           rippleAnimateBackground="false" style="-fx-background-color: transparent;"
-                                           text="□" textFill="WHITE"/>
+                                           rippleColor="#bdbdbd71" style="-fx-background-color: transparent;" text="□"
+                                           textFill="WHITE"/>
                                 <MFXButton fx:id="closeBtn" maxHeight="30.0" maxWidth="30.0" minHeight="30.0"
                                            minWidth="30.0" onAction="#closeBtnOnAction" prefHeight="30.0"
-                                           prefWidth="30.0" rippleAnimateBackground="false"
+                                           prefWidth="30.0" rippleColor="#bdbdbd71"
                                            style="-fx-background-color: transparent;" text="x" textFill="WHITE"/>
                             </children>
                         </HBox>
@@ -90,15 +89,40 @@
                 </AnchorPane>
             </children>
         </VBox>
-        <HBox alignment="CENTER_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <children>
-                <Label maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0" onMouseDragged="#resize"
-                       onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0">
-                    <cursor>
-                        <Cursor fx:constant="SE_RESIZE"/>
-                    </cursor>
-                </Label>
-            </children>
-        </HBox>
+        <Label maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0" onMouseDragged="#resizeES"
+               onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0" AnchorPane.bottomAnchor="0.0"
+               AnchorPane.rightAnchor="0.0">
+            <cursor>
+                <Cursor fx:constant="SE_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="604.0" layoutY="435.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeE" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+            <cursor>
+                <Cursor fx:constant="E_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="604.0" layoutY="40.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeS" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0">
+            <cursor>
+                <Cursor fx:constant="S_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="604.0" layoutY="40.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeW" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="30.0">
+            <cursor>
+                <Cursor fx:constant="E_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="10.0" layoutY="435.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeWN" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+            <cursor>
+                <Cursor fx:constant="SW_RESIZE"/>
+            </cursor>
+        </Label>
     </children>
 </AnchorPane>

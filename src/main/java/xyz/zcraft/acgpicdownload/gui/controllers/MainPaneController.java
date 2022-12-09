@@ -29,10 +29,10 @@ public class MainPaneController implements Initializable {
     GUI gui;
     double w = 800;
     double h = 500 - 30;
-    double resizeX;
-    double resizeY;
-    double resizeW;
-    double resizeH;
+    double origMouseX;
+    double origMouseY;
+    double origStageW;
+    double origStageH;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
@@ -54,8 +54,6 @@ public class MainPaneController implements Initializable {
     @javafx.fxml.FXML
     private HBox titlePane;
     private boolean transparent = false;
-    private double origX;
-    private double origY;
     private double origStageX;
     private double origStageY;
     private Image image;
@@ -150,16 +148,16 @@ public class MainPaneController implements Initializable {
 
     @FXML
     private void mouseDragged(MouseEvent e) {
-        gui.mainStage.setX(e.getScreenX() - origX + origStageX);
-        gui.mainStage.setY(e.getScreenY() - origY + origStageY);
+        gui.mainStage.setX(e.getScreenX() - origMouseX + origStageX);
+        gui.mainStage.setY(e.getScreenY() - origMouseY + origStageY);
     }
 
     @FXML
     private void startMoving(MouseEvent e) {
         origStageX = gui.mainStage.getX();
         origStageY = gui.mainStage.getY();
-        origX = e.getScreenX();
-        origY = e.getScreenY();
+        origMouseX = e.getScreenX();
+        origMouseY = e.getScreenY();
     }
 
     @FXML
@@ -176,23 +174,40 @@ public class MainPaneController implements Initializable {
         return titlePane;
     }
 
+    @FXML
     public void resizeStart(MouseEvent event) {
-        resizeX = event.getScreenX();
-        resizeY = event.getScreenY();
-        resizeW = gui.mainStage.getWidth();
-        resizeH = gui.mainStage.getHeight();
+        origMouseX = event.getScreenX();
+        origMouseY = event.getScreenY();
+        origStageW = gui.mainStage.getWidth();
+        origStageH = gui.mainStage.getHeight();
+        origStageX = gui.mainStage.getX();
+        origStageY = gui.mainStage.getY();
     }
 
-    public void resize(MouseEvent event) {
-        double tempW = resizeW + event.getScreenX() - resizeX;
-        double tempH = resizeH + event.getScreenY() - resizeY - 30;
-        if (tempW > 625 && tempH > 398) {
-            gui.mainStage.setWidth(tempW);
+    @FXML
+    public void resizeES(MouseEvent event) {
+        resizeE(event);
+        resizeS(event);
+    }
+
+    @FXML
+    private void resizeS(MouseEvent event) {
+        double tempH = origStageH + event.getScreenY() - origMouseY - 30;
+        if (tempH > 398) {
             gui.mainStage.setHeight(tempH + 30);
-            this.w = tempW;
             this.h = tempH;
-            fitBackground();
         }
+        fitBackground();
+    }
+
+    @FXML
+    private void resizeE(MouseEvent event) {
+        double tempW = origStageW + event.getScreenX() - origMouseX;
+        if (tempW > 625) {
+            gui.mainStage.setWidth(tempW);
+            this.w = tempW;
+        }
+        fitBackground();
     }
 
     public void maximizeBtnOnAction() {
@@ -200,5 +215,20 @@ public class MainPaneController implements Initializable {
         this.w = gui.mainStage.getWidth();
         this.h = gui.mainStage.getHeight() - 30;
         fitBackground();
+    }
+
+    public void resizeW(MouseEvent mouseEvent) {
+        double tempW = origStageW + origMouseX - mouseEvent.getScreenX();
+        if (tempW > 625) {
+            gui.mainStage.setWidth(tempW);
+            gui.mainStage.setX(origStageX - tempW + origStageW);
+            this.w = tempW;
+        }
+        fitBackground();
+    }
+
+    public void resizeWN(MouseEvent mouseEvent) {
+        resizeS(mouseEvent);
+        resizeW(mouseEvent);
     }
 }
