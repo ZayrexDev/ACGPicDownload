@@ -23,11 +23,6 @@ public class ConfigManager {
         return Objects.requireNonNullElse(config.get(key), defaultValue);
     }
 
-    public static Object getSubValue(String sub, String key, Object defaultValue) {
-        if (config.getJSONObject("sub") == null) return defaultValue;
-        return Objects.requireNonNullElse(config.getJSONObject("sub").get(key), defaultValue);
-    }
-
     public static double getDoubleIfExist(String key, double defaultValue) {
         if (config.containsKey(key)) return config.getDouble(key);
         return defaultValue;

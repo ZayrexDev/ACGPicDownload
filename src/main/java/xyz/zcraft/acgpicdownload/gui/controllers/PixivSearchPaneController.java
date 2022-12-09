@@ -22,17 +22,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PixivSearchPaneController extends PixivFetchPane {
-    @javafx.fxml.FXML
-    public MFXComboBox<String> typeCombo;
-    @javafx.fxml.FXML
-    public MFXComboBox<String> modeCombo;
-    @javafx.fxml.FXML
-    public MFXSlider pageSlider;
-    public MFXTextField keywordField;
-    @javafx.fxml.FXML
-    private MFXSlider relatedDepthSlider;
-    @FXML
-    private MFXComboBox<String> suffixCombo;
     private static final String[] SUFFIX = {
             "",
             "30000users入り",
@@ -45,6 +34,18 @@ public class PixivSearchPaneController extends PixivFetchPane {
             "100users入り",
             "50users入り"
     };
+    @javafx.fxml.FXML
+    public MFXComboBox<String> typeCombo;
+    @javafx.fxml.FXML
+    public MFXComboBox<String> modeCombo;
+    @javafx.fxml.FXML
+    public MFXSlider pageSlider;
+    public MFXTextField keywordField;
+    @javafx.fxml.FXML
+    private MFXSlider relatedDepthSlider;
+    @FXML
+    private MFXComboBox<String> suffixCombo;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
@@ -82,6 +83,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
         suffixCombo.selectFirst();
     }
 
+    @FXML
     @Override
     public void fetchBtnOnAction() {
         loadingPane.setVisible(true);

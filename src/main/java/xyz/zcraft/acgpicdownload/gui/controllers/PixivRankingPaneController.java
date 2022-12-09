@@ -120,13 +120,13 @@ public class PixivRankingPaneController extends PixivFetchPane {
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
 
-                int[] i = {0,0,0};
+                int[] i = {0, 0, 0};
                 ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
                 for (; i[0] < ids.size(); i[0]++) {
                     final int finalI = i[0];
-                    tpe.execute(()->{
+                    tpe.execute(() -> {
                         int tries = 0;
-                        while(tries <= 5){
+                        while (tries <= 5) {
                             try {
                                 PixivArtwork a = PixivFetchUtil.getArtwork(
                                         ids.get(finalI),
@@ -144,14 +144,15 @@ public class PixivRankingPaneController extends PixivFetchPane {
                                 tries++;
                                 try {
                                     Thread.sleep(2000);
-                                } catch (InterruptedException ignored) {}
+                                } catch (InterruptedException ignored) {
+                                }
                             }
                         }
-                        i[1] ++;
-                        i[2] ++;
+                        i[1]++;
+                        i[2]++;
                     });
                 }
-                while(tpe.getActiveCount() != 0){
+                while (tpe.getActiveCount() != 0) {
                     Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + i[1] + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.failed") + " " + i[2]));
                     try {
                         Thread.sleep(1000);

@@ -25,19 +25,14 @@ import java.util.ResourceBundle;
 public class SettingsPaneController extends MyPane {
     @javafx.fxml.FXML
     private AnchorPane mainPane;
-
     @javafx.fxml.FXML
     private MFXButton backBtn;
-
     @javafx.fxml.FXML
     private MFXTextField proxyField;
-
     @javafx.fxml.FXML
     private MFXSlider aniSpeedSlider;
-
     @FXML
     private MFXComboBox<Locale> languageCombo;
-
     private String proxyHost;
     private int proxyPort;
 

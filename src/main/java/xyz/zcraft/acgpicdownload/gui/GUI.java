@@ -93,12 +93,6 @@ public class GUI extends Application {
         AnchorPane.setRightAnchor(node, 0d);
     }
 
-    public void fill(Node... node) {
-        for (Node node1 : node) {
-            fill(node1);
-        }
-    }
-
     public void openFetchPane() {
         fetchPaneController.show();
     }
@@ -284,14 +278,16 @@ public class GUI extends Application {
             mainStage.initStyle(StageStyle.UNDECORATED);
             if (bg != null && !bg.isEmpty()) {
                 File bgFolder = new File(bg);
-                if (!bgFolder.exists())
-                    bgFolder.mkdirs();
-                List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
-                        .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
-                        .toList());
-                if (fl.size() > 0) {
-                    File file = fl.get(new Random().nextInt(fl.size()));
-                    imgMain = new FileInputStream(file);
+                if (bgFolder.exists()) {
+                    List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
+                            .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
+                            .toList());
+                    if (fl.size() > 0) {
+                        File file = fl.get(new Random().nextInt(fl.size()));
+                        imgMain = new FileInputStream(file);
+                    } else {
+                        imgMain = ResourceLoader.loadStream("bg.png");
+                    }
                 } else {
                     imgMain = ResourceLoader.loadStream("bg.png");
                 }
@@ -328,6 +324,7 @@ public class GUI extends Application {
             String msg = conductException(e);
             if (msg != null) {
                 sb.append(ResourceBundleUtil.getString("err.conduct"));
+                sb.append("\n");
                 sb.append(msg);
                 sb.append("\n");
             }

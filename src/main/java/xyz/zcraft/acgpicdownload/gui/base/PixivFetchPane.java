@@ -59,7 +59,7 @@ public abstract class PixivFetchPane extends MyPane {
         if (depth > 0) {
             List<PixivArtwork> temp2Artworks = new LinkedList<>();
             List<PixivArtwork> temp = new LinkedList<>(pixivArtworks);
-            int[] p = {0,0,0};
+            int[] p = {0, 0, 0};
             for (; p[0] < depth; p[0]++) {
                 Platform.runLater(() -> subOperationLabel
                         .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
@@ -69,7 +69,7 @@ public abstract class PixivFetchPane extends MyPane {
                 p[2] = 0;
                 for (int tempSize = temp.size(); p[1] < tempSize; p[1]++) {
                     PixivArtwork temp2 = temp.get(p[1]);
-                    tpe.execute(()->{
+                    tpe.execute(() -> {
                         List<PixivArtwork> related;
                         try {
                             related = PixivFetchUtil.getRelated(temp2, 18,
@@ -78,10 +78,11 @@ public abstract class PixivFetchPane extends MyPane {
                                     ConfigManager.getConfig().getInteger("proxyPort"));
                             temp2Artworks.addAll(related);
                             p[2]++;
-                        } catch (IOException ignored) {}
+                        } catch (IOException ignored) {
+                        }
                     });
                 }
-                while(tpe.getActiveCount() != 0){
+                while (tpe.getActiveCount() != 0) {
                     Platform.runLater(() -> subOperationLabel
                             .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
                                     + (p[0] + 1) + " / " + depth + " | "
@@ -156,16 +157,19 @@ public abstract class PixivFetchPane extends MyPane {
                 typeColumn));
 
         dataTable.getFilters().addAll(List.of(
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"),
+                        PixivArtwork::getTitle),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),
                         PixivArtwork::getUserName),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
                         PixivArtwork::getFromString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
                         PixivArtwork::getTagsString),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"),
+                        PixivArtwork::getId),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"),
-                        PixivArtwork::getTypeString)));
+                        PixivArtwork::getTypeString))
+        );
 
         dataTable.setItems(data);
         dataTable.getSelectionModel().setAllowsMultipleSelection(true);

@@ -74,7 +74,7 @@ public class MainPaneController implements Initializable {
     }
 
     private void fitBackground() {
-        if(image == null) return;
+        if (image == null) return;
         Rectangle2D vp;
 
         if (image.getWidth() / image.getHeight() > w / h) {
@@ -184,11 +184,13 @@ public class MainPaneController implements Initializable {
     }
 
     public void resize(MouseEvent event) {
-        if(resizeW + event.getScreenX() - resizeX > 625 && resizeH + event.getScreenY() - resizeY - 30 > 398){
-            gui.mainStage.setWidth(resizeW + event.getScreenX() - resizeX);
-            gui.mainStage.setHeight(resizeH + event.getScreenY() - resizeY);
-            this.w = resizeW + event.getScreenX() - resizeX;
-            this.h = resizeH + event.getScreenY() - resizeY - 30;
+        double tempW = resizeW + event.getScreenX() - resizeX;
+        double tempH = resizeH + event.getScreenY() - resizeY - 30;
+        if (tempW > 625 && tempH > 398) {
+            gui.mainStage.setWidth(tempW);
+            gui.mainStage.setHeight(tempH + 30);
+            this.w = tempW;
+            this.h = tempH;
             fitBackground();
         }
     }
