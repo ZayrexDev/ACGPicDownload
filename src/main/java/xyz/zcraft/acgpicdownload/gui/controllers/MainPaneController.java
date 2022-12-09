@@ -120,7 +120,7 @@ public class MainPaneController implements Initializable {
         initProgressBar.setProgress(p == 1 ? -1 : p);
     }
 
-    public void initDone() {
+    public void loadDone() {
         FadeTransition ft = new FadeTransition();
         ft.setNode(initPane);
         ft.setToValue(0);
@@ -137,13 +137,31 @@ public class MainPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initPane.setVisible(true);
         closeBtn.setText("");
         closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.WHITE));
         minimizeBtn.setText("");
         minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.WHITE));
         maximizeBtn.setText("");
         maximizeBtn.setGraphic(new MFXFontIcon("mfx-expand", Color.WHITE));
+    }
+
+    public void reload() {
+        FadeTransition ft = new FadeTransition();
+        ft.setNode(initPane);
+        ft.setToValue(1);
+        ft.setFromValue(0);
+        ft.setDuration(Duration.millis(10));
+        ft.setRate(0.1);
+        ft.setOnFinished((e) -> initPane.setVisible(false));
+        ft.play();
+
+        ft.setNode(blurImg);
+        ft.setOnFinished((e) -> blurImg.setVisible(false));
+        ft.play();
+    }
+
+    public void init() {
+        initPane.setVisible(true);
     }
 
     @FXML
@@ -159,12 +177,10 @@ public class MainPaneController implements Initializable {
         origMouseX = e.getScreenX();
         origMouseY = e.getScreenY();
     }
-
     @FXML
     private void minimizeBtnOnAction() {
         gui.mainStage.setIconified(true);
     }
-
     @FXML
     private void closeBtnOnAction() {
         System.exit(0);

@@ -4,6 +4,8 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
 import io.github.palexdev.materialfx.enums.ScrimPriority;
+import io.github.palexdev.materialfx.i18n.I18N;
+import io.github.palexdev.materialfx.i18n.Language;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -41,6 +43,7 @@ public class GUI extends Application {
     public Pane welcomePane;
 
     public GUI gui;
+    private Scene s;
 
     public static void start(String[] args) {
         launch(args);
@@ -105,24 +108,41 @@ public class GUI extends Application {
         pixivDownloadPaneController.show();
     }
 
-    @Override
-    public void start(Stage stage) throws Exception {
+    public static void setMFXLanguage() {
+        for (Language v : Language.values()) {
+            if (v.getLocale().equals(Locale.getDefault())) {
+                I18N.setLanguage(v);
+                return;
+            }
+        }
+    }
+
+    private static void setLanguage() throws IOException {
         ConfigManager.readConfig();
         if (ConfigManager.getConfig().containsKey("lang"))
             ResourceBundleUtil.load(ConfigManager.getConfig().getString("lang"));
+        setMFXLanguage();
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        setLanguage();
         gui = this;
         mainStage = stage;
 
         stage.setTitle("ACGPicDownload");
 
-        FXMLLoader mainLoader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"),
-                ResourceBundleUtil.getResource());
+        FXMLLoader mainLoader = new FXMLLoader(ResourceLoader.loadURL("fxml/MainPane.fxml"), ResourceBundleUtil.getResource());
         stagePane = mainLoader.load();
         mainPaneController = mainLoader.getController();
         mainPane = mainPaneController.getMainPane();
         mainPaneController.setGui(gui);
 
+        this.s = new Scene(stagePane);
         readBackground();
+        mainStage.setScene(s);
+
+        mainPaneController.init();
 
         stage.setOnCloseRequest(windowEvent -> {
             stage.hide();
@@ -131,140 +151,151 @@ public class GUI extends Application {
 
         stage.show();
 
-        Thread initThread = new Thread(() -> {
-            try {
-                FXMLLoader loader;
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"), ResourceBundleUtil.getResource());
-                welcomePane = loader.load();
-                welcomePaneController = loader.getController();
-                welcomePaneController.setGui(gui);
-                fill(welcomePane);
-                Platform.runLater(() -> mainPane.getChildren().add(welcomePane));
-                mainPaneController.setProgress(0.1);
+        Thread initThread = new Thread(this::initWindow);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                fetchPaneController = loader.getController();
-                fetchPaneController.setGui(gui);
-                fill(fetchPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
-                mainPaneController.setProgress(0.2);
+        initThread.setPriority(1);
+        initThread.start();
+    }
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                pixivMenuPaneController = loader.getController();
-                pixivMenuPaneController.setGui(gui);
-                fill(pixivMenuPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
-                mainPaneController.setProgress(0.3);
+    private void initWindow() {
+        Stage stage = mainStage;
+        try {
+            FXMLLoader loader;
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/WelcomePane.fxml"), ResourceBundleUtil.getResource());
+            welcomePane = loader.load();
+            welcomePaneController = loader.getController();
+            welcomePaneController.setGui(gui);
+            fill(welcomePane);
+            Platform.runLater(() -> mainPane.getChildren().add(welcomePane));
+            mainPaneController.setProgress(0.1);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                pixivUserPaneController = loader.getController();
-                pixivUserPaneController.setGui(gui);
-                fill(pixivUserPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
-                mainPaneController.setProgress(0.4);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            fetchPaneController = loader.getController();
+            fetchPaneController.setGui(gui);
+            fill(fetchPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
+            mainPaneController.setProgress(0.2);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                pixivRelatedPaneController = loader.getController();
-                pixivRelatedPaneController.setGui(gui);
-                fill(pixivUserPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
-                mainPaneController.setProgress(0.5);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            pixivMenuPaneController = loader.getController();
+            pixivMenuPaneController.setGui(gui);
+            fill(pixivMenuPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
+            mainPaneController.setProgress(0.3);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                pixivDownloadPaneController = loader.getController();
-                pixivDownloadPaneController.setGui(gui);
-                fill(pixivDownloadPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
-                mainPaneController.setProgress(0.6);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            pixivUserPaneController = loader.getController();
+            pixivUserPaneController.setGui(gui);
+            fill(pixivUserPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
+            mainPaneController.setProgress(0.4);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                pixivDiscoveryPaneController = loader.getController();
-                pixivDiscoveryPaneController.setGui(gui);
-                fill(pixivDiscoveryPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
-                mainPaneController.setProgress(0.7);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            pixivRelatedPaneController = loader.getController();
+            pixivRelatedPaneController.setGui(gui);
+            fill(pixivUserPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
+            mainPaneController.setProgress(0.5);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                settingsPaneController = loader.getController();
-                settingsPaneController.setGui(gui);
-                fill(settingsPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(settingsPaneController.getMainPane()));
-                mainPaneController.setProgress(0.8);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            pixivDownloadPaneController = loader.getController();
+            pixivDownloadPaneController.setGui(gui);
+            fill(pixivDownloadPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
+            mainPaneController.setProgress(0.6);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRankingPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                pixivRankingPaneController = loader.getController();
-                pixivRankingPaneController.setGui(gui);
-                fill(pixivRankingPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(pixivRankingPaneController.getMainPane()));
-                mainPaneController.setProgress(0.9);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            pixivDiscoveryPaneController = loader.getController();
+            pixivDiscoveryPaneController.setGui(gui);
+            fill(pixivDiscoveryPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
+            mainPaneController.setProgress(0.7);
 
-                loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivSearchPane.fxml"), ResourceBundleUtil.getResource());
-                loader.load();
-                pixivSearchPaneController = loader.getController();
-                pixivSearchPaneController.setGui(gui);
-                fill(pixivSearchPaneController.getMainPane());
-                Platform.runLater(() -> mainPane.getChildren().add(pixivSearchPaneController.getMainPane()));
-                mainPaneController.setProgress(0.95);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            settingsPaneController = loader.getController();
+            settingsPaneController.setGui(gui);
+            fill(settingsPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(settingsPaneController.getMainPane()));
+            mainPaneController.setProgress(0.8);
 
-                // Load done
-                welcomePane.setVisible(false);
-                mainPaneController.setProgress(1);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRankingPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            pixivRankingPaneController = loader.getController();
+            pixivRankingPaneController.setGui(gui);
+            fill(pixivRankingPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(pixivRankingPaneController.getMainPane()));
+            mainPaneController.setProgress(0.9);
 
-                Thread.sleep(1000);
+            loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivSearchPane.fxml"), ResourceBundleUtil.getResource());
+            loader.load();
+            pixivSearchPaneController = loader.getController();
+            pixivSearchPaneController.setGui(gui);
+            fill(pixivSearchPaneController.getMainPane());
+            Platform.runLater(() -> mainPane.getChildren().add(pixivSearchPaneController.getMainPane()));
+            mainPaneController.setProgress(0.95);
 
-                Platform.runLater(() -> {
-                    mainPaneController.initDone();
-                    welcomePane.setVisible(true);
-                    welcomePaneController.showMain();
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    e.printStackTrace(pw);
-                    MFXGenericDialog content = MFXGenericDialogBuilder.build()
-                            .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw)
-                            .setShowClose(true)
-                            .setHeaderText(ResourceBundleUtil.getString("cli.fetch.err")).get();
-                    content.addActions(Map.entry(new MFXButton("OK"), event -> System.exit(1)));
-                    MFXGenericDialogBuilder.build(content)
-                            .toStageDialogBuilder()
-                            .initOwner(stage)
-                            .initModality(Modality.APPLICATION_MODAL)
-                            .setDraggable(true)
-                            .setTitle("Dialogs Preview")
-                            .setScrimPriority(ScrimPriority.WINDOW)
-                            .setScrimOwner(true)
-                            .get()
-                            .showDialog();
+            // Load done
+            welcomePane.setVisible(false);
+            mainPaneController.setProgress(1);
 
-                    pw.close();
-                    try {
-                        sw.close();
-                    } catch (IOException ignored) {
-                    }
-                });
-            }
-        });
+            Thread.sleep(1000);
+
+            Platform.runLater(() -> {
+                mainPaneController.loadDone();
+                welcomePane.setVisible(true);
+                welcomePaneController.showMain();
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                MFXGenericDialog content = MFXGenericDialogBuilder.build()
+                        .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw)
+                        .setShowClose(true)
+                        .setHeaderText(ResourceBundleUtil.getString("cli.fetch.err")).get();
+                content.addActions(Map.entry(new MFXButton("OK"), event -> System.exit(1)));
+                MFXGenericDialogBuilder.build(content)
+                        .toStageDialogBuilder()
+                        .initOwner(stage)
+                        .initModality(Modality.APPLICATION_MODAL)
+                        .setDraggable(true)
+                        .setTitle("Dialogs Preview")
+                        .setScrimPriority(ScrimPriority.WINDOW)
+                        .setScrimOwner(true)
+                        .get()
+                        .showDialog();
+
+                pw.close();
+                try {
+                    sw.close();
+                } catch (IOException ignored) {
+                }
+            });
+        }
+    }
+
+    public void reloadWindow() throws IOException {
+        mainPaneController.reload();
+        setLanguage();
+        readBackground();
+        Thread initThread = new Thread(this::initWindow);
 
         initThread.setPriority(1);
         initThread.start();
     }
 
     private void readBackground() throws IOException {
-        Scene s = new Scene(stagePane);
         String bg = ConfigManager.getConfig().getString("bg");
         InputStream imgMain;
-        mainStage.setScene(s);
         if (bg != null && bg.equals("transparent")) {
             s.setFill(null);
             mainStage.initStyle(StageStyle.TRANSPARENT);

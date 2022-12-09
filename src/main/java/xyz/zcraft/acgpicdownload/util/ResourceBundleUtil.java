@@ -12,6 +12,7 @@ public class ResourceBundleUtil {
 
     public static void load(String language) {
         BUNDLE = ResourceBundle.getBundle("xyz.zcraft.acgpicdownload.languages.String", Locale.forLanguageTag(language));
+        Locale.setDefault(Locale.forLanguageTag(language));
     }
 
     public static void loadDefault() {
