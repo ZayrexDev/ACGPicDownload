@@ -222,6 +222,8 @@ public class FetchPaneController extends MyPane {
                     }
                 });
 
+        dataTable.features().enableBounceEffect();
+        dataTable.features().enableSmoothScrolling(0.7);
         data.clear();
     }
 

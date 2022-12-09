@@ -8,6 +8,7 @@ import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -30,6 +31,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public abstract class PixivFetchPane extends MyPane {
     protected final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
@@ -50,6 +53,51 @@ public abstract class PixivFetchPane extends MyPane {
     protected MFXTableView<PixivArtwork> dataTable;
     @javafx.fxml.FXML
     protected MFXTextField cookieField;
+
+    public static void getRelated(List<PixivArtwork> pixivArtworks, int depth, String cookieString, Label subOperationLabel) throws IOException {
+        ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+        if (depth > 0) {
+            List<PixivArtwork> temp2Artworks = new LinkedList<>();
+            List<PixivArtwork> temp = new LinkedList<>(pixivArtworks);
+            int[] p = {0,0,0};
+            for (; p[0] < depth; p[0]++) {
+                Platform.runLater(() -> subOperationLabel
+                        .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
+                                + (p[0] + 1) + " / " + depth));
+                temp2Artworks.clear();
+                p[1] = 0;
+                p[2] = 0;
+                for (int tempSize = temp.size(); p[1] < tempSize; p[1]++) {
+                    PixivArtwork temp2 = temp.get(p[1]);
+                    tpe.execute(()->{
+                        List<PixivArtwork> related;
+                        try {
+                            related = PixivFetchUtil.getRelated(temp2, 18,
+                                    cookieString,
+                                    ConfigManager.getConfig().getString("proxyHost"),
+                                    ConfigManager.getConfig().getInteger("proxyPort"));
+                            temp2Artworks.addAll(related);
+                            p[2]++;
+                        } catch (IOException ignored) {}
+                    });
+                }
+                while(tpe.getActiveCount() != 0){
+                    Platform.runLater(() -> subOperationLabel
+                            .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
+                                    + (p[0] + 1) + " / " + depth + " | "
+                                    + (p[2]) + " / " + temp.size()));
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                temp.clear();
+                temp.addAll(temp2Artworks);
+                pixivArtworks.addAll(temp2Artworks);
+            }
+        }
+    }
 
     abstract public void fetchBtnOnAction();
 
@@ -121,6 +169,8 @@ public abstract class PixivFetchPane extends MyPane {
 
         dataTable.setItems(data);
         dataTable.getSelectionModel().setAllowsMultipleSelection(true);
+        dataTable.features().enableBounceEffect();
+        dataTable.features().enableSmoothScrolling(0.7);
         data.clear();
     }
 

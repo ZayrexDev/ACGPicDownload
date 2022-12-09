@@ -189,7 +189,8 @@ public class PixivDownloadPaneController extends MyPane {
                         o -> o.getStatus().toString())));
 
         dataTable.setItems(data);
-
+        dataTable.features().enableBounceEffect();
+        dataTable.features().enableSmoothScrolling(0.7);
         data.clear();
     }
 

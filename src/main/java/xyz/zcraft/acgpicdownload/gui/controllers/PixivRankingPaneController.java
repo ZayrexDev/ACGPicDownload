@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class PixivRankingPaneController extends PixivFetchPane {
     private static final String[][] MAJORS = {
@@ -26,6 +28,8 @@ public class PixivRankingPaneController extends PixivFetchPane {
             {"monthly"}, {"rookie"}, {"original"},
             {"daily_ai", "daily_r18_ai"}, {"male", "male_r18"}, {"female", "female_r18"}
     };
+
+
     private final LinkedList<String> minors = new LinkedList<>();
     public MFXComboBox<String> majorCombo;
     public MFXComboBox<String> minorCombo;
@@ -116,28 +120,45 @@ public class PixivRankingPaneController extends PixivFetchPane {
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
 
-                int[] i = {0, 0};
+                int[] i = {0,0,0};
+                ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
                 for (; i[0] < ids.size(); i[0]++) {
-                    Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i[0] + 1) + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.retries") + " " + (i[1] + 1)));
+                    final int finalI = i[0];
+                    tpe.execute(()->{
+                        int tries = 0;
+                        while(tries <= 5){
+                            try {
+                                PixivArtwork a = PixivFetchUtil.getArtwork(
+                                        ids.get(finalI),
+                                        cookieField.getText(),
+                                        ConfigManager.getConfig().getString("proxyHost"),
+                                        ConfigManager.getConfig().getInteger("proxyPort")
+                                );
+                                a.setFrom(From.Ranking);
+                                String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected() ? "*" : "") + "-" + minorCombo.getSelectedItem() + "#" + (finalI + 1);
+                                a.setRanking(rankingInfo);
+                                pixivArtworks.add(a);
+                                i[1]++;
+                                return;
+                            } catch (Exception e) {
+                                tries++;
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (InterruptedException ignored) {}
+                            }
+                        }
+                        i[1] ++;
+                        i[2] ++;
+                    });
+                }
+                while(tpe.getActiveCount() != 0){
+                    Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + i[1] + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.failed") + " " + i[2]));
                     try {
-                        PixivArtwork a = PixivFetchUtil.getArtwork(
-                                ids.get(i[0]),
-                                cookieField.getText(),
-                                ConfigManager.getConfig().getString("proxyHost"),
-                                ConfigManager.getConfig().getInteger("proxyPort")
-                        );
-                        a.setFrom(From.Ranking);
-                        String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected() ? "*" : "") + "-" + minorCombo.getSelectedItem() + "#" + (i[0] + 1);
-                        a.setRanking(rankingInfo);
-                        pixivArtworks.add(a);
-                        i[1] = 0;
-                    } catch (Exception e) {
-                        i[1]++;
-                        if (i[1] <= 5)
-                            i[0]--;
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
-
                 Platform.runLater(() -> data.addAll(pixivArtworks));
 
                 Notice.showSuccess(String.format(

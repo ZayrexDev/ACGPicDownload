@@ -177,33 +177,8 @@ public class PixivUserPaneController extends PixivFetchPane {
                                     ConfigManager.getConfig().getInteger("proxyPort")));
                 }
 
-                if (relatedDepthSlider.getValue() > 0) {
-                    List<PixivArtwork> temp2Artworks = new LinkedList<>();
-                    List<PixivArtwork> temp = new LinkedList<>(pixivArtworks);
-                    for (int i = 0; i < relatedDepthSlider.getValue(); i++) {
-                        final int finalI = i;
-                        Platform.runLater(() -> subOperationLabel
-                                .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
-                                        + (finalI + 1) + " / " + (int) relatedDepthSlider.getValue()));
-                        temp2Artworks.clear();
-                        for (int j = 0, tempSize = temp.size(); j < tempSize; j++) {
-                            int finalJ = j;
-                            Platform.runLater(() -> subOperationLabel
-                                    .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
-                                            + (finalI + 1) + " / " + (int) relatedDepthSlider.getValue() + " | "
-                                            + (finalJ + 1) + " / " + temp.size()));
-                            PixivArtwork temp2 = temp.get(j);
-                            List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
-                                    cookieField.getText(),
-                                    ConfigManager.getConfig().getString("proxyHost"),
-                                    ConfigManager.getConfig().getInteger("proxyPort"));
-                            temp2Artworks.addAll(related);
-                        }
-                        temp.clear();
-                        temp.addAll(temp2Artworks);
-                        pixivArtworks.addAll(temp2Artworks);
-                    }
-                }
+                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), cookieField.getText(), subOperationLabel);
+
                 Platform.runLater(() -> data.addAll(pixivArtworks));
                 Notice.showSuccess(
                         String.format(

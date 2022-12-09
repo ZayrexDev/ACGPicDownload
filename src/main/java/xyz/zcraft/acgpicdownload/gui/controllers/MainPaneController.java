@@ -4,7 +4,6 @@ import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXProgressBar;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.animation.FadeTransition;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
@@ -30,6 +29,10 @@ public class MainPaneController implements Initializable {
     GUI gui;
     double w = 800;
     double h = 500 - 30;
+    double resizeX;
+    double resizeY;
+    double resizeW;
+    double resizeH;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
@@ -55,6 +58,7 @@ public class MainPaneController implements Initializable {
     private double origY;
     private double origStageX;
     private double origStageY;
+    private Image image;
 
     public AnchorPane getMainPane() {
         return mainPane;
@@ -63,13 +67,14 @@ public class MainPaneController implements Initializable {
     public ImageView getBackground() {
         return background;
     }
-    private Image image;
+
     public void setBackground(InputStream stream) {
         image = new Image(stream);
         fitBackground();
     }
 
     private void fitBackground() {
+        if(image == null) return;
         Rectangle2D vp;
 
         if (image.getWidth() / image.getHeight() > w / h) {
@@ -171,10 +176,6 @@ public class MainPaneController implements Initializable {
         return titlePane;
     }
 
-    double resizeX;
-    double resizeY;
-    double resizeW;
-    double resizeH;
     public void resizeStart(MouseEvent event) {
         resizeX = event.getScreenX();
         resizeY = event.getScreenY();
@@ -183,11 +184,13 @@ public class MainPaneController implements Initializable {
     }
 
     public void resize(MouseEvent event) {
-        gui.mainStage.setWidth(resizeW + event.getScreenX() - resizeX);
-        gui.mainStage.setHeight(resizeH + event.getScreenY() - resizeY);
-        this.w = resizeW + event.getScreenX() - resizeX;
-        this.h = resizeH + event.getScreenY() - resizeY - 30;
-        fitBackground();
+        if(resizeW + event.getScreenX() - resizeX > 625 && resizeH + event.getScreenY() - resizeY - 30 > 398){
+            gui.mainStage.setWidth(resizeW + event.getScreenX() - resizeX);
+            gui.mainStage.setHeight(resizeH + event.getScreenY() - resizeY);
+            this.w = resizeW + event.getScreenX() - resizeX;
+            this.h = resizeH + event.getScreenY() - resizeY - 30;
+            fitBackground();
+        }
     }
 
     public void maximizeBtnOnAction() {

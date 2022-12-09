@@ -5,6 +5,8 @@ module xyz.zcraft.acgpicdownload {
     requires transitive javafx.graphics;
     requires transitive MaterialFX;
     requires transitive org.jetbrains.annotations;
+    requires transitive VirtualizedFX;
+    requires transitive lombok;
     requires animated.gif.lib;
     requires org.jsoup;
 

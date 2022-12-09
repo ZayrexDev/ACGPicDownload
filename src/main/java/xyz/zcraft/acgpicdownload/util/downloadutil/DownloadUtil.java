@@ -205,7 +205,6 @@ public class DownloadUtil {
             if (fullResult && a.getArtwork().getOrigJson() != null) {
                 File jsonf = new File(toDic, namingRule.name(a.getArtwork()).concat(".json"));
                 BufferedOutputStream jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
-                ;
 
                 String str = a.getArtwork().getOrigJson().toJSONString(Feature.PrettyFormat);
                 jsonos.write(str.getBytes(StandardCharsets.UTF_8));
