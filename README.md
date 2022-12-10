@@ -27,7 +27,7 @@ GUI:
 - 在[Releases](https://github.com/zxzxy/ACGPicDownload/releases)下载最新版本
 
 > 如果你的设备已经安装了Java17+，那么可以下载 `ACGPicDownload.版本号.jar` 并直接使用命令行运行，或在 Windows
-> 上下载 `ACGPicDownload.不包含.win.exe` 并直接运行
+> 上下载 `ACGPicDownload.版本号.win.exe` 并直接运行
 
 > 如果并没有Java17+安装，那么可以在[这里](https://adoptium.net/zh-CN/temurin/archive)
 > 下载安装Java17以上的版本，或者如果你是Windows，则可以下载 `ACGPicDownload.版本号.win.jdk.7z`, 里面自带JDK17
