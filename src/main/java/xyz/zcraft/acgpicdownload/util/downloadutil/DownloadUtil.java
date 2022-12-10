@@ -3,6 +3,8 @@ package xyz.zcraft.acgpicdownload.util.downloadutil;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter.Feature;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
 import xyz.zcraft.acgpicdownload.util.pixivutils.*;
@@ -14,6 +16,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
+import java.util.function.Predicate;
 import java.util.zip.ZipInputStream;
 
 public class DownloadUtil {
@@ -170,19 +173,26 @@ public class DownloadUtil {
         }
     }
 
-    public void downloadPixiv(PixivDownload a, File toDic, String cookieString, NamingRule namingRule, boolean fullResult, String proxyHost, Integer proxyPort)
+    public void downloadPixiv(@NotNull PixivDownload a, File toDic, String cookieString, NamingRule namingRule, boolean fullResult, String proxyHost, Integer proxyPort, ArtworkCondition condition)
             throws IOException {
         if (a.getArtwork().getIllustType() == 2) {
-            downloadPixivGif(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
+            downloadPixivGif(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort, condition);
         } else {
-            downloadPixivIllusion(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
+            downloadPixivIllusion(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort, condition);
         }
     }
 
-    private void downloadPixivGif(PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
-                                  boolean fullResult, String proxyHost, Integer proxyPort) throws IOException {
+    private void downloadPixivGif(@NotNull PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
+                                  boolean fullResult, String proxyHost, Integer proxyPort, @Nullable ArtworkCondition condition) throws IOException {
         try {
             GifData gifData = PixivFetchUtil.getGifData(a.getArtwork(), cookieString, proxyHost, proxyPort);
+            if(condition != null) {
+                a.setArtwork(PixivFetchUtil.getArtwork(a.getArtwork(), cookieString, proxyHost, proxyPort));
+                if (!condition.test(a.getArtwork())) {
+                    a.setStatus(DownloadStatus.FILTERED);
+                    return;
+                }
+            }
             URL url = new URL(gifData.getSrc());
             URLConnection c = url.openConnection();
             c.setRequestProperty("Referer", PixivDownloadUtil.REFERER);
@@ -217,24 +227,30 @@ public class DownloadUtil {
             Main.logError(e);
             retriedCount++;
             if (retriedCount > maxRetryCount) {
-                if (a != null) {
-                    a.setStatus(DownloadStatus.FAILED);
-                }
+                a.setStatus(DownloadStatus.FAILED);
                 throw e;
             } else {
-                downloadPixivGif(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
+                downloadPixivGif(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort, condition);
             }
         }
     }
 
-    private void downloadPixivIllusion(PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
-                                       boolean fullResult, String proxyHost, Integer proxyPort)
+    private void downloadPixivIllusion(@NotNull PixivDownload a, File toDic, String cookieString, NamingRule namingRule,
+                                       boolean fullResult, String proxyHost, Integer proxyPort, ArtworkCondition condition)
             throws IOException {
         InputStream is = null;
         FileOutputStream fos = null;
         File f = null;
         try {
             LinkedList<String> pages = PixivFetchUtil.getFullPages(a.getArtwork(), cookieString, proxyHost, proxyPort);
+
+            if (condition != null){
+                a.setArtwork(PixivFetchUtil.getArtwork(a.getArtwork(),cookieString,proxyHost,proxyPort));
+                if (!condition.test(a.getArtwork())) {
+                    a.setStatus(DownloadStatus.FILTERED);
+                    return;
+                }
+            }
 
             if (pages.size() > 1 && namingRule.multiP() == 0) {
                 toDic = new File(toDic, namingRule.nameFolder(a.getArtwork()));
@@ -301,7 +317,7 @@ public class DownloadUtil {
                 a.setStatus(DownloadStatus.FAILED);
                 throw e;
             } else {
-                downloadPixiv(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort);
+                downloadPixiv(a, toDic, cookieString, namingRule, fullResult, proxyHost, proxyPort, condition);
             }
         }
     }

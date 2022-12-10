@@ -44,6 +44,8 @@ public class PixivDownloadPaneController extends MyPane {
     public MFXTextField namingRuleField;
     public MFXComboBox<String> multiPageCombo;
     public MFXTextField folderNamingRuleField;
+    public MFXTextField bookmarkCountField;
+    public MFXTextField likeCountField;
     public MFXButton namingRuleHelpBtn;
     public MFXButton saveConfigBtn;
     @FXML
@@ -65,6 +67,10 @@ public class PixivDownloadPaneController extends MyPane {
     private Label statusLabel;
 
     public void startDownload() {
+        ArtworkCondition condition = ArtworkCondition.always();
+        try{condition.bookmark(Integer.parseInt(bookmarkCountField.getText()));}catch (NumberFormatException ignored){}
+        try{condition.like(Integer.parseInt(likeCountField.getText()));}catch (NumberFormatException ignored){}
+
         PixivDownloadUtil.startDownload(
                 data,
                 outputDirField.getText(),
@@ -74,7 +80,8 @@ public class PixivDownloadPaneController extends MyPane {
                 new NamingRule(namingRuleField.getText(), multiPageCombo.getSelectedIndex(), folderNamingRuleField.getText()),
                 fullResultToggle.isSelected(),
                 ConfigManager.getConfig().getString("proxyHost"),
-                ConfigManager.getConfig().getInteger("proxyPort")
+                ConfigManager.getConfig().getInteger("proxyPort"),
+                condition
         );
     }
 

@@ -3,6 +3,7 @@ package xyz.zcraft.acgpicdownload.util.pixivutils;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
@@ -12,6 +13,7 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PixivArtwork {
     @JSONField(name = "id")
     private String id;
@@ -63,6 +65,10 @@ public class PixivArtwork {
     private String profileImageUrl;
     @JSONField(name = "aiType")
     private int aiType;
+    @JSONField(name = "bookmarkCount")
+    private int bookmarkCount;
+    @JSONField(name = "likeCount")
+    private int likeCount;
 
     private LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
     private String imageUrl;
@@ -78,11 +84,6 @@ public class PixivArtwork {
         else if (illustType == 1 || illustType == 0)
             return Objects.requireNonNull(ResourceBundleUtil.getString("fetch.pixiv.type.illust")).concat("-" + pageCount);
         else return "?";
-    }
-
-    @Override
-    public String toString() {
-        return "PixivArtwork{" + "id='" + id + '\'' + ", title='" + title + '\'' + ", illustType=" + illustType + ", xRestrict=" + xRestrict + ", restrict=" + restrict + ", sl=" + sl + ", url='" + url + '\'' + ", description='" + description + '\'' + ", originalTags=" + originalTags + ", userId='" + userId + '\'' + ", userName='" + userName + '\'' + ", width=" + width + ", height=" + height + ", pageCount=" + pageCount + ", bookmarkable=" + bookmarkable + ", bookmarkData=" + bookmarkData + ", alt='" + alt + '\'' + ", titleCaptionTranslation=" + titleCaptionTranslation + ", createDate='" + createDate + '\'' + ", updateDate='" + updateDate + '\'' + ", unlisted=" + unlisted + ", masked=" + masked + ", urls=" + urls + ", profileImageUrl='" + profileImageUrl + '\'' + ", aiType=" + aiType + '}';
     }
 
     public String getFromString() {
