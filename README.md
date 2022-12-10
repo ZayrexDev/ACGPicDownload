@@ -9,13 +9,15 @@
 # 特性
 
 - 支持爬取P站的主页，发现，用户，榜单和相关作品
+- 支持插画，漫画，动图的下载
 - 简单易用
 - 支持自定义下载源 ([添加自定义下载源](https://github.com/zxzxy/ACGPicDownload/wiki/%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%8B%E8%BD%BD%E6%BA%90))
 - 支持定时执行 ([子指令 schedule](https://github.com/zxzxy/ACGPicDownload/wiki/%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B#%E5%AD%90%E6%8C%87%E4%BB%A4-schedule))
 - 高度可自定义的下载连接与文件名
 
+# 截图
 GUI:
-![动画](https://user-images.githubusercontent.com/73475219/206824590-9914f28d-76d6-4be6-8242-065a67b83002.gif)
+![动画](https://user-images.githubusercontent.com/73475219/206856967-15e3d70c-ac6f-49c6-942d-67d934258892.gif)
 ![image](https://user-images.githubusercontent.com/73475219/206438395-89e1eec5-f734-484f-94d9-2b82a6c63f69.png)
 
 命令行:
