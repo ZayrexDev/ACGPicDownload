@@ -15,8 +15,7 @@
 - 高度可自定义的下载连接与文件名
 
 GUI:
-![image](https://user-images.githubusercontent.com/73475219/206439234-27aae535-a61f-4a9d-bf63-3ec4622434b5.png)
-![image](https://user-images.githubusercontent.com/73475219/206440352-2d1196fb-e022-4749-b2f7-1953aac023f3.png)
+![动画](https://user-images.githubusercontent.com/73475219/206824590-9914f28d-76d6-4be6-8242-065a67b83002.gif)
 ![image](https://user-images.githubusercontent.com/73475219/206438395-89e1eec5-f734-484f-94d9-2b82a6c63f69.png)
 
 命令行:
@@ -27,7 +26,7 @@ GUI:
 - 在[Releases](https://github.com/zxzxy/ACGPicDownload/releases)下载最新版本
 
 > 如果你的设备已经安装了Java17+，那么可以下载 `ACGPicDownload.版本号.jar` 并直接使用命令行运行，或在 Windows
-> 上下载 `ACGPicDownload.不包含.win.exe` 并直接运行
+> 上下载 `ACGPicDownload.版本号.win.exe` 并直接运行
 
 > 如果并没有Java17+安装，那么可以在[这里](https://adoptium.net/zh-CN/temurin/archive)
 > 下载安装Java17以上的版本，或者如果你是Windows，则可以下载 `ACGPicDownload.版本号.win.jdk.7z`, 里面自带JDK17
