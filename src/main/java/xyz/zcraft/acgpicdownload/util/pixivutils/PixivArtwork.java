@@ -87,6 +87,7 @@ public class PixivArtwork {
     }
 
     public String getFromString() {
+        if(from == null) return null;
         if (from.equals(From.Ranking)) {
             return from.toString().concat(" ").concat(ranking);
         } else if (from.equals(From.Search)) {

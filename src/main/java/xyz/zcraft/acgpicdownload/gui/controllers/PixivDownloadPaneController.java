@@ -97,13 +97,14 @@ public class PixivDownloadPaneController extends MyPane {
                 + ResourceBundleUtil.getString("cli.download.status.init") + data.filtered((e) -> e.getStatus() == DownloadStatus.INITIALIZE).size() + " "
                 + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
                 + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size();
+                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.filtered") + data.filtered((e) -> e.getStatus() == DownloadStatus.FILTERED).size();
         Platform.runLater(() -> statusLabel.setText(sb));
     }
 
     public void delCompleted() {
         int a = data.size();
-        data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
+        data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED || datum.getStatus() == DownloadStatus.FILTERED);
         Notice.showSuccess(
                 String.format(
                         Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")),
@@ -158,7 +159,7 @@ public class PixivDownloadPaneController extends MyPane {
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFromString()));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
-        statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getStatus().toString()));
+        statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivDownload::getStatusString));
         typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
 
         titleColumn.setAlignment(Pos.CENTER);

@@ -290,16 +290,15 @@ public class PixivFetchUtil {
     }
 
     /**
-     * 根据原作品返回具有完整数据的作品数据
+     * 根据原作品补全作品的bookmarkCount，likeCount属性
      *
      * @param artwork      原作品
      * @param cookieString 使用的cookie
      * @param proxyHost    代理地址
      * @param proxyPort    代理端口
-     * @return 作品数据
      * @throws IOException 当无法抓取时
      */
-    public static PixivArtwork getArtwork(@NotNull PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+    public static void getFullData(@NotNull PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
         Connection c = Jsoup.connect(getArtworkPageUrl(artwork.getId()))
                 .ignoreContentType(true)
@@ -310,15 +309,8 @@ public class PixivFetchUtil {
             c.proxy(proxyHost, proxyPort);
         }
         JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(artwork.getId());
-        PixivArtwork pixivArtwork = jsonObject.to(PixivArtwork.class);
-        pixivArtwork.setOrigJson(jsonObject);
-        JSONArray jsonArray = jsonObject.getJSONObject("tags").getJSONArray("tags");
-        LinkedHashSet<String> tags = new LinkedHashSet<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            tags.add(jsonArray.getJSONObject(i).getString("tag"));
-        }
-        pixivArtwork.setTranslatedTags(tags);
-        return pixivArtwork;
+        artwork.setBookmarkCount(jsonObject.getInteger("bookmarkCount"));
+        artwork.setLikeCount(jsonObject.getInteger("likeCount"));
     }
 
     /**

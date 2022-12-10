@@ -1,19 +1,24 @@
 package xyz.zcraft.acgpicdownload.util.pixivutils;
 
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
+import lombok.Data;
+import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
 
-public class PixivDownload extends DownloadResult {
-    protected PixivArtwork artwork;
+@Data
+public class PixivDownload {
+    private PixivArtwork artwork;
+    private DownloadStatus status = DownloadStatus.CREATED;
 
     public PixivDownload(PixivArtwork artwork) {
         this.artwork = artwork;
     }
 
-    public PixivArtwork getArtwork() {
-        return artwork;
-    }
-
-    public void setArtwork(PixivArtwork artwork) {
-        this.artwork = artwork;
+    public String getStatusString() {
+        if (status == DownloadStatus.FILTERED) {
+            return ResourceBundleUtil.getString("cli.download.status.filtered")
+                    + " " + artwork.getBookmarkCount() + "|" + artwork.getLikeCount();
+        } else {
+            return status.toString();
+        }
     }
 }
