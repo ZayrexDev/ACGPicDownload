@@ -43,7 +43,6 @@ public class PixivDownloadUtil {
                     } catch (Exception e) {
                         Main.logError(e);
                         a.setStatus(DownloadStatus.FAILED);
-                        a.setErrorMessage(e.toString());
                     }
                 });
             }
