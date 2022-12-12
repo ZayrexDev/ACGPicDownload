@@ -17,7 +17,7 @@
 
 # 截图
 GUI:
-![动画](https://user-images.githubusercontent.com/73475219/206856967-15e3d70c-ac6f-49c6-942d-67d934258892.gif)
+![动画](https://user-images.githubusercontent.com/73475219/207077096-f7910d21-19cc-4ffe-95c7-81081a72b921.gif)
 ![image](https://user-images.githubusercontent.com/73475219/206438395-89e1eec5-f734-484f-94d9-2b82a6c63f69.png)
 
 命令行:
