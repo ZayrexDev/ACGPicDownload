@@ -1,6 +1,5 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -34,11 +33,6 @@ public class PixivRelatedPaneController extends PixivFetchPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
-
-        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
-        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
     }
 
     @FXML
@@ -63,14 +57,14 @@ public class PixivRelatedPaneController extends PixivFetchPane {
 
                 PixivArtwork artwork = PixivFetchUtil.getArtwork(
                         idField.getText(),
-                        cookieField.getText(),
+                        getCookie(),
                         ConfigManager.getConfig().getString("proxyHost"),
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
                 artwork.setFrom(From.Spec);
                 LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>(List.of(artwork));
 
-                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), cookieField.getText(), subOperationLabel);
+                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), getCookie(), subOperationLabel);
                 Platform.runLater(() -> data.addAll(pixivArtworks));
                 Notice.showSuccess(String.format(
                         Objects.requireNonNull(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetched")),

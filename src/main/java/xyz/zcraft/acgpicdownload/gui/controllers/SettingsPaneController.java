@@ -57,7 +57,7 @@ public class SettingsPaneController extends MyPane {
 
     public void hide() {
         super.hide();
-        gui.welcomePaneController.showMain();
+        gui.menuPaneController.showMain();
     }
 
     @javafx.fxml.FXML

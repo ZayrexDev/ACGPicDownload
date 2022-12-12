@@ -30,6 +30,30 @@ public class PixivFetchUtil {
     private static final String RANKING = "https://www.pixiv.net/ranking.php";
     private static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
 
+    public static PixivAccount getAccount(String cookieString, String proxyHost, Integer proxyPort) {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect("https://www.pixiv.net")
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        try {
+            String text = Objects.requireNonNull(c.get().getElementById("meta-global-data")).attr("content");
+            PixivAccount userData = JSONObject.parseObject(text).getJSONObject("userData").to(PixivAccount.class);
+            if (userData.getName() != null && userData.getId() != null) {
+                return userData;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * 搜索“顶部”作品
      *

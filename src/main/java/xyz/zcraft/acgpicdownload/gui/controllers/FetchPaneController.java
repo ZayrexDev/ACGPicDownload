@@ -350,7 +350,7 @@ public class FetchPaneController extends MyPane {
     @javafx.fxml.FXML
     public void backBtnOnAction() {
         super.hide();
-        gui.welcomePaneController.showMain();
+        gui.menuPaneController.showMain();
     }
 
     private void updateSource() {

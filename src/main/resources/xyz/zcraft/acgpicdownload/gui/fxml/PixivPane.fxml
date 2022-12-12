@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
+            minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="360.0" prefWidth="600.0" stylesheets="@../default.css"
+            xmlns="http://javafx.com/javafx/19"
+            fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivPaneController">
+    <children>
+        <VBox fx:id="controls" layoutX="10.0" layoutY="10.0" prefHeight="333.0" prefWidth="178.0" spacing="5.0"
+              style="-fx-background-color: #ffffff88; -fx-background-radius: 0 10 10 0;" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
+            <children>
+                <Label text="%gui.welcome.pixiv.title">
+                    <font>
+                        <Font size="20.0"/>
+                    </font>
+                </Label>
+                <Separator prefWidth="200.0" style="-fx-background-color: black;"/>
+                <HBox prefHeight="40.0" prefWidth="200.0" spacing="5.0">
+                    <children>
+                        <ImageView fx:id="userImg" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
+                                   preserveRatio="true"/>
+                        <VBox maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="%gui.welcome.pixiv.loginAs">
+                                    <font>
+                                        <Font size="10.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="userNameLabel" maxHeight="1.7976931348623157E308"
+                                       maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS"/>
+                            </children>
+                        </VBox>
+                        <MFXButton maxHeight="1.7976931348623157E308" onAction="#openAccountManager" prefHeight="40.0"
+                                   prefWidth="0.0" text="&gt;"/>
+                    </children>
+                </HBox>
+                <VBox fx:id="fetchBtns" spacing="5.0">
+                    <children>
+                        <MFXButton alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+                                   onAction="#pixivMenuBtnOnAction" text="%gui.welcome.pixiv.menu"
+                                   textAlignment="RIGHT"/>
+                        <MFXButton alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+                                   onAction="#pixivDiscBtnOnAction" text="%gui.welcome.pixiv.disc"
+                                   textAlignment="RIGHT"/>
+                        <MFXButton alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+                                   onAction="#pixivUserBtnOnAction" text="%gui.welcome.pixiv.user"
+                                   textAlignment="RIGHT"/>
+                        <MFXButton alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+                                   onAction="#pixivRankingBtnOnAction" text="%gui.welcome.pixiv.ranking"
+                                   textAlignment="RIGHT"/>
+                        <MFXButton alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+                                   onAction="#pixivRelatedBtnOnAction" text="%gui.welcome.pixiv.related"
+                                   textAlignment="RIGHT"/>
+                        <MFXButton alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+                                   onAction="#pixivSearchBtnOnAction" text="%gui.welcome.pixiv.search"
+                                   textAlignment="RIGHT"/>
+                        <MFXButton alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308"
+                                   onAction="#pixivDownloadBtnOnAction" text="%gui.welcome.pixiv.download"
+                                   textAlignment="RIGHT"/>
+                    </children>
+                </VBox>
+                <MFXButton alignment="CENTER_RIGHT" layoutX="20.0" layoutY="91.0" maxWidth="1.7976931348623157E308"
+                           onAction="#pixivBackBtnOnAction" text="%gui.welcome.pixiv.back" textAlignment="RIGHT"/>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

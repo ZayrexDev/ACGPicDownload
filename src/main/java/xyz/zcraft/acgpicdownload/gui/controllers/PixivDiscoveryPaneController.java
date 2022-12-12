@@ -1,6 +1,5 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -33,8 +32,6 @@ public class PixivDiscoveryPaneController extends PixivFetchPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
 
         modeCombo.getItems().addAll(
                 ResourceBundleUtil.getString("gui.pixiv.disc.mode.all"),
@@ -43,9 +40,6 @@ public class PixivDiscoveryPaneController extends PixivFetchPane {
         );
 
         modeCombo.getSelectionModel().selectFirst();
-
-        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
-        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
     }
 
     @FXML
@@ -69,12 +63,12 @@ public class PixivDiscoveryPaneController extends PixivFetchPane {
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.getDiscovery(
                         modeCombo.getSelectedIndex(),
                         (int) maxCountSlider.getValue(),
-                        cookieField.getText(),
+                        getCookie(),
                         ConfigManager.getConfig().getString("proxyHost"),
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
 
-                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), cookieField.getText(), subOperationLabel);
+                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), getCookie(), subOperationLabel);
 
                 Platform.runLater(() -> data.addAll(pixivArtworks));
                 Notice.showSuccess(String.format(

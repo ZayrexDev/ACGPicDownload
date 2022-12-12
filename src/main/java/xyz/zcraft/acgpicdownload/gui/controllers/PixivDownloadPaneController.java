@@ -76,7 +76,7 @@ public class PixivDownloadPaneController extends MyPane {
                 outputDirField.getText(),
                 new Logger("GUI", System.out, Main.log),
                 (int) threadCountSlider.getValue(),
-                ConfigManager.getTempConfig().get("cookie"),
+                ConfigManager.getSelectedAccount().getCookie(),
                 new NamingRule(namingRuleField.getText(), multiPageCombo.getSelectedIndex(), folderNamingRuleField.getText()),
                 fullResultToggle.isSelected(),
                 ConfigManager.getConfig().getString("proxyHost"),
@@ -88,7 +88,7 @@ public class PixivDownloadPaneController extends MyPane {
     @javafx.fxml.FXML
     public void backToMenu() {
         super.hide();
-        gui.welcomePaneController.showMain();
+        gui.menuPaneController.showMain();
     }
 
     private void updateStatus() {
@@ -133,7 +133,7 @@ public class PixivDownloadPaneController extends MyPane {
 
     public void backBtnOnAction() {
         super.hide();
-        gui.welcomePaneController.openPixivPane();
+        gui.pixivPaneController.openPixivPane();
     }
 
     private void initTable() {

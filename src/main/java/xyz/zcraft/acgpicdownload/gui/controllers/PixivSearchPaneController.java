@@ -1,6 +1,5 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
@@ -52,11 +51,6 @@ public class PixivSearchPaneController extends PixivFetchPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
-
-        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
-        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
 
         typeCombo.getItems().addAll(
                 ResourceBundleUtil.getString("gui.pixiv.search.mode.top"),
@@ -106,7 +100,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
                 if (typeCombo.getSelectedIndex() == 0) {
                     pixivArtworks.addAll(PixivFetchUtil.searchTopArtworks(
                             keyword,
-                            cookieField.getText(),
+                            getCookie(),
                             ConfigManager.getConfig().getString("proxyHost"),
                             ConfigManager.getConfig().getInteger("proxyPort")
                     ));
@@ -115,7 +109,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
                             keyword,
                             modeCombo.getSelectedIndex(),
                             ((int) pageSlider.getValue()),
-                            cookieField.getText(),
+                            getCookie(),
                             ConfigManager.getConfig().getString("proxyHost"),
                             ConfigManager.getConfig().getInteger("proxyPort")
                     ));
@@ -124,13 +118,13 @@ public class PixivSearchPaneController extends PixivFetchPane {
                             keyword,
                             modeCombo.getSelectedIndex(),
                             ((int) pageSlider.getValue()),
-                            cookieField.getText(),
+                            getCookie(),
                             ConfigManager.getConfig().getString("proxyHost"),
                             ConfigManager.getConfig().getInteger("proxyPort")
                     ));
                 }
 
-                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), cookieField.getText(), subOperationLabel);
+                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), getCookie(), subOperationLabel);
 
                 Platform.runLater(() -> data.addAll(pixivArtworks));
                 Notice.showSuccess(String.format(

@@ -1,6 +1,5 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
@@ -42,11 +41,6 @@ public class PixivRankingPaneController extends PixivFetchPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
-
-        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
-        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
 
         majorCombo.getItems().addAll(
                 ResourceBundleUtil.getString("gui.pixiv.ranking.daily"),
@@ -117,7 +111,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
                 LinkedList<String> ids = PixivFetchUtil.getRankingIDs(
                         major,
                         minor,
-                        cookieField.getText(),
+                        getCookie(),
                         ConfigManager.getConfig().getString("proxyHost"),
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
@@ -132,7 +126,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
                             try {
                                 PixivArtwork a = PixivFetchUtil.getArtwork(
                                         ids.get(finalI),
-                                        cookieField.getText(),
+                                        getCookie(),
                                         ConfigManager.getConfig().getString("proxyHost"),
                                         ConfigManager.getConfig().getInteger("proxyPort")
                                 );
