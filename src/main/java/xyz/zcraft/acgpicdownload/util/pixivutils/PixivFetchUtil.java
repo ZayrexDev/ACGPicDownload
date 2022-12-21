@@ -30,6 +30,30 @@ public class PixivFetchUtil {
     private static final String RANKING = "https://www.pixiv.net/ranking.php";
     private static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
 
+    public static PixivAccount getAccount(String cookieString, String proxyHost, Integer proxyPort) {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect("https://www.pixiv.net")
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+
+        try {
+            String text = Objects.requireNonNull(c.get().getElementById("meta-global-data")).attr("content");
+            PixivAccount userData = JSONObject.parseObject(text).getJSONObject("userData").to(PixivAccount.class);
+            if (userData.getName() != null && userData.getId() != null) {
+                return userData;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * 搜索“顶部”作品
      *
@@ -287,6 +311,30 @@ public class PixivFetchUtil {
         }
         pixivArtwork.setTranslatedTags(tags);
         return pixivArtwork;
+    }
+
+    /**
+     * 根据原作品补全作品的bookmarkCount，likeCount属性
+     *
+     * @param artwork      原作品
+     * @param cookieString 使用的cookie
+     * @param proxyHost    代理地址
+     * @param proxyPort    代理端口
+     * @throws IOException 当无法抓取时
+     */
+    public static void getFullData(@NotNull PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
+        HashMap<String, String> cookie = parseCookie(cookieString);
+        Connection c = Jsoup.connect(getArtworkPageUrl(artwork.getId()))
+                .ignoreContentType(true)
+                .method(Method.GET)
+                .cookies(cookie)
+                .timeout(10 * 1000);
+        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
+            c.proxy(proxyHost, proxyPort);
+        }
+        JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(artwork.getId());
+        artwork.setBookmarkCount(jsonObject.getInteger("bookmarkCount"));
+        artwork.setLikeCount(jsonObject.getInteger("likeCount"));
     }
 
     /**
@@ -663,6 +711,7 @@ public class PixivFetchUtil {
      * @return cookie键值对
      */
     public static HashMap<String, String> parseCookie(String cookieString) {
+        if(cookieString == null) return new HashMap<>();
         String[] t = cookieString.split(";");
         HashMap<String, String> cookieMap = new HashMap<>();
         for (String t2 : t) {

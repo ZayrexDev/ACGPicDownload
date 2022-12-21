@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0"
+            minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0"
             style="-fx-background-color: #ffffff88;" xmlns="http://javafx.com/javafx/19"
             fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivSearchPaneController">
     <children>
@@ -45,19 +46,16 @@
                     </VBox.margin>
                 </HBox>
                 <Separator prefWidth="200.0"/>
-                <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="600.0" spacing="10.0">
+                <HBox maxWidth="1.7976931348623157E308" spacing="10.0">
                     <children>
-                        <MFXPasswordField fx:id="cookieField" allowCopy="true" allowCut="true" allowPaste="true"
-                                          floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie" maxHeight="30.0"
-                                          maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                          HBox.hgrow="ALWAYS"/>
-                        <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelpBtnOnAction"/>
-                        <MFXButton onAction="#submitCookie" text="%gui.pixiv.menu.submitCookie"/>
+                        <MFXTextField fx:id="keywordField" floatMode="BORDER" floatingText="%gui.pixiv.search.keyword"
+                                      maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
+                                      prefHeight="30.0" HBox.hgrow="ALWAYS"/>
+                        <MFXComboBox fx:id="suffixCombo" floatMode="BORDER" floatingText="%gui.pixiv.search.suffix"
+                                     maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
+                                     prefHeight="30.0"/>
                     </children>
                 </HBox>
-                <MFXTextField fx:id="keywordField" floatMode="BORDER" floatingText="%gui.pixiv.search.keyword"
-                              maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                              VBox.vgrow="ALWAYS"/>
                 <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="70.0" prefHeight="30.0" prefWidth="600.0"
                       spacing="10.0">
                     <children>

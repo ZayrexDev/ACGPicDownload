@@ -25,19 +25,14 @@ import java.util.ResourceBundle;
 public class SettingsPaneController extends MyPane {
     @javafx.fxml.FXML
     private AnchorPane mainPane;
-
     @javafx.fxml.FXML
     private MFXButton backBtn;
-
     @javafx.fxml.FXML
     private MFXTextField proxyField;
-
     @javafx.fxml.FXML
     private MFXSlider aniSpeedSlider;
-
     @FXML
     private MFXComboBox<Locale> languageCombo;
-
     private String proxyHost;
     private int proxyPort;
 
@@ -60,13 +55,9 @@ public class SettingsPaneController extends MyPane {
     @FXML
     private MFXButton bgChooseFolderBtn;
 
-    public void show() {
-        super.show();
-    }
-
     public void hide() {
         super.hide();
-        gui.welcomePaneController.showMain();
+        gui.menuPaneController.showMain();
     }
 
     @javafx.fxml.FXML
@@ -77,14 +68,6 @@ public class SettingsPaneController extends MyPane {
     @javafx.fxml.FXML
     public void saveConfigBtnOnAction() {
         saveConfig();
-    }
-
-    public String getProxyHost() {
-        return "127.0.0.1";
-    }
-
-    public int getProxyPort() {
-        return 7890;
     }
 
     @FXML

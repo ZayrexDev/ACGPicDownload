@@ -11,7 +11,6 @@ import xyz.zcraft.acgpicdownload.util.sourceutil.argument.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class SourceManager {
     private static final ArrayList<String> returnTypes = new ArrayList<>(Arrays.asList("json", "redirect"));
@@ -144,12 +143,7 @@ public class SourceManager {
                     Object obj = arg.get("from");
                     if (obj instanceof JSONArray arr) {
                         HashSet<String> tmp = new HashSet<>();
-                        arr.forEach(new Consumer<Object>() {
-                            @Override
-                            public void accept(Object arg0) {
-                                tmp.add(String.valueOf(arg0));
-                            }
-                        });
+                        arr.forEach(arg0 -> tmp.add(String.valueOf(arg0)));
                         LimitedStringArgument lsa = new LimitedStringArgument(name, tmp);
                         if (arg.containsKey("value")) {
                             lsa.set(arg.getString("value"));

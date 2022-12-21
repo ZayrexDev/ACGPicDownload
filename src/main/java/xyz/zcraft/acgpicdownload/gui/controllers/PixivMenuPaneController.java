@@ -1,10 +1,10 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -15,7 +15,6 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -42,13 +41,9 @@ public class PixivMenuPaneController extends PixivFetchPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
-
-        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
-        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
     }
 
+    @FXML
     @Override
     public void fetchBtnOnAction() {
         loadingPane.setVisible(true);
@@ -68,7 +63,7 @@ public class PixivMenuPaneController extends PixivFetchPane {
 
                 List<PixivArtwork> pixivArtworks = PixivFetchUtil.selectArtworks(
                         PixivFetchUtil.fetchMenu(
-                                cookieField.getText(),
+                                getCookie(),
                                 ConfigManager.getConfig().getString("proxyHost"),
                                 ConfigManager.getConfig().getInteger("proxyPort")
                         ),
@@ -80,29 +75,8 @@ public class PixivMenuPaneController extends PixivFetchPane {
                         fromOtherToggle.isSelected()
                 );
 
-                if (relatedDepthSlider.getValue() > 0) {
-                    List<PixivArtwork> temp2Artworks = new LinkedList<>();
-                    List<PixivArtwork> temp = new LinkedList<>(pixivArtworks);
-                    for (int i = 0; i < relatedDepthSlider.getValue(); i++) {
-                        final int finalI = i;
-                        Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " " + (finalI + 1) + " / " + (int) relatedDepthSlider.getValue()));
-                        temp2Artworks.clear();
-                        for (int j = 0, tempSize = temp.size(); j < tempSize; j++) {
-                            int finalJ = j;
-                            Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " " + (finalI + 1) + " / " + (int) relatedDepthSlider.getValue() + " | " + (finalJ + 1) + " / " + temp.size()));
-                            PixivArtwork temp2 = temp.get(j);
-                            List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
-                                    cookieField.getText(),
-                                    ConfigManager.getConfig().getString("proxyHost"),
-                                    ConfigManager.getConfig().getInteger("proxyPort")
-                            );
-                            temp2Artworks.addAll(related);
-                        }
-                        temp.clear();
-                        temp.addAll(temp2Artworks);
-                        pixivArtworks.addAll(temp2Artworks);
-                    }
-                }
+                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), getCookie(), subOperationLabel);
+
                 Platform.runLater(() -> data.addAll(pixivArtworks));
                 Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetched")), pixivArtworks.size()), gui.mainPane);
             } catch (IOException e) {

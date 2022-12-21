@@ -1,10 +1,10 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class PixivRankingPaneController extends PixivFetchPane {
     private static final String[][] MAJORS = {
@@ -26,6 +28,8 @@ public class PixivRankingPaneController extends PixivFetchPane {
             {"monthly"}, {"rookie"}, {"original"},
             {"daily_ai", "daily_r18_ai"}, {"male", "male_r18"}, {"female", "female_r18"}
     };
+
+
     private final LinkedList<String> minors = new LinkedList<>();
     public MFXComboBox<String> majorCombo;
     public MFXComboBox<String> minorCombo;
@@ -37,11 +41,6 @@ public class PixivRankingPaneController extends PixivFetchPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
-
-        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
-        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
 
         majorCombo.getItems().addAll(
                 ResourceBundleUtil.getString("gui.pixiv.ranking.daily"),
@@ -86,6 +85,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
         minorCombo.selectFirst();
     }
 
+    @FXML
     @Override
     public void fetchBtnOnAction() {
         var major = MAJORS[majorCombo.getSelectedIndex()][resToggle.isSelected() ? 1 : 0];
@@ -111,33 +111,51 @@ public class PixivRankingPaneController extends PixivFetchPane {
                 LinkedList<String> ids = PixivFetchUtil.getRankingIDs(
                         major,
                         minor,
-                        cookieField.getText(),
+                        getCookie(),
                         ConfigManager.getConfig().getString("proxyHost"),
                         ConfigManager.getConfig().getInteger("proxyPort")
                 );
 
-                int[] i = {0, 0};
+                int[] i = {0, 0, 0};
+                ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
                 for (; i[0] < ids.size(); i[0]++) {
-                    Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + (i[0] + 1) + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.retries") + " " + (i[1] + 1)));
-                    try {
-                        PixivArtwork a = PixivFetchUtil.getArtwork(
-                                ids.get(i[0]),
-                                cookieField.getText(),
-                                ConfigManager.getConfig().getString("proxyHost"),
-                                ConfigManager.getConfig().getInteger("proxyPort")
-                        );
-                        a.setFrom(From.Ranking);
-                        String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected() ? "*" : "") + "-" + minorCombo.getSelectedItem() + "#" + (i[0] + 1);
-                        a.setRanking(rankingInfo);
-                        pixivArtworks.add(a);
-                        i[1] = 0;
-                    } catch (Exception e) {
+                    final int finalI = i[0];
+                    tpe.execute(() -> {
+                        int tries = 0;
+                        while (tries <= 5) {
+                            try {
+                                PixivArtwork a = PixivFetchUtil.getArtwork(
+                                        ids.get(finalI),
+                                        getCookie(),
+                                        ConfigManager.getConfig().getString("proxyHost"),
+                                        ConfigManager.getConfig().getInteger("proxyPort")
+                                );
+                                a.setFrom(From.Ranking);
+                                String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected() ? "*" : "") + "-" + minorCombo.getSelectedItem() + "#" + (finalI + 1);
+                                a.setRanking(rankingInfo);
+                                pixivArtworks.add(a);
+                                i[1]++;
+                                return;
+                            } catch (Exception e) {
+                                tries++;
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (InterruptedException ignored) {
+                                }
+                            }
+                        }
                         i[1]++;
-                        if (i[1] <= 5)
-                            i[0]--;
+                        i[2]++;
+                    });
+                }
+                while (tpe.getActiveCount() != 0) {
+                    Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + i[1] + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.failed") + " " + i[2]));
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
                 }
-
                 Platform.runLater(() -> data.addAll(pixivArtworks));
 
                 Notice.showSuccess(String.format(

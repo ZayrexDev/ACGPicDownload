@@ -129,10 +129,6 @@ public class FetchPaneController extends MyPane {
         dataTable.update();
     }
 
-    public void show() {
-        super.show();
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
@@ -222,6 +218,8 @@ public class FetchPaneController extends MyPane {
                     }
                 });
 
+        dataTable.features().enableBounceEffect();
+        dataTable.features().enableSmoothScrolling(0.7);
         data.clear();
     }
 
@@ -352,7 +350,7 @@ public class FetchPaneController extends MyPane {
     @javafx.fxml.FXML
     public void backBtnOnAction() {
         super.hide();
-        gui.welcomePaneController.showMain();
+        gui.menuPaneController.showMain();
     }
 
     private void updateSource() {

@@ -1,12 +1,11 @@
 package xyz.zcraft.acgpicdownload.gui.controllers;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
+import javafx.fxml.FXML;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -18,11 +17,22 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class PixivSearchPaneController extends PixivFetchPane {
+    private static final String[] SUFFIX = {
+            "",
+            "30000users入り",
+            "20000users入り",
+            "10000users入り",
+            "5000users入り",
+            "1000users入り",
+            "500users入り",
+            "300users入り",
+            "100users入り",
+            "50users入り"
+    };
     @javafx.fxml.FXML
     public MFXComboBox<String> typeCombo;
     @javafx.fxml.FXML
@@ -32,36 +42,8 @@ public class PixivSearchPaneController extends PixivFetchPane {
     public MFXTextField keywordField;
     @javafx.fxml.FXML
     private MFXSlider relatedDepthSlider;
-
-    public static void getRelated(LinkedList<PixivArtwork> source, int depth, String cookieString, Label subOperationLabel) throws IOException {
-        if (depth > 0) {
-            List<PixivArtwork> temp2Artworks = new LinkedList<>();
-            List<PixivArtwork> temp = new LinkedList<>(source);
-            for (int i = 0; i < depth; i++) {
-                final int finalI = i;
-                Platform.runLater(() -> subOperationLabel
-                        .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
-                                + (finalI + 1) + " / " + depth));
-                temp2Artworks.clear();
-                for (int j = 0, tempSize = temp.size(); j < tempSize; j++) {
-                    int finalJ = j;
-                    Platform.runLater(() -> subOperationLabel
-                            .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
-                                    + (finalI + 1) + " / " + depth + " | "
-                                    + (finalJ + 1) + " / " + temp.size()));
-                    PixivArtwork temp2 = temp.get(j);
-                    List<PixivArtwork> related = PixivFetchUtil.getRelated(temp2, 18,
-                            cookieString,
-                            ConfigManager.getConfig().getString("proxyHost"),
-                            ConfigManager.getConfig().getInteger("proxyPort"));
-                    temp2Artworks.addAll(related);
-                }
-                temp.clear();
-                temp.addAll(temp2Artworks);
-                source.addAll(temp2Artworks);
-            }
-        }
-    }
+    @FXML
+    private MFXComboBox<String> suffixCombo;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -69,11 +51,6 @@ public class PixivSearchPaneController extends PixivFetchPane {
 
         backBtn.setText("");
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
-
-        cookieField.textProperty().addListener((observableValue, s, t1) -> ConfigManager.getTempConfig().put("cookie", t1));
-        cookieField.setText(Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"), new JSONObject()).getString("cookie"));
 
         typeCombo.getItems().addAll(
                 ResourceBundleUtil.getString("gui.pixiv.search.mode.top"),
@@ -95,8 +72,12 @@ public class PixivSearchPaneController extends PixivFetchPane {
 
         typeCombo.selectFirst();
         modeCombo.selectFirst();
+
+        suffixCombo.getItems().addAll(SUFFIX);
+        suffixCombo.selectFirst();
     }
 
+    @FXML
     @Override
     public void fetchBtnOnAction() {
         loadingPane.setVisible(true);
@@ -115,34 +96,36 @@ public class PixivSearchPaneController extends PixivFetchPane {
                 });
                 LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>();
 
+                String keyword = keywordField.getText().concat(suffixCombo.getSelectedItem());
                 if (typeCombo.getSelectedIndex() == 0) {
                     pixivArtworks.addAll(PixivFetchUtil.searchTopArtworks(
-                            keywordField.getText(),
-                            cookieField.getText(),
+                            keyword,
+                            getCookie(),
                             ConfigManager.getConfig().getString("proxyHost"),
                             ConfigManager.getConfig().getInteger("proxyPort")
                     ));
                 } else if (typeCombo.getSelectedIndex() == 1) {
                     pixivArtworks.addAll(PixivFetchUtil.searchIllustArtworks(
-                            keywordField.getText(),
+                            keyword,
                             modeCombo.getSelectedIndex(),
                             ((int) pageSlider.getValue()),
-                            cookieField.getText(),
+                            getCookie(),
                             ConfigManager.getConfig().getString("proxyHost"),
                             ConfigManager.getConfig().getInteger("proxyPort")
                     ));
                 } else if (typeCombo.getSelectedIndex() == 2) {
                     pixivArtworks.addAll(PixivFetchUtil.searchMangaArtworks(
-                            keywordField.getText(),
+                            keyword,
                             modeCombo.getSelectedIndex(),
                             ((int) pageSlider.getValue()),
-                            cookieField.getText(),
+                            getCookie(),
                             ConfigManager.getConfig().getString("proxyHost"),
                             ConfigManager.getConfig().getInteger("proxyPort")
                     ));
                 }
 
-                getRelated(pixivArtworks, ((int) relatedDepthSlider.getValue()), cookieField.getText(), subOperationLabel);
+                getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), getCookie(), subOperationLabel);
+
                 Platform.runLater(() -> data.addAll(pixivArtworks));
                 Notice.showSuccess(String.format(
                         Objects.requireNonNull(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetched")),

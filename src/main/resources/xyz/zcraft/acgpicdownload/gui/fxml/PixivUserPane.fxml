@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0"
+            minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="452.0" prefWidth="807.0"
             style="-fx-background-color: #ffffff88;" xmlns="http://javafx.com/javafx/19"
             fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivUserPaneController">
     <children>
@@ -45,23 +46,12 @@
                     </VBox.margin>
                 </HBox>
                 <Separator prefWidth="200.0"/>
-                <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="600.0" spacing="10.0">
-                    <children>
-                        <MFXPasswordField fx:id="cookieField" allowCopy="true" allowCut="true" allowPaste="true"
-                                          floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie" maxHeight="30.0"
-                                          maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                          HBox.hgrow="ALWAYS"/>
-                        <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelpBtnOnAction"/>
-                        <MFXButton onAction="#submitCookie" text="%gui.pixiv.menu.submitCookie"/>
-                    </children>
-                </HBox>
                 <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="70.0" prefHeight="30.0" prefWidth="600.0"
                       spacing="10.0">
                     <children>
                         <MFXTextField fx:id="uidField" floatMode="BORDER" floatingText="%gui.pixiv.user.uid"
-                                      maxHeight="30.0"
-                                      maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                      HBox.hgrow="ALWAYS"/>
+                                      maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
+                                      prefHeight="30.0" HBox.hgrow="ALWAYS"/>
                     </children>
                 </HBox>
                 <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="15.0">
@@ -79,14 +69,12 @@
                         <MFXButton layoutX="111.0" layoutY="10.0" onAction="#clearSelected"
                                    text="%gui.pixiv.menu.clearSelected"/>
                         <Separator layoutX="84.0" layoutY="13.0" maxHeight="20.0" minHeight="20.0"
-                                   orientation="VERTICAL"
-                                   prefHeight="20.0"/>
+                                   orientation="VERTICAL" prefHeight="20.0"/>
                         <MFXButton onAction="#sendToDownloadBtnOnAction" text="%gui.pixiv.menu.sendToDownload"/>
                         <MFXButton layoutX="272.0" layoutY="10.0" onAction="#sendSelectedToDownloadBtnOnAction"
                                    text="%gui.pixiv.menu.sendSelectedToDownload"/>
                         <Separator layoutX="334.0" layoutY="13.0" maxHeight="20.0" minHeight="20.0"
-                                   orientation="VERTICAL"
-                                   prefHeight="20.0"/>
+                                   orientation="VERTICAL" prefHeight="20.0"/>
                         <MFXButton layoutX="373.0" layoutY="10.0" onAction="#removeSelectedBtnOnAction"
                                    text="%gui.pixiv.menu.deleteSelected"/>
                     </children>

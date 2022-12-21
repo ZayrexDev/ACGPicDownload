@@ -17,6 +17,18 @@ import java.io.IOException;
 import java.util.*;
 
 public class Fetch {
+    public static final String USAGE = """
+                    Available arguments:
+                       --list-sources : List all the sources.
+                       -s, --source <source name> : Set the source to use.
+                       -o, --output <output dictionary> : Set the output dictionary.
+                       --arg key1=value1,key2=value2,... : custom the argument in the url.
+                       --multi-thread : (Experimental) Enable multi thread download. May improve download speed.
+                       -t, --t <times> : Set the number of times to fetch.
+                       -f, --full : Download the json data together with the image.
+
+                    See the documentation to get more information about usage
+            """;
     private final LinkedList<Argument<?>> arguments = new LinkedList<>();
     private final HashMap<String, String> argumentsTmp = new HashMap<>();
     public boolean enableConsoleProgressBar = false;
@@ -30,19 +42,7 @@ public class Fetch {
     private boolean saveFullResult = false;
 
     public static void usage(Logger logger) {
-        logger.info(
-                """
-                                Available arguments:
-                                   --list-sources : List all the sources.
-                                   -s, --source <source name> : Set the source to use.
-                                   -o, --output <output dictionary> : Set the output dictionary.
-                                   --arg key1=value1,key2=value2,... : custom the argument in the url.
-                                   --multi-thread : (Experimental) Enable multi thread download. May improve download speed.
-                                   -t, --t <times> : Set the number of times to fetch.
-                                   -f, --full : Download the json data together with the image.
-
-                                See the documentation to get more information about usage
-                        """);
+        logger.info(USAGE);
     }
 
     private boolean parseArguments(ArrayList<String> args) {
@@ -137,7 +137,6 @@ public class Fetch {
                     } else {
                         maxThread = -1;
                     }
-                    break;
                 }
                 default -> {
                     logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotParseArgFull"));
@@ -210,7 +209,7 @@ public class Fetch {
         }
 
         try {
-            for (Argument<? extends Object> arg : s.getArguments()) {
+            for (Argument<?> arg : s.getArguments()) {
                 String str = argumentsTmp.get(arg.getName());
                 if (str != null) {
                     if (arg instanceof StringArgument) {
@@ -241,7 +240,7 @@ public class Fetch {
             logger.info(ResourceBundleUtil.getString("cli.fetch.info.noPicGot"));
             return;
         } else {
-            logger.info(String.format(ResourceBundleUtil.getString("cli.fetch.info.gotPic"), r.size()));
+            logger.info(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("cli.fetch.info.gotPic")), r.size()));
         }
 
         FetchUtil.startDownload(r, outputDir, logger, saveFullResult, enableConsoleProgressBar, maxThread);

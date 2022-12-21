@@ -1,20 +1,18 @@
 package xyz.zcraft.acgpicdownload.gui.base;
 
-import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTableColumn;
 import io.github.palexdev.materialfx.controls.MFXTableView;
-import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
-import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
@@ -25,15 +23,17 @@ import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public abstract class PixivFetchPane extends MyPane {
     protected final ObservableList<PixivArtwork> data = FXCollections.observableArrayList();
-    protected FadeTransition ft = new FadeTransition();
+    protected final FadeTransition ft = new FadeTransition();
     @javafx.fxml.FXML
     protected AnchorPane loadingPane;
     @javafx.fxml.FXML
@@ -45,11 +45,53 @@ public abstract class PixivFetchPane extends MyPane {
     @javafx.fxml.FXML
     protected MFXButton backBtn;
     @javafx.fxml.FXML
-    protected MFXButton cookieHelpBtn;
-    @javafx.fxml.FXML
     protected MFXTableView<PixivArtwork> dataTable;
-    @javafx.fxml.FXML
-    protected MFXTextField cookieField;
+
+    public static void getRelated(List<PixivArtwork> pixivArtworks, int depth, String cookieString, Label subOperationLabel) throws IOException {
+        ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+        if (depth > 0) {
+            List<PixivArtwork> temp2Artworks = new LinkedList<>();
+            List<PixivArtwork> temp = new LinkedList<>(pixivArtworks);
+            int[] p = {0, 0, 0};
+            for (; p[0] < depth; p[0]++) {
+                Platform.runLater(() -> subOperationLabel
+                        .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
+                                + (p[0] + 1) + " / " + depth));
+                temp2Artworks.clear();
+                p[1] = 0;
+                p[2] = 0;
+                for (int tempSize = temp.size(); p[1] < tempSize; p[1]++) {
+                    PixivArtwork temp2 = temp.get(p[1]);
+                    tpe.execute(() -> {
+                        List<PixivArtwork> related;
+                        try {
+                            related = PixivFetchUtil.getRelated(temp2, 18,
+                                    cookieString,
+                                    ConfigManager.getConfig().getString("proxyHost"),
+                                    ConfigManager.getConfig().getInteger("proxyPort"));
+                            temp2Artworks.addAll(related);
+                            p[2]++;
+                        } catch (IOException ignored) {
+                        }
+                    });
+                }
+                while (tpe.getActiveCount() != 0) {
+                    Platform.runLater(() -> subOperationLabel
+                            .setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchRel") + " "
+                                    + (p[0] + 1) + " / " + depth + " | "
+                                    + (p[2]) + " / " + temp.size()));
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                temp.clear();
+                temp.addAll(temp2Artworks);
+                pixivArtworks.addAll(temp2Artworks);
+            }
+        }
+    }
 
     abstract public void fetchBtnOnAction();
 
@@ -98,29 +140,28 @@ public abstract class PixivFetchPane extends MyPane {
         idColumn.setAlignment(Pos.CENTER);
         typeColumn.setAlignment(Pos.CENTER);
 
-        // titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.4).get());
-        // authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        // fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        // tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.2).get());
-        // idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-
         dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn,
                 typeColumn));
 
         dataTable.getFilters().addAll(List.of(
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"), PixivArtwork::getTitle),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.title"),
+                        PixivArtwork::getTitle),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.author"),
                         PixivArtwork::getUserName),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.from"),
                         PixivArtwork::getFromString),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.tag"),
                         PixivArtwork::getTagsString),
-                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"), PixivArtwork::getId),
+                new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.menu.column.id"),
+                        PixivArtwork::getId),
                 new StringFilter<>(ResourceBundleUtil.getString("gui.pixiv.download.column.type"),
-                        PixivArtwork::getTypeString)));
+                        PixivArtwork::getTypeString))
+        );
 
         dataTable.setItems(data);
         dataTable.getSelectionModel().setAllowsMultipleSelection(true);
+        dataTable.features().enableBounceEffect();
+        dataTable.features().enableSmoothScrolling(0.7);
         data.clear();
     }
 
@@ -132,17 +173,12 @@ public abstract class PixivFetchPane extends MyPane {
     @javafx.fxml.FXML
     public void backToMenu() {
         super.hide();
-        gui.welcomePaneController.showMain();
-    }
-
-    public void show() {
-        cookieField.setText(ConfigManager.getTempConfig().get("cookie"));
-        super.show();
+        gui.menuPaneController.showMain();
     }
 
     public void hide() {
         super.hide();
-        gui.welcomePaneController.openPixivPane();
+        gui.pixivPaneController.openPixivPane();
     }
 
     @javafx.fxml.FXML
@@ -201,31 +237,7 @@ public abstract class PixivFetchPane extends MyPane {
                 gui.mainPane);
     }
 
-    @javafx.fxml.FXML
-    public void cookieHelpBtnOnAction() throws IOException, URISyntaxException {
-        if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
-            java.awt.Desktop.getDesktop()
-                    .browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/%E8%8E%B7%E5%8F%96Cookie"));
-        } else {
-            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/Get-cookie"));
-        }
-    }
-
-    @javafx.fxml.FXML
-    public void submitCookie() {
-        try {
-            JSONObject json = Objects.requireNonNullElse(ConfigManager.getConfig().getJSONObject("pixiv"),
-                    new JSONObject());
-            HashMap<String, String> stringStringHashMap = PixivFetchUtil.parseCookie(cookieField.getText());
-            String s = stringStringHashMap.get("PHPSESSID");
-            cookieField.setText("PHPSESSID" + "=" + s);
-            json.put("cookie", cookieField.getText());
-            ConfigManager.getConfig().put("pixiv", json);
-            ConfigManager.saveConfig();
-            Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.notice.savedCookie"), gui.mainPane);
-        } catch (IOException e) {
-            Main.logError(e);
-            gui.showError(e);
-        }
+    public String getCookie() {
+        return ConfigManager.getSelectedAccount().getCookie();
     }
 }

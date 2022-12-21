@@ -1,7 +1,7 @@
 package xyz.zcraft.acgpicdownload.util.sourceutil.argument;
 
-public abstract class Argument<T extends Object> {
-    protected String name;
+public abstract class Argument<T> {
+    protected final String name;
     protected T value;
 
     public Argument(String name) {

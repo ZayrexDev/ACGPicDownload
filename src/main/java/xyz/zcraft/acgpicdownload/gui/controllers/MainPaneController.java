@@ -25,9 +25,14 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainPaneController implements Initializable {
+    public MFXButton maximizeBtn;
     GUI gui;
     double w = 800;
     double h = 500 - 30;
+    double origMouseX;
+    double origMouseY;
+    double origStageW;
+    double origStageH;
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
@@ -49,10 +54,9 @@ public class MainPaneController implements Initializable {
     @javafx.fxml.FXML
     private HBox titlePane;
     private boolean transparent = false;
-    private double origX;
-    private double origY;
     private double origStageX;
     private double origStageY;
+    private Image image;
 
     public AnchorPane getMainPane() {
         return mainPane;
@@ -63,16 +67,25 @@ public class MainPaneController implements Initializable {
     }
 
     public void setBackground(InputStream stream) {
-        Image image = new Image(stream);
+        image = new Image(stream);
+        fitBackground();
+    }
+
+    private void fitBackground() {
+        if (image == null) return;
         Rectangle2D vp;
 
         if (image.getWidth() / image.getHeight() > w / h) {
             background.setFitHeight(h);
             blurImg.setFitHeight(h);
+            background.setFitWidth(0);
+            blurImg.setFitWidth(0);
             vp = new Rectangle2D((image.getWidth() - (image.getHeight() / h * w)) / 2, 0, image.getWidth(), image.getHeight());
         } else {
             background.setFitWidth(w);
             blurImg.setFitWidth(w);
+            background.setFitHeight(0);
+            blurImg.setFitHeight(0);
             vp = new Rectangle2D(0, (image.getHeight() - image.getWidth() / w * h) / 2, image.getWidth(), image.getHeight());
         }
 
@@ -93,6 +106,7 @@ public class MainPaneController implements Initializable {
         titleLbl.setTextFill(Color.BLACK);
         closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.BLACK));
         minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.BLACK));
+        maximizeBtn.setGraphic(new MFXFontIcon("mfx-expand", Color.BLACK));
     }
 
     public GUI getGui() {
@@ -107,7 +121,7 @@ public class MainPaneController implements Initializable {
         initProgressBar.setProgress(p == 1 ? -1 : p);
     }
 
-    public void initDone() {
+    public void loadDone() {
         FadeTransition ft = new FadeTransition();
         ft.setNode(initPane);
         ft.setToValue(0);
@@ -124,32 +138,50 @@ public class MainPaneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initPane.setVisible(true);
         closeBtn.setText("");
         closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.WHITE));
         minimizeBtn.setText("");
         minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.WHITE));
+        maximizeBtn.setText("");
+        maximizeBtn.setGraphic(new MFXFontIcon("mfx-expand", Color.WHITE));
+    }
+
+    public void reload() {
+        FadeTransition ft = new FadeTransition();
+        ft.setNode(initPane);
+        ft.setToValue(1);
+        ft.setFromValue(0);
+        ft.setDuration(Duration.millis(10));
+        ft.setRate(0.1);
+        ft.setOnFinished((e) -> initPane.setVisible(false));
+        ft.play();
+
+        ft.setNode(blurImg);
+        ft.setOnFinished((e) -> blurImg.setVisible(false));
+        ft.play();
+    }
+
+    public void init() {
+        initPane.setVisible(true);
     }
 
     @FXML
     private void mouseDragged(MouseEvent e) {
-        gui.mainStage.setX(e.getScreenX() - origX + origStageX);
-        gui.mainStage.setY(e.getScreenY() - origY + origStageY);
+        gui.mainStage.setX(e.getScreenX() - origMouseX + origStageX);
+        gui.mainStage.setY(e.getScreenY() - origMouseY + origStageY);
     }
 
     @FXML
     private void startMoving(MouseEvent e) {
         origStageX = gui.mainStage.getX();
         origStageY = gui.mainStage.getY();
-        origX = e.getScreenX();
-        origY = e.getScreenY();
+        origMouseX = e.getScreenX();
+        origMouseY = e.getScreenY();
     }
-
     @FXML
     private void minimizeBtnOnAction() {
         gui.mainStage.setIconified(true);
     }
-
     @FXML
     private void closeBtnOnAction() {
         System.exit(0);
@@ -157,5 +189,63 @@ public class MainPaneController implements Initializable {
 
     public HBox getTitlePane() {
         return titlePane;
+    }
+
+    @FXML
+    public void resizeStart(MouseEvent event) {
+        origMouseX = event.getScreenX();
+        origMouseY = event.getScreenY();
+        origStageW = gui.mainStage.getWidth();
+        origStageH = gui.mainStage.getHeight();
+        origStageX = gui.mainStage.getX();
+        origStageY = gui.mainStage.getY();
+    }
+
+    @FXML
+    public void resizeES(MouseEvent event) {
+        resizeE(event);
+        resizeS(event);
+    }
+
+    @FXML
+    private void resizeS(MouseEvent event) {
+        double tempH = origStageH + event.getScreenY() - origMouseY - 30;
+        if (tempH > 398) {
+            gui.mainStage.setHeight(tempH + 30);
+            this.h = tempH;
+        }
+        fitBackground();
+    }
+
+    @FXML
+    private void resizeE(MouseEvent event) {
+        double tempW = origStageW + event.getScreenX() - origMouseX;
+        if (tempW > 625) {
+            gui.mainStage.setWidth(tempW);
+            this.w = tempW;
+        }
+        fitBackground();
+    }
+
+    public void maximizeBtnOnAction() {
+        gui.mainStage.setMaximized(!gui.mainStage.isMaximized());
+        this.w = gui.mainStage.getWidth();
+        this.h = gui.mainStage.getHeight() - 30;
+        fitBackground();
+    }
+
+    public void resizeW(MouseEvent mouseEvent) {
+        double tempW = origStageW + origMouseX - mouseEvent.getScreenX();
+        if (tempW > 625) {
+            gui.mainStage.setWidth(tempW);
+            gui.mainStage.setX(origStageX - tempW + origStageW);
+            this.w = tempW;
+        }
+        fitBackground();
+    }
+
+    public void resizeWN(MouseEvent mouseEvent) {
+        resizeS(mouseEvent);
+        resizeW(mouseEvent);
     }
 }

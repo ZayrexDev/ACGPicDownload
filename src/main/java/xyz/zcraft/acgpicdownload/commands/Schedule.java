@@ -72,7 +72,6 @@ public class Schedule {
                     for (Event event : events) {
                         l.printlnf("%-" + a + "s %s %-" + b + "s %s %-" + c + "s", event.getCommandString(), " | ", String.valueOf(event.getMaxTimes()), " | ", event.getInterval().toString());
                     }
-                    break;
                 }
             }
         }

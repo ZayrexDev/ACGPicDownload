@@ -44,6 +44,8 @@ public class PixivDownloadPaneController extends MyPane {
     public MFXTextField namingRuleField;
     public MFXComboBox<String> multiPageCombo;
     public MFXTextField folderNamingRuleField;
+    public MFXTextField bookmarkCountField;
+    public MFXTextField likeCountField;
     public MFXButton namingRuleHelpBtn;
     public MFXButton saveConfigBtn;
     @FXML
@@ -65,23 +67,28 @@ public class PixivDownloadPaneController extends MyPane {
     private Label statusLabel;
 
     public void startDownload() {
+        ArtworkCondition condition = ArtworkCondition.always();
+        try{condition.bookmark(Integer.parseInt(bookmarkCountField.getText()));}catch (NumberFormatException ignored){}
+        try{condition.like(Integer.parseInt(likeCountField.getText()));}catch (NumberFormatException ignored){}
+
         PixivDownloadUtil.startDownload(
                 data,
                 outputDirField.getText(),
                 new Logger("GUI", System.out, Main.log),
                 (int) threadCountSlider.getValue(),
-                ConfigManager.getTempConfig().get("cookie"),
+                ConfigManager.getSelectedAccount().getCookie(),
                 new NamingRule(namingRuleField.getText(), multiPageCombo.getSelectedIndex(), folderNamingRuleField.getText()),
                 fullResultToggle.isSelected(),
                 ConfigManager.getConfig().getString("proxyHost"),
-                ConfigManager.getConfig().getInteger("proxyPort")
+                ConfigManager.getConfig().getInteger("proxyPort"),
+                condition
         );
     }
 
     @javafx.fxml.FXML
     public void backToMenu() {
         super.hide();
-        gui.welcomePaneController.showMain();
+        gui.menuPaneController.showMain();
     }
 
     private void updateStatus() {
@@ -90,13 +97,14 @@ public class PixivDownloadPaneController extends MyPane {
                 + ResourceBundleUtil.getString("cli.download.status.init") + data.filtered((e) -> e.getStatus() == DownloadStatus.INITIALIZE).size() + " "
                 + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
                 + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size();
+                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size() + " "
+                + ResourceBundleUtil.getString("cli.download.status.filtered") + data.filtered((e) -> e.getStatus() == DownloadStatus.FILTERED).size();
         Platform.runLater(() -> statusLabel.setText(sb));
     }
 
     public void delCompleted() {
         int a = data.size();
-        data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED);
+        data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED || datum.getStatus() == DownloadStatus.FILTERED);
         Notice.showSuccess(
                 String.format(
                         Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")),
@@ -125,7 +133,7 @@ public class PixivDownloadPaneController extends MyPane {
 
     public void backBtnOnAction() {
         super.hide();
-        gui.welcomePaneController.openPixivPane();
+        gui.pixivPaneController.openPixivPane();
     }
 
     private void initTable() {
@@ -151,7 +159,7 @@ public class PixivDownloadPaneController extends MyPane {
         fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFromString()));
         tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
         idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
-        statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getStatus().toString()));
+        statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivDownload::getStatusString));
         typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
 
         titleColumn.setAlignment(Pos.CENTER);
@@ -161,13 +169,6 @@ public class PixivDownloadPaneController extends MyPane {
         idColumn.setAlignment(Pos.CENTER);
         statusColumn.setAlignment(Pos.CENTER);
         typeColumn.setAlignment(Pos.CENTER);
-
-        // titleColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
-        // authorColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.15).get());
-        // fromColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.05).get());
-        // tagColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.3).get());
-        // idColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
-        // statusColumn.prefWidthProperty().set(dataTable.widthProperty().multiply(0.1).get());
 
         dataTable.getTableColumns().addAll(List.of(titleColumn, authorColumn, fromColumn, tagColumn, idColumn, statusColumn, typeColumn));
 
@@ -189,7 +190,8 @@ public class PixivDownloadPaneController extends MyPane {
                         o -> o.getStatus().toString())));
 
         dataTable.setItems(data);
-
+        dataTable.features().enableBounceEffect();
+        dataTable.features().enableSmoothScrolling(0.7);
         data.clear();
     }
 

@@ -17,7 +17,8 @@ public class PixivDownloadUtil {
     public synchronized static void startDownload(List<PixivDownload> artworksDownloads, String outputDir,
                                                   Logger logger, int maxThread, String cookieString,
                                                   NamingRule namingRule, boolean fullResult,
-                                                  String proxyHost, Integer proxyPort) {
+                                                  String proxyHost, Integer proxyPort,
+                                                  ArtworkCondition condition) {
         File outDir = new File(outputDir);
         if (!outDir.exists() && !outDir.mkdirs()) {
             logger.err(ResourceBundleUtil.getString("cli.fetch.err.cannotCreatDir"));
@@ -34,11 +35,14 @@ public class PixivDownloadUtil {
                 a.setStatus(DownloadStatus.INITIALIZE);
                 tpe.execute(() -> {
                     try {
-                        new DownloadUtil(1).downloadPixiv(a, outDir, cookieString, namingRule, fullResult, proxyHost, proxyPort);
+                        new DownloadUtil(1).downloadPixiv(
+                                a, outDir, cookieString,
+                                namingRule, fullResult,
+                                proxyHost, proxyPort, condition
+                        );
                     } catch (Exception e) {
                         Main.logError(e);
                         a.setStatus(DownloadStatus.FAILED);
-                        a.setErrorMessage(e.toString());
                     }
                 });
             }

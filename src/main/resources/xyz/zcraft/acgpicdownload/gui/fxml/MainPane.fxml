@@ -3,71 +3,126 @@
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.effect.GaussianBlur?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="stagePane" maxHeight="1.7976931348623157E308"
-      maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/19"
-      fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.MainPaneController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19"
+            fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.MainPaneController">
     <children>
-        <HBox fx:id="titlePane" alignment="CENTER_LEFT" maxHeight="30.0" minHeight="30.0" onMouseDragged="#mouseDragged"
-              onMousePressed="#startMoving" prefHeight="30.0" prefWidth="600.0" style="-fx-background-color: black;">
+        <VBox fx:id="stagePane" layoutX="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
             <children>
-                <Label fx:id="titleLbl" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" text="ACGPicDownload"
-                       textFill="WHITE">
-                    <padding>
-                        <Insets left="10.0"/>
-                    </padding>
-                    <font>
-                        <Font name="Segoe UI Light" size="19.0"/>
-                    </font>
-                </Label>
-                <HBox alignment="CENTER_RIGHT" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0"
-                      prefHeight="30.0" prefWidth="200.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                <HBox fx:id="titlePane" alignment="CENTER_LEFT" maxHeight="30.0" minHeight="30.0"
+                      onMouseDragged="#mouseDragged" onMousePressed="#startMoving" prefHeight="30.0" prefWidth="600.0"
+                      style="-fx-background-color: black;">
                     <children>
-                        <MFXButton fx:id="minimizeBtn" maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0"
-                                   onAction="#minimizeBtnOnAction" prefHeight="30.0" prefWidth="30.0"
-                                   rippleAnimateBackground="false" style="-fx-background-color: transparent;" text="-"
-                                   textFill="WHITE"/>
-                        <MFXButton fx:id="closeBtn" maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0"
-                                   onAction="#closeBtnOnAction" prefHeight="30.0" prefWidth="30.0"
-                                   rippleAnimateBackground="false" style="-fx-background-color: transparent;" text="x"
-                                   textFill="WHITE"/>
-                    </children>
-                </HBox>
-            </children>
-            <padding>
-                <Insets bottom="2.0" left="10.0" right="10.0" top="2.0"/>
-            </padding>
-        </HBox>
-        <AnchorPane fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
-                    stylesheets="@../default.css" VBox.vgrow="ALWAYS">
-            <children>
-                <ImageView fx:id="background" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0"
-                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                <ImageView fx:id="blurImg" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0"
-                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <effect>
-                        <GaussianBlur/>
-                    </effect>
-                </ImageView>
-                <VBox fx:id="initPane" alignment="CENTER" fillWidth="false" visible="false"
-                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                      AnchorPane.topAnchor="0.0">
-                    <children>
-                        <Label text="ACGPicDownload">
+                        <Label fx:id="titleLbl" maxHeight="30.0" minHeight="30.0" prefHeight="30.0"
+                               text="ACGPicDownload" textFill="WHITE">
+                            <padding>
+                                <Insets left="10.0"/>
+                            </padding>
                             <font>
-                                <Font name="Segoe UI" size="35.0"/>
+                                <Font name="Segoe UI Light" size="19.0"/>
                             </font>
                         </Label>
-                        <MFXProgressBar fx:id="initProgressBar" maxWidth="1.7976931348623157E308" prefWidth="300.0"
-                                        progress="0.0"/>
+                        <HBox alignment="CENTER_RIGHT" maxHeight="30.0" maxWidth="1.7976931348623157E308"
+                              minHeight="30.0" prefHeight="30.0" prefWidth="200.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <MFXButton fx:id="minimizeBtn" maxHeight="30.0" maxWidth="30.0" minHeight="30.0"
+                                           minWidth="30.0" onAction="#minimizeBtnOnAction" prefHeight="30.0"
+                                           prefWidth="30.0" rippleColor="#bdbdbd71"
+                                           style="-fx-background-color: transparent;" text="-" textFill="WHITE"/>
+                                <MFXButton fx:id="maximizeBtn" layoutX="367.0" layoutY="10.0" maxHeight="30.0"
+                                           maxWidth="30.0" minHeight="30.0" minWidth="30.0"
+                                           onAction="#maximizeBtnOnAction" prefHeight="30.0" prefWidth="30.0"
+                                           rippleColor="#bdbdbd71" style="-fx-background-color: transparent;" text="□"
+                                           textFill="WHITE"/>
+                                <MFXButton fx:id="closeBtn" maxHeight="30.0" maxWidth="30.0" minHeight="30.0"
+                                           minWidth="30.0" onAction="#closeBtnOnAction" prefHeight="30.0"
+                                           prefWidth="30.0" rippleColor="#bdbdbd71"
+                                           style="-fx-background-color: transparent;" text="x" textFill="WHITE"/>
+                            </children>
+                        </HBox>
                     </children>
-                </VBox>
+                    <padding>
+                        <Insets bottom="2.0" left="10.0" right="10.0" top="2.0"/>
+                    </padding>
+                </HBox>
+                <AnchorPane VBox.vgrow="ALWAYS">
+                    <children>
+                        <AnchorPane fx:id="mainPane" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308"
+                                    maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+                                    prefHeight="400.0" prefWidth="600.0" stylesheets="@../default.css"
+                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <children>
+                                <ImageView fx:id="background" pickOnBounds="true" preserveRatio="true"
+                                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                <ImageView fx:id="blurImg" pickOnBounds="true" preserveRatio="true"
+                                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <effect>
+                                        <GaussianBlur/>
+                                    </effect>
+                                </ImageView>
+                                <VBox fx:id="initPane" alignment="CENTER" fillWidth="false" visible="false"
+                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <Label text="ACGPicDownload">
+                                            <font>
+                                                <Font name="Segoe UI" size="35.0"/>
+                                            </font>
+                                        </Label>
+                                        <MFXProgressBar fx:id="initProgressBar" maxWidth="1.7976931348623157E308"
+                                                        prefWidth="300.0" progress="0.0"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </AnchorPane>
             </children>
-        </AnchorPane>
+        </VBox>
+        <Label maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0" onMouseDragged="#resizeES"
+               onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0" AnchorPane.bottomAnchor="0.0"
+               AnchorPane.rightAnchor="0.0">
+            <cursor>
+                <Cursor fx:constant="SE_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="604.0" layoutY="435.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeE" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+            <cursor>
+                <Cursor fx:constant="E_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="604.0" layoutY="40.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeS" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0">
+            <cursor>
+                <Cursor fx:constant="S_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="604.0" layoutY="40.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeW" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="30.0">
+            <cursor>
+                <Cursor fx:constant="E_RESIZE"/>
+            </cursor>
+        </Label>
+        <Label layoutX="10.0" layoutY="435.0" maxHeight="5.0" maxWidth="5.0" minHeight="5.0" minWidth="5.0"
+               onMouseDragged="#resizeWN" onMousePressed="#resizeStart" prefHeight="5.0" prefWidth="5.0"
+               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+            <cursor>
+                <Cursor fx:constant="SW_RESIZE"/>
+            </cursor>
+        </Label>
     </children>
-</VBox>
+</AnchorPane>

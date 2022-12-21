@@ -1,18 +1,26 @@
 package xyz.zcraft.acgpicdownload.gui;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class ConfigManager {
-    private static final HashMap<String, String> tempConfig = new HashMap<>();
+    private static final HashSet<PixivAccount> accounts = new HashSet<>();
     private static JSONObject config;
+    private static PixivAccount selectedAccount;
 
-    public static HashMap<String, String> getTempConfig() {
-        return tempConfig;
+    public static PixivAccount getSelectedAccount() {
+        return selectedAccount;
+    }
+
+    public static void setSelectedAccount(PixivAccount selectedAccount) {
+        ConfigManager.selectedAccount = selectedAccount;
     }
 
     public static JSONObject getConfig() {
@@ -21,11 +29,6 @@ public class ConfigManager {
 
     public static Object getValue(String key, Object defaultValue) {
         return Objects.requireNonNullElse(config.get(key), defaultValue);
-    }
-
-    public static Object getSubValue(String sub, String key, Object defaultValue) {
-        if (config.getJSONObject("sub") == null) return defaultValue;
-        return Objects.requireNonNullElse(config.getJSONObject("sub").get(key), defaultValue);
     }
 
     public static double getDoubleIfExist(String key, double defaultValue) {
@@ -38,24 +41,44 @@ public class ConfigManager {
         if (!f.exists()) {
             f.createNewFile();
             config = new JSONObject();
-            return;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+            String line;
+            while ((line = reader.readLine()) != null) sb.append(line);
+            reader.close();
+            config = Objects.requireNonNullElse(JSONObject.parse(sb.toString()), new JSONObject());
         }
-        StringBuilder sb = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new FileReader(f));
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
+        f = new File("accounts.json");
+        if (!f.exists()) {
+            f.createNewFile();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+            String line;
+            while ((line = reader.readLine()) != null) sb.append(line);
+            reader.close();
+            JSONArray acc = Objects.requireNonNullElse(JSONArray.parse(sb.toString()), new JSONArray());
+            for (int i = 0; i < acc.size(); i++) {
+                accounts.add(acc.getJSONObject(i).to(PixivAccount.class));
+            }
         }
-
-        reader.close();
-
-        config = Objects.requireNonNullElse(JSONObject.parse(sb.toString()), new JSONObject());
     }
 
     public static void saveConfig() throws IOException {
         BufferedWriter bw = new BufferedWriter(new FileWriter("config.json"));
         bw.write(config.toString(JSONWriter.Feature.PrettyFormat));
         bw.close();
+
+        JSONArray arr = new JSONArray();
+        bw = new BufferedWriter(new FileWriter("accounts.json"));
+        arr.addAll(accounts);
+        bw.write(arr.toString(JSONWriter.Feature.PrettyFormat));
+        bw.close();
+    }
+
+    public static Set<PixivAccount> getAccounts() {
+        return accounts;
     }
 }

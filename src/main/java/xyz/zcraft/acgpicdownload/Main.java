@@ -1,7 +1,5 @@
 package xyz.zcraft.acgpicdownload;
 
-import io.github.palexdev.materialfx.i18n.I18N;
-import io.github.palexdev.materialfx.i18n.Language;
 import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.Schedule;
 import xyz.zcraft.acgpicdownload.gui.GUI;
@@ -15,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class Main {
     public static PrintWriter debugOut;
@@ -67,7 +64,6 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        setMFXLanguage();
         ArrayList<String> argList = new ArrayList<>(List.of(args));
         try {
             log = new PrintStream("out.log");
@@ -84,15 +80,6 @@ public class Main {
             argList.remove(0);
             Schedule s = new Schedule();
             s.main(argList);
-        }
-    }
-
-    public static void setMFXLanguage() {
-        for (Language v : Language.values()) {
-            if (v.getLocale().equals(Locale.getDefault())) {
-                I18N.setLanguage(Language.SIMPLIFIED_CHINESE);
-                return;
-            }
         }
     }
 }

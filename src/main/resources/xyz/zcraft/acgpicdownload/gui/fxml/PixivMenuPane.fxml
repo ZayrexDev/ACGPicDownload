@@ -46,16 +46,6 @@
                     </VBox.margin>
                 </HBox>
                 <Separator prefWidth="200.0"/>
-                <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="600.0" spacing="10.0">
-                    <children>
-                        <MFXPasswordField fx:id="cookieField" allowCopy="true" allowCut="true" allowPaste="true"
-                                          floatMode="BORDER" floatingText="%gui.pixiv.menu.cookie" maxHeight="30.0"
-                                          maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                          HBox.hgrow="ALWAYS"/>
-                        <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelpBtnOnAction"/>
-                        <MFXButton onAction="#submitCookie" text="%gui.pixiv.menu.submitCookie"/>
-                    </children>
-                </HBox>
                 <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="15.0">
                     <children>
                         <Label text="%gui.pixiv.menu.maxCount"/>
