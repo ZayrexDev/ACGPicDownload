@@ -7,6 +7,7 @@ module xyz.zcraft.acgpicdownload {
     requires transitive org.jetbrains.annotations;
     requires transitive VirtualizedFX;
     requires transitive lombok;
+    requires log4j;
     requires animated.gif.lib;
     requires org.jsoup;
 
