@@ -3,6 +3,7 @@ package xyz.zcraft.acgpicdownload.gui;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
 
 import java.io.*;
@@ -13,6 +14,7 @@ import java.util.Set;
 public class ConfigManager {
     private static final HashSet<PixivAccount> accounts = new HashSet<>();
     private static JSONObject config;
+    public static final Logger logger = Logger.getLogger(GUI.class);
     private static PixivAccount selectedAccount;
 
     public static PixivAccount getSelectedAccount() {
@@ -48,6 +50,7 @@ public class ConfigManager {
             while ((line = reader.readLine()) != null) sb.append(line);
             reader.close();
             config = Objects.requireNonNullElse(JSONObject.parse(sb.toString()), new JSONObject());
+            logger.info("Loaded configuration from config.json");
         }
 
         f = new File("accounts.json");
@@ -63,6 +66,8 @@ public class ConfigManager {
             for (int i = 0; i < acc.size(); i++) {
                 accounts.add(acc.getJSONObject(i).to(PixivAccount.class));
             }
+
+            logger.info("Read " + accounts.size() + " accounts from accounts.json");
         }
     }
 
@@ -76,6 +81,8 @@ public class ConfigManager {
         arr.addAll(accounts);
         bw.write(arr.toString(JSONWriter.Feature.PrettyFormat));
         bw.close();
+
+        logger.info("Configuration saved");
     }
 
     public static Set<PixivAccount> getAccounts() {

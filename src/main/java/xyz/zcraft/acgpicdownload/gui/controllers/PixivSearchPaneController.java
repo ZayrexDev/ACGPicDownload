@@ -6,11 +6,13 @@ import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.PixivFetchPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
@@ -44,7 +46,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
     private MFXSlider relatedDepthSlider;
     @FXML
     private MFXComboBox<String> suffixCombo;
-
+    public static final Logger logger = Logger.getLogger(PixivSearchPaneController.class);
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
@@ -90,13 +92,17 @@ public class PixivSearchPaneController extends PixivFetchPane {
 
         new Thread(() -> {
             try {
+                String keyword = keywordField.getText().concat(suffixCombo.getSelectedItem());
+                long start = System.currentTimeMillis();
+                PixivAccount selectedAccount = ConfigManager.getSelectedAccount();
+                logger.info("Fetching for keyword" + keyword + "with account " + selectedAccount.getName());
+
                 Platform.runLater(() -> {
                     operationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
                     subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
                 });
                 LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>();
 
-                String keyword = keywordField.getText().concat(suffixCombo.getSelectedItem());
                 if (typeCombo.getSelectedIndex() == 0) {
                     pixivArtworks.addAll(PixivFetchUtil.searchTopArtworks(
                             keyword,
@@ -124,13 +130,16 @@ public class PixivSearchPaneController extends PixivFetchPane {
                     ));
                 }
 
+                logger.info("Fetched " + pixivArtworks.size() + " artworks, getting related artworks for " + relatedDepthSlider.getValue() + " times");
                 getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), getCookie(), subOperationLabel);
 
                 Platform.runLater(() -> data.addAll(pixivArtworks));
                 Notice.showSuccess(String.format(
                         Objects.requireNonNull(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetched")),
                         pixivArtworks.size()), gui.mainPane);
+                logger.info("Fetch completed successfully within " + (System.currentTimeMillis() - start) + " ms");
             } catch (IOException e) {
+                logger.error("Fetch keyword failed", e);
                 Main.logError(e);
                 gui.showError(e);
             } finally {

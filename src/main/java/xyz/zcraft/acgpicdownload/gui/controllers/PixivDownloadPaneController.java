@@ -105,6 +105,7 @@ public class PixivDownloadPaneController extends MyPane {
     public void delCompleted() {
         int a = data.size();
         data.removeIf(datum -> datum.getStatus() == DownloadStatus.COMPLETED || datum.getStatus() == DownloadStatus.FILTERED);
+        updateStatus();
         Notice.showSuccess(
                 String.format(
                         Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")),
@@ -118,6 +119,7 @@ public class PixivDownloadPaneController extends MyPane {
         int a = data.size();
         data.removeAll(dataTable.getSelectionModel().getSelectedValues());
         dataTable.getSelectionModel().clearSelection();
+        updateStatus();
         Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")), a - data.size()), gui.mainPane);
     }
 

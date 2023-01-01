@@ -17,6 +17,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.gui.controllers.*;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 
@@ -45,6 +47,8 @@ public class GUI extends Application {
 
     public GUI gui;
     private Scene s;
+
+    public static final Logger logger = Logger.getLogger(GUI.class);
 
     public static void start(String[] args) {
         launch(args);
@@ -112,6 +116,7 @@ public class GUI extends Application {
     public static void setMFXLanguage() {
         for (Language v : Language.values()) {
             if (v.getLocale().equals(Locale.getDefault())) {
+                logger.debug("MFX language set to " + v);
                 I18N.setLanguage(v);
                 return;
             }
@@ -123,10 +128,14 @@ public class GUI extends Application {
         if (ConfigManager.getConfig().containsKey("lang"))
             ResourceBundleUtil.load(ConfigManager.getConfig().getString("lang"));
         setMFXLanguage();
+        logger.debug("Language set!");
     }
 
     @Override
     public void start(Stage stage) throws Exception {
+        logger.setLevel(Level.ALL);
+        logger.info("Launching GUI");
+
         setLanguage();
         gui = this;
         mainStage = stage;
@@ -138,9 +147,14 @@ public class GUI extends Application {
         mainPaneController = mainLoader.getController();
         mainPane = mainPaneController.getMainPane();
         mainPaneController.setGui(gui);
+        logger.debug("MainPane Loaded");
 
         this.s = new Scene(stagePane);
+
+        logger.debug("Loading background");
         readBackground();
+        logger.debug("Loaded background");
+
         mainStage.setScene(s);
 
         mainPaneController.init();
@@ -156,6 +170,8 @@ public class GUI extends Application {
 
         initThread.setPriority(1);
         initThread.start();
+
+        logger.info("Initializing panes...");
     }
 
     private void initWindow() {
@@ -170,6 +186,7 @@ public class GUI extends Application {
             fill(pixivPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivPaneController.getMainPane()));
             mainPaneController.setProgress(0.05);
+            logger.debug("PixivPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/MenuPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -178,6 +195,7 @@ public class GUI extends Application {
             fill(menuPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(menuPaneController.getMainPane()));
             mainPaneController.setProgress(0.1);
+            logger.debug("MenuPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivAccountPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -186,6 +204,7 @@ public class GUI extends Application {
             fill(pixivAccountPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivAccountPaneController.getMainPane()));
             mainPaneController.setProgress(0.15);
+            logger.debug("PixivAccountPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/FetchPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -194,6 +213,7 @@ public class GUI extends Application {
             fill(fetchPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(fetchPaneController.getMainPane()));
             mainPaneController.setProgress(0.2);
+            logger.debug("FetchPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivMenuPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -202,6 +222,7 @@ public class GUI extends Application {
             fill(pixivMenuPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivMenuPaneController.getMainPane()));
             mainPaneController.setProgress(0.3);
+            logger.debug("PixivMenuPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivUserPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -210,6 +231,7 @@ public class GUI extends Application {
             fill(pixivUserPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivUserPaneController.getMainPane()));
             mainPaneController.setProgress(0.4);
+            logger.debug("PixivUserPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRelatedPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -218,6 +240,7 @@ public class GUI extends Application {
             fill(pixivUserPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivRelatedPaneController.getMainPane()));
             mainPaneController.setProgress(0.5);
+            logger.debug("PixivRelatedPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDownloadPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -226,6 +249,7 @@ public class GUI extends Application {
             fill(pixivDownloadPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivDownloadPaneController.getMainPane()));
             mainPaneController.setProgress(0.6);
+            logger.debug("PixivDownloadPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivDiscoveryPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -234,6 +258,7 @@ public class GUI extends Application {
             fill(pixivDiscoveryPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivDiscoveryPaneController.getMainPane()));
             mainPaneController.setProgress(0.7);
+            logger.debug("PixivDiscoveryPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/SettingsPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -242,6 +267,7 @@ public class GUI extends Application {
             fill(settingsPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(settingsPaneController.getMainPane()));
             mainPaneController.setProgress(0.8);
+            logger.debug("SettingsPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivRankingPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -250,6 +276,7 @@ public class GUI extends Application {
             fill(pixivRankingPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivRankingPaneController.getMainPane()));
             mainPaneController.setProgress(0.9);
+            logger.debug("PixivRankingPane Loaded");
 
             loader = new FXMLLoader(ResourceLoader.loadURL("fxml/PixivSearchPane.fxml"), ResourceBundleUtil.getResource());
             loader.load();
@@ -258,7 +285,9 @@ public class GUI extends Application {
             fill(pixivSearchPaneController.getMainPane());
             Platform.runLater(() -> mainPane.getChildren().add(pixivSearchPaneController.getMainPane()));
             mainPaneController.setProgress(0.95);
+            logger.debug("PixivSearchPane Loaded");
 
+            logger.debug("Loaded all panes");
             // Load done
             menuPaneController.getMainPane().setVisible(false);
             mainPaneController.setProgress(1);
@@ -270,8 +299,11 @@ public class GUI extends Application {
                 menuPaneController.getMainPane().setVisible(true);
                 menuPaneController.showMain();
             });
+
+            logger.info("Init done, GUI loaded");
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            logger.error("Error Initializing GUI", e);
             Platform.runLater(() -> {
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
@@ -368,16 +400,17 @@ public class GUI extends Application {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         pw.flush();
+        StringBuilder sb = new StringBuilder();
+        String msg = conductException(e);
+        if (msg != null) {
+            sb.append(ResourceBundleUtil.getString("err.conduct"));
+            sb.append("\n");
+            sb.append(msg);
+            sb.append("\n");
+        }
+        sb.append(sw);
+        logger.error("Error Occurred(" + sb + ")", e);
         Platform.runLater(() -> {
-            StringBuilder sb = new StringBuilder();
-            String msg = conductException(e);
-            if (msg != null) {
-                sb.append(ResourceBundleUtil.getString("err.conduct"));
-                sb.append("\n");
-                sb.append(msg);
-                sb.append("\n");
-            }
-            sb.append(sw);
             gui.fill(epc.getErrorPane());
             gui.mainPane.getChildren().addAll(epc.getErrorPane());
             epc.setErrorMessage(sb.toString());

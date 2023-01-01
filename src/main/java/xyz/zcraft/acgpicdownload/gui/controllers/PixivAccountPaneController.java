@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -122,6 +123,8 @@ public class PixivAccountPaneController implements Initializable {
         ft.play();
     }
 
+    public static final Logger logger = Logger.getLogger(PixivAccountPaneController.class);
+
     public void addAccount() throws IOException {
         HashMap<String, String> stringStringHashMap = PixivFetchUtil.parseCookie(cookieField.getText());
         String cookie = "PHPSESSID" + "=" + stringStringHashMap.get("PHPSESSID");
@@ -139,7 +142,10 @@ public class PixivAccountPaneController implements Initializable {
             accountCombo.selectItem(account);
             ConfigManager.saveConfig();
             gui.pixivPaneController.reloadAccount();
+
+            logger.info("Account " + account.getName() + " added");
         } else {
+            logger.error("Failed to add account");
             Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
         }
     }
@@ -169,6 +175,8 @@ public class PixivAccountPaneController implements Initializable {
             accountCombo.selectItem(account);
             ConfigManager.saveConfig();
             gui.pixivPaneController.reloadAccount();
+
+            logger.info("Refreshed account " + account.getName());
         } else {
             Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
         }
