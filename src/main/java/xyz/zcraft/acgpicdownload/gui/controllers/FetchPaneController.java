@@ -22,6 +22,7 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
+import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.gui.base.argpanes.ArgumentPane;
@@ -98,9 +99,10 @@ public class FetchPaneController extends MyPane {
     @javafx.fxml.FXML
     private MFXButton updateFromGithubBtn;
 
-
+    public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(GUI.class);
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
+        logger.info("Starting download");
         downloading = true;
         FetchUtil.startDownloadWithResults(dm, new ArrayList<>(data),
                 Objects.equals(outputDirField.getText(), "") ? new File("").getAbsolutePath()
@@ -262,9 +264,12 @@ public class FetchPaneController extends MyPane {
         loadingPane.setVisible(true);
         ft.play();
         new Thread(() -> {
+            logger.info("Updating from Github");
             try {
                 SourceManager.updateFromGithub();
+                logger.info("Update successfully");
             } catch (IOException e) {
+                logger.error("Failed to update from Github", e);
                 Main.logError(e);
                 gui.showError(e);
             } finally {
@@ -289,6 +294,9 @@ public class FetchPaneController extends MyPane {
         ft.setDuration(Duration.millis(5));
         ft.play();
         new Thread(() -> {
+            long start = System.currentTimeMillis();
+            logger.info("Starting fetching");
+
             LinkedList<DownloadResult> r = new LinkedList<>();
             Source s;
             try {
@@ -334,6 +342,8 @@ public class FetchPaneController extends MyPane {
                 ft.setOnFinished((e) -> loadingPane.setVisible(false));
                 ft.play();
             });
+
+            logger.info("Finished fetching in" + (System.currentTimeMillis() - start) + "ms");
         }).start();
     }
 

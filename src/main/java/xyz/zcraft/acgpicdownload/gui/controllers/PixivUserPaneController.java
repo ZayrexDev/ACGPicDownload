@@ -5,11 +5,14 @@ import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.font.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
+import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.PixivFetchPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
+import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
 
@@ -31,6 +34,8 @@ public class PixivUserPaneController extends PixivFetchPane {
         backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
     }
 
+    public static final Logger logger = Logger.getLogger(GUI.class);
+
     @FXML
     @Override
     public void fetchBtnOnAction() {
@@ -46,6 +51,10 @@ public class PixivUserPaneController extends PixivFetchPane {
 
         new Thread(() -> {
             try {
+                long start = System.currentTimeMillis();
+                PixivAccount selectedAccount = ConfigManager.getSelectedAccount();
+                logger.info("Fetching uid " + uidField.getText() + " with account " + selectedAccount.getName());
+
                 Platform.runLater(() -> {
                     operationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
                     subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.menu.notice.fetchMain"));
@@ -65,6 +74,7 @@ public class PixivUserPaneController extends PixivFetchPane {
                             PixivFetchUtil.getUserArtworks(s, uidField.getText(), ConfigManager.getConfig().getString("proxyHost"),
                                     ConfigManager.getConfig().getInteger("proxyPort")));
                 }
+                logger.info("Fetched " + pixivArtworks.size() + " artworks, getting related artworks for " + relatedDepthSlider.getValue() + " times");
 
                 getRelated(pixivArtworks, (int) relatedDepthSlider.getValue(), getCookie(), subOperationLabel);
 
@@ -76,7 +86,9 @@ public class PixivUserPaneController extends PixivFetchPane {
                         ),
                         gui.mainPane
                 );
+                logger.info("Fetch completed successfully within " + (System.currentTimeMillis() - start) + " ms");
             } catch (IOException e) {
+                logger.error("Fetch user failed", e);
                 Main.logError(e);
                 gui.showError(e);
             } finally {
