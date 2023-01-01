@@ -22,7 +22,6 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.gui.base.argpanes.ArgumentPane;
@@ -99,7 +98,7 @@ public class FetchPaneController extends MyPane {
     @javafx.fxml.FXML
     private MFXButton updateFromGithubBtn;
 
-    public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(GUI.class);
+    public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(FetchPaneController.class);
     @javafx.fxml.FXML
     public void downloadBtnOnAction() {
         logger.info("Starting download");

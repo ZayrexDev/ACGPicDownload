@@ -123,7 +123,7 @@ public class PixivAccountPaneController implements Initializable {
         ft.play();
     }
 
-    public static final Logger logger = Logger.getLogger(GUI.class);
+    public static final Logger logger = Logger.getLogger(PixivAccountPaneController.class);
 
     public void addAccount() throws IOException {
         HashMap<String, String> stringStringHashMap = PixivFetchUtil.parseCookie(cookieField.getText());

@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
-import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.PixivFetchPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
@@ -45,7 +44,7 @@ public class PixivDiscoveryPaneController extends PixivFetchPane {
         modeCombo.getSelectionModel().selectFirst();
     }
 
-    public static final Logger logger = Logger.getLogger(GUI.class);
+    public static final Logger logger = Logger.getLogger(PixivDiscoveryPaneController.class);
 
     @FXML
     @Override
