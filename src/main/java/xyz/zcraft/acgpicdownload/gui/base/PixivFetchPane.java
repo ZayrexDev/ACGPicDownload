@@ -16,9 +16,9 @@ import javafx.util.Duration;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownload;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivDownload;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -197,7 +197,7 @@ public abstract class PixivFetchPane extends MyPane {
         for (PixivArtwork s : dataTable.getSelectionModel().getSelectedValues()) {
             sb.append(PixivFetchUtil.getArtworkPageUrl(s)).append("\n");
         }
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
             Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
         }

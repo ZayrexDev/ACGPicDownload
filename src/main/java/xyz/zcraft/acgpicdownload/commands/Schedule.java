@@ -1,14 +1,14 @@
 package xyz.zcraft.acgpicdownload.commands;
 
 import xyz.zcraft.acgpicdownload.util.Logger;
-import xyz.zcraft.acgpicdownload.util.scheduleutil.Event;
+import xyz.zcraft.acgpicdownload.util.schedule.Event;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager.isEmpty;
+import static xyz.zcraft.acgpicdownload.util.source.SourceManager.isEmpty;
 
 public class Schedule {
     private final ArrayList<Event> events = new ArrayList<>();
@@ -78,7 +78,7 @@ public class Schedule {
 
         s.close();
 
-        while (events.size() > 0) {
+        while (!events.isEmpty()) {
             for (int i = 0; i < events.size(); i++) {
                 Event e = events.get(i);
                 if (e.isActive()) {
@@ -103,7 +103,7 @@ public class Schedule {
     }
 
     public boolean parseEvent(ArrayList<String> args) {
-        if (args.size() != 0) {
+        if (!args.isEmpty()) {
             int maxTime = -1;
             Duration interval = null;
             for (int i = 0; i < args.size(); i++) {
@@ -140,7 +140,7 @@ public class Schedule {
             }
 
             if (interval != null) {
-                if (args.size() > 0) {
+                if (!args.isEmpty()) {
                     if (args.get(0).equalsIgnoreCase("schedule")) {
                         l.err("Could not use schedule command in a schedule!");
                         return false;

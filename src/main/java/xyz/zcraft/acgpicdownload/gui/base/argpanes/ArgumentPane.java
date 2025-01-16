@@ -1,6 +1,6 @@
 package xyz.zcraft.acgpicdownload.gui.base.argpanes;
 
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.source.argument.Argument;
 
 public interface ArgumentPane<T> {
     T getValueString();

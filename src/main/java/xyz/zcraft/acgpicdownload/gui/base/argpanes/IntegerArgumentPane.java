@@ -4,12 +4,16 @@ import io.github.palexdev.materialfx.controls.MFXSpinner;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import lombok.Getter;
+import lombok.Setter;
 import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.IntegerArgument;
+import xyz.zcraft.acgpicdownload.util.source.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.source.argument.IntegerArgument;
 
 import java.io.IOException;
 
+@Setter
+@Getter
 public class IntegerArgumentPane implements ArgumentPane<Integer> {
     HBox pane;
     IntegerArgument arg;
@@ -29,38 +33,6 @@ public class IntegerArgumentPane implements ArgumentPane<Integer> {
         a.setArg(arg);
 //        a.getArgSpinner().getSpinnerModel().
         return a;
-    }
-
-    public HBox getPane() {
-        return pane;
-    }
-
-    public void setPane(HBox pane) {
-        this.pane = pane;
-    }
-
-    public Label getArgNameLabel() {
-        return argNameLabel;
-    }
-
-    public void setArgNameLabel(Label argNameLabel) {
-        this.argNameLabel = argNameLabel;
-    }
-
-    public MFXSpinner<Integer> getArgSpinner() {
-        return argSpinner;
-    }
-
-    public void setArgSpinner(MFXSpinner<Integer> argSpinner) {
-        this.argSpinner = argSpinner;
-    }
-
-    public IntegerArgument getArg() {
-        return arg;
-    }
-
-    public void setArg(IntegerArgument arg) {
-        this.arg = arg;
     }
 
     @Override

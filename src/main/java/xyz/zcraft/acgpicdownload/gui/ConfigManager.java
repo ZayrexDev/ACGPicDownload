@@ -3,8 +3,9 @@ package xyz.zcraft.acgpicdownload.gui;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import lombok.Getter;
 import org.apache.log4j.Logger;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivAccount;
 
 import java.io.*;
 import java.util.HashSet;
@@ -15,11 +16,8 @@ public class ConfigManager {
     private static final HashSet<PixivAccount> accounts = new HashSet<>();
     private static JSONObject config;
     public static final Logger logger = Logger.getLogger(GUI.class);
+    @Getter
     private static PixivAccount selectedAccount;
-
-    public static PixivAccount getSelectedAccount() {
-        return selectedAccount;
-    }
 
     public static void setSelectedAccount(PixivAccount selectedAccount) {
         ConfigManager.selectedAccount = selectedAccount;

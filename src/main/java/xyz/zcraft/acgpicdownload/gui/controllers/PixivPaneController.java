@@ -11,11 +11,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import lombok.Getter;
+import lombok.Setter;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivDownloadUtil;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivAccount;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivDownloadUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,22 +34,13 @@ public class PixivPaneController implements Initializable {
     private Label userNameLabel;
     @FXML
     private VBox controls;
+    @Getter
     @javafx.fxml.FXML
     private AnchorPane mainPane;
 
+    @Getter
+    @Setter
     private GUI gui;
-
-    public AnchorPane getMainPane() {
-        return mainPane;
-    }
-
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
-    }
 
     public void pixivMenuBtnOnAction() {
         closePixivPane();

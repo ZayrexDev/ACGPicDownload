@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
+import lombok.Getter;
 import xyz.zcraft.acgpicdownload.Main;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
@@ -25,8 +26,8 @@ import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
 import xyz.zcraft.acgpicdownload.gui.base.MyPane;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
-import xyz.zcraft.acgpicdownload.util.pixivutils.*;
+import xyz.zcraft.acgpicdownload.util.dl.DownloadStatus;
+import xyz.zcraft.acgpicdownload.util.pixiv.*;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -52,6 +53,7 @@ public class PixivDownloadPaneController extends MyPane {
     private MFXTableView<PixivDownload> dataTable;
     @FXML
     private AnchorPane mainPane;
+    @Getter
     private volatile ObservableList<PixivDownload> data;
     @FXML
     private MFXTextField outputDirField;
@@ -93,12 +95,12 @@ public class PixivDownloadPaneController extends MyPane {
 
     private void updateStatus() {
         Platform.runLater(() -> dataTable.update());
-        String sb = ResourceBundleUtil.getString("cli.download.status.created") + data.filtered((e) -> e.getStatus() == DownloadStatus.CREATED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.init") + data.filtered((e) -> e.getStatus() == DownloadStatus.INITIALIZE).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size() + " "
-                + ResourceBundleUtil.getString("cli.download.status.filtered") + data.filtered((e) -> e.getStatus() == DownloadStatus.FILTERED).size();
+        String sb = ResourceBundleUtil.getString("gui.download.status.created") + data.filtered((e) -> e.getStatus() == DownloadStatus.CREATED).size() + " "
+                + ResourceBundleUtil.getString("gui.download.status.init") + data.filtered((e) -> e.getStatus() == DownloadStatus.INITIALIZE).size() + " "
+                + ResourceBundleUtil.getString("gui.download.status.started") + data.filtered((e) -> e.getStatus() == DownloadStatus.STARTED).size() + " "
+                + ResourceBundleUtil.getString("gui.download.status.completed") + data.filtered((e) -> e.getStatus() == DownloadStatus.COMPLETED).size() + " "
+                + ResourceBundleUtil.getString("gui.download.status.failed") + data.filtered((e) -> e.getStatus() == DownloadStatus.FAILED).size() + " "
+                + ResourceBundleUtil.getString("gui.download.status.filtered") + data.filtered((e) -> e.getStatus() == DownloadStatus.FILTERED).size();
         Platform.runLater(() -> statusLabel.setText(sb));
     }
 
@@ -121,10 +123,6 @@ public class PixivDownloadPaneController extends MyPane {
         dataTable.getSelectionModel().clearSelection();
         updateStatus();
         Notice.showSuccess(String.format(Objects.requireNonNull(ResourceBundleUtil.getString("gui.fetch.notice.removeCompleted")), a - data.size()), gui.mainPane);
-    }
-
-    public ObservableList<PixivDownload> getData() {
-        return data;
     }
 
     public void show() {
@@ -266,7 +264,7 @@ public class PixivDownloadPaneController extends MyPane {
         for (PixivDownload s : dataTable.getSelectionModel().getSelectedValues()) {
             sb.append(PixivFetchUtil.getArtworkPageUrl(s.getArtwork())).append("\n");
         }
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
             Notice.showSuccess(ResourceBundleUtil.getString("gui.pixiv.download.copied"), gui.mainPane);
         }

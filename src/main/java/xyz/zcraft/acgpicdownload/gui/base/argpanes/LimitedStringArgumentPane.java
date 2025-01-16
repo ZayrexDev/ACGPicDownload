@@ -3,12 +3,14 @@ package xyz.zcraft.acgpicdownload.gui.base.argpanes;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
 import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
+import xyz.zcraft.acgpicdownload.util.source.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.source.argument.LimitedStringArgument;
 
 import java.io.IOException;
 
+@Getter
 public class LimitedStringArgumentPane implements ArgumentPane<String> {
     protected LimitedStringArgument arg;
     @javafx.fxml.FXML
@@ -30,24 +32,12 @@ public class LimitedStringArgumentPane implements ArgumentPane<String> {
         return a;
     }
 
-    public LimitedStringArgument getArg() {
-        return arg;
-    }
-
     protected void setArg(LimitedStringArgument arg) {
         this.arg = arg;
     }
 
-    public VBox getPane() {
-        return pane;
-    }
-
     protected void setPane(VBox pane) {
         this.pane = pane;
-    }
-
-    public MFXComboBox<String> getArgCombo() {
-        return argCombo;
     }
 
     protected void setArgCombo(MFXComboBox<String> argCombo) {

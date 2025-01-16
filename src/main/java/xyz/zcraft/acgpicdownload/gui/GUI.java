@@ -311,7 +311,7 @@ public class GUI extends Application {
                 MFXGenericDialog content = MFXGenericDialogBuilder.build()
                         .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw)
                         .setShowClose(true)
-                        .setHeaderText(ResourceBundleUtil.getString("cli.fetch.err")).get();
+                        .setHeaderText(ResourceBundleUtil.getString("gui.fetch.err")).get();
                 content.addActions(Map.entry(new MFXButton("OK"), event -> System.exit(1)));
                 MFXGenericDialogBuilder.build(content)
                         .toStageDialogBuilder()
@@ -363,7 +363,7 @@ public class GUI extends Application {
                     List<File> fl = new ArrayList<>(Stream.of(Objects.requireNonNull(bgFolder.listFiles()))
                             .filter((f) -> f.getName().endsWith(".png") || f.getName().endsWith(".jpg"))
                             .toList());
-                    if (fl.size() > 0) {
+                    if (!fl.isEmpty()) {
                         File file = fl.get(new Random().nextInt(fl.size()));
                         imgMain = new FileInputStream(file);
                     } else {

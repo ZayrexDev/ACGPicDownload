@@ -12,9 +12,9 @@ import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.gui.base.PixivFetchPane;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivArtwork;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivAccount;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 
 import java.io.IOException;
 import java.net.URL;
