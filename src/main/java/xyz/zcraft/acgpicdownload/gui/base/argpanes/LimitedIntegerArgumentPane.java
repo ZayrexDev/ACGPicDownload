@@ -4,12 +4,16 @@ import io.github.palexdev.materialfx.controls.MFXSlider;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import lombok.Getter;
+import lombok.Setter;
 import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
+import xyz.zcraft.acgpicdownload.util.source.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.source.argument.LimitedIntegerArgument;
 
 import java.io.IOException;
 
+@Setter
+@Getter
 public class LimitedIntegerArgumentPane implements ArgumentPane<Integer> {
     LimitedIntegerArgument arg;
 
@@ -40,38 +44,6 @@ public class LimitedIntegerArgumentPane implements ArgumentPane<Integer> {
         }
         a.getArgSlider().setValue(arg.getValue());
         return a;
-    }
-
-    public LimitedIntegerArgument getArg() {
-        return arg;
-    }
-
-    public void setArg(LimitedIntegerArgument arg) {
-        this.arg = arg;
-    }
-
-    public HBox getPane() {
-        return pane;
-    }
-
-    public void setPane(HBox pane) {
-        this.pane = pane;
-    }
-
-    public Label getArgNameLabel() {
-        return argNameLabel;
-    }
-
-    public void setArgNameLabel(Label argNameLabel) {
-        this.argNameLabel = argNameLabel;
-    }
-
-    public MFXSlider getArgSlider() {
-        return argSlider;
-    }
-
-    public void setArgSlider(MFXSlider argSlider) {
-        this.argSlider = argSlider;
     }
 
     @Override

@@ -16,13 +16,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivAccount;
-import xyz.zcraft.acgpicdownload.util.pixivutils.PixivFetchUtil;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivAccount;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,29 +38,17 @@ public class PixivAccountPaneController implements Initializable {
     public MFXComboBox<PixivAccount> accountCombo;
     public MFXTextField cookieField;
     public MFXButton cookieHelpBtn;
+    @Setter
+    @Getter
     GUI gui;
     @javafx.fxml.FXML
     private ImageView bg;
+    @Setter
+    @Getter
     @javafx.fxml.FXML
     private AnchorPane mainPane;
     @javafx.fxml.FXML
     private VBox accountsPane;
-
-    public AnchorPane getMainPane() {
-        return mainPane;
-    }
-
-    public void setMainPane(AnchorPane mainPane) {
-        this.mainPane = mainPane;
-    }
-
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

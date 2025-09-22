@@ -31,17 +31,17 @@ import xyz.zcraft.acgpicdownload.gui.base.argpanes.StringArgumentPane;
 import xyz.zcraft.acgpicdownload.util.ExceptionHandler;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadManager;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadResult;
-import xyz.zcraft.acgpicdownload.util.downloadutil.DownloadStatus;
-import xyz.zcraft.acgpicdownload.util.fetchutil.FetchUtil;
-import xyz.zcraft.acgpicdownload.util.fetchutil.Result;
-import xyz.zcraft.acgpicdownload.util.sourceutil.Source;
-import xyz.zcraft.acgpicdownload.util.sourceutil.SourceManager;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.Argument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedIntegerArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.LimitedStringArgument;
-import xyz.zcraft.acgpicdownload.util.sourceutil.argument.StringArgument;
+import xyz.zcraft.acgpicdownload.util.dl.DownloadManager;
+import xyz.zcraft.acgpicdownload.util.dl.DownloadResult;
+import xyz.zcraft.acgpicdownload.util.dl.DownloadStatus;
+import xyz.zcraft.acgpicdownload.util.fetch.FetchUtil;
+import xyz.zcraft.acgpicdownload.util.fetch.Result;
+import xyz.zcraft.acgpicdownload.util.source.Source;
+import xyz.zcraft.acgpicdownload.util.source.SourceManager;
+import xyz.zcraft.acgpicdownload.util.source.argument.Argument;
+import xyz.zcraft.acgpicdownload.util.source.argument.LimitedIntegerArgument;
+import xyz.zcraft.acgpicdownload.util.source.argument.LimitedStringArgument;
+import xyz.zcraft.acgpicdownload.util.source.argument.StringArgument;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -118,13 +118,13 @@ public class FetchPaneController extends MyPane {
 
         progressBar.setProgress(dm.getPercentComplete());
         if (downloading) {
-            String sb = " " + ResourceBundleUtil.getString("cli.download.status.created") + dm.getCreated() + " "
-                    + ResourceBundleUtil.getString("cli.download.status.started") + dm.getStarted() + " "
-                    + ResourceBundleUtil.getString("cli.download.status.completed") + dm.getCompleted() + " "
-                    + ResourceBundleUtil.getString("cli.download.status.failed") + dm.getFailed() + " " + dm.getSpeed();
+            String sb = " " + ResourceBundleUtil.getString("gui.download.status.created") + dm.getCreated() + " "
+                    + ResourceBundleUtil.getString("gui.download.status.started") + dm.getStarted() + " "
+                    + ResourceBundleUtil.getString("gui.download.status.completed") + dm.getCompleted() + " "
+                    + ResourceBundleUtil.getString("gui.download.status.failed") + dm.getFailed() + " " + dm.getSpeed();
             Platform.runLater(() -> statusLabel.setText(sb));
         } else {
-            Platform.runLater(() -> statusLabel.setText(ResourceBundleUtil.getString("cli.download.status.completed")));
+            Platform.runLater(() -> statusLabel.setText(ResourceBundleUtil.getString("gui.download.status.completed")));
         }
 
         dataTable.update();
@@ -146,7 +146,7 @@ public class FetchPaneController extends MyPane {
         initTable();
 
         fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
-        data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.size() == 0));
+        data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.isEmpty()));
 
         try {
             ConfigManager.readConfig();
@@ -200,7 +200,7 @@ public class FetchPaneController extends MyPane {
         dataTable.getSelectionModel().selectionProperty()
                 .addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
                     List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
-                    if (selectedValues.size() > 0) {
+                    if (!selectedValues.isEmpty()) {
                         if (selectedValues.get(0).getStatus() == DownloadStatus.COMPLETED &&
                                 ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy")) {
                             try {
