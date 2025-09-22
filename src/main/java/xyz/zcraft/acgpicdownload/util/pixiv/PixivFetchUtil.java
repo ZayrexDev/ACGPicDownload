@@ -14,9 +14,11 @@ import java.io.IOException;
 import java.util.*;
 
 public class PixivFetchUtil {
+    public static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
     private static final String TOP = "https://www.pixiv.net/ajax/top/illust?mode=all";
     private static final String RELATED = "https://www.pixiv.net/ajax/illust/%s/recommend/init?limit=%d";
     private static final String ARTWORK = "https://www.pixiv.net/artworks/";
+    private static final String ARTWORK_AJAX = "https://www.pixiv.net/ajax/illust/";
     private static final String USER = "https://www.pixiv.net/ajax/user/%s/profile/all?";
     private static final String USER_TAGS = "https://www.pixiv.net/ajax/tags/frequent/illust?%s";
     private static final String USER_WORKS = "https://www.pixiv.net/ajax/user/%s/profile/illusts?%s&work_category=illust&is_first_page=1";
@@ -26,9 +28,7 @@ public class PixivFetchUtil {
     private static final String SEARCH_TOP = "https://www.pixiv.net/ajax/search/top/%s";
     private static final String SEARCH_ILLUST = "https://www.pixiv.net/ajax/search/illustrations/%s?word=%s&mode=%s&p=%d";
     private static final String SEARCH_MANGA = "https://www.pixiv.net/ajax/search/manga/%s?word=%s&mode=%s&p=%d";
-
     private static final String RANKING = "https://www.pixiv.net/ranking.php";
-    public static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
 
     public static PixivAccount getAccount(String cookieString, String proxyHost, Integer proxyPort) {
         HashMap<String, String> cookie = parseCookie(cookieString);
@@ -43,9 +43,12 @@ public class PixivFetchUtil {
         }
 
         try {
-            String text = Objects.requireNonNull(c.get().getElementById("meta-global-data")).attr("content");
+            String text = Objects.requireNonNull(c.get().getElementById("__NEXT_DATA__")).data();
             final JSONObject jsonObject = JSONObject.parseObject(text);
-            PixivAccount userData = jsonObject.getJSONObject("userData").to(PixivAccount.class);
+            final JSONObject userDataObject = JSONObject.parseObject(jsonObject.getJSONObject("props")
+                            .getJSONObject("pageProps").getString("serverSerializedPreloadedState"))
+                    .getJSONObject("userData").getJSONObject("self");
+            PixivAccount userData = userDataObject.to(PixivAccount.class);
             userData.setToken(jsonObject.getString("token"));
             if (userData.getName() != null && userData.getId() != null) {
                 return userData;
@@ -295,7 +298,7 @@ public class PixivFetchUtil {
      */
     public static PixivArtwork getArtwork(@NotNull String id, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(getArtworkPageUrl(id))
+        Connection c = Jsoup.connect(getArtworkAjaxUrl(id))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
@@ -303,7 +306,7 @@ public class PixivFetchUtil {
         if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
-        JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(id);
+        JSONObject jsonObject = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body");
         PixivArtwork pixivArtwork = jsonObject.to(PixivArtwork.class);
         pixivArtwork.setOrigJson(jsonObject);
         JSONArray jsonArray = jsonObject.getJSONObject("tags").getJSONArray("tags");
@@ -326,7 +329,7 @@ public class PixivFetchUtil {
      */
     public static void getFullData(@NotNull PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
         HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(getArtworkPageUrl(artwork.getId()))
+        Connection c = Jsoup.connect(getArtworkAjaxUrl(artwork.getId()))
                 .ignoreContentType(true)
                 .method(Method.GET)
                 .cookies(cookie)
@@ -334,7 +337,7 @@ public class PixivFetchUtil {
         if (proxyHost != null && proxyPort != null && proxyPort != 0) {
             c.proxy(proxyHost, proxyPort);
         }
-        JSONObject jsonObject = JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(artwork.getId());
+        JSONObject jsonObject = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body");
         artwork.setBookmarkCount(jsonObject.getInteger("bookmarkCount"));
         artwork.setLikeCount(jsonObject.getInteger("likeCount"));
     }
@@ -620,32 +623,6 @@ public class PixivFetchUtil {
     }
 
     /**
-     * 获取作品的图片URL
-     *
-     * @param artwork      作品数据
-     * @param cookieString 使用的cookie
-     * @param proxyHost    代理地址
-     * @param proxyPort    代理端口
-     * @return 单页作品，动图作品的第一帧，多页作品的第一张的图片地址
-     * @throws IOException 当无法抓取时
-     * @deprecated 此方法只能获取单张图片，无法获取多页。已改用{@link #getFullPages(PixivArtwork, String, String, Integer)}
-     */
-    @Deprecated
-    public static String getImageUrl(PixivArtwork artwork, String cookieString, String proxyHost, Integer proxyPort) throws IOException {
-        HashMap<String, String> cookie = parseCookie(cookieString);
-        Connection c = Jsoup.connect(getArtworkPageUrl(artwork))
-                .ignoreContentType(true)
-                .method(Method.GET)
-                .cookies(cookie)
-                .timeout(10 * 1000);
-        if (proxyHost != null && proxyPort != null && proxyPort != 0) {
-            c.proxy(proxyHost, proxyPort);
-        }
-
-        return JSONObject.parseObject(Objects.requireNonNull(c.get().head().getElementById("meta-preload-data")).attr("content")).getJSONObject("illust").getJSONObject(artwork.getId()).getJSONObject("urls").getString("original");
-    }
-
-    /**
      * 获取相关作品
      *
      * @param artwork      源作品
@@ -706,6 +683,10 @@ public class PixivFetchUtil {
         return ARTWORK + id;
     }
 
+    public static String getArtworkAjaxUrl(@NotNull String id) {
+        return ARTWORK_AJAX + id;
+    }
+
     /**
      * 根据cookie字符串解析cookie键值对
      *
@@ -713,7 +694,7 @@ public class PixivFetchUtil {
      * @return cookie键值对
      */
     public static HashMap<String, String> parseCookie(String cookieString) {
-        if(cookieString == null) return new HashMap<>();
+        if (cookieString == null) return new HashMap<>();
         String[] t = cookieString.split(";");
         HashMap<String, String> cookieMap = new HashMap<>();
         for (String t2 : t) {
