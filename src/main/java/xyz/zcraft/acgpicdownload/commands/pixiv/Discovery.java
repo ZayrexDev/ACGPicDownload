@@ -77,8 +77,10 @@ public class Discovery {
             } catch (InterruptedException ignored) {
             }
         }
-        System.out.println("\r\033[32m[      DONE      ]");
-
+        if (f.isError())
+            System.out.println("\r\033[31m[      ERROR     ]\033[0m");
+        else
+            System.out.println("\r\033[32m[      DONE      ]\033[0m");
         List<PixivArtwork> art = f.getResult();
 
         if (f.getException() != null) {
@@ -140,7 +142,7 @@ public class Discovery {
 //                throw new RuntimeException(e);
             }
         }
-        System.out.println("Done fetching discovery.");
+        System.out.print("\n\nDONE fetching discovery.");
         System.out.print("\033[?25h");
         tpe.shutdown();
     }
