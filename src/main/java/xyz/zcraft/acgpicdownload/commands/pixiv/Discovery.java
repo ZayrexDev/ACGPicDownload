@@ -1,23 +1,27 @@
 package xyz.zcraft.acgpicdownload.commands.pixiv;
 
+import com.alibaba.fastjson2.JSONArray;
 import lombok.Getter;
 import xyz.zcraft.acgpicdownload.util.Logger;
-import xyz.zcraft.acgpicdownload.util.dl.DownloadUtil;
-import xyz.zcraft.acgpicdownload.util.pixiv.*;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
+import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class Discovery {
+    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Discovery.class);
     private final int threads = 5;
+
     private int mode = 0;
     private int count = 1;
+
+    private boolean file = false;
+    private String fileName;
 
     public void revoke(List<String> argList, String cookie, String proxyHost, int proxyPort, Logger logger) {
         for (int i = 0; i < argList.size(); i++) {
@@ -32,7 +36,7 @@ public class Discovery {
 
                         mode = argList.indexOf(argList.get(i));
                     } else {
-                        logger.err("Please specify at the mode");
+                        logger.err("Please specify a mode");
                         return;
                     }
                     break;
@@ -54,12 +58,30 @@ public class Discovery {
                     }
                     break;
                 }
+
+                case "-f", "-file": {
+                    if (argList.size() > i + 1) {
+                        i++;
+                        fileName = argList.get(i);
+                        file = true;
+                    } else {
+                        logger.err("Please specify a mode");
+                        return;
+                    }
+
+                    break;
+                }
             }
         }
 
         logger.info("Ready to get discovery: mode=" + mode + ",count=" + count + ",proxy=" + proxyHost + ":" + proxyPort);
 
+        if (file && fileName != null) {
+            logger.info("Saving to file: " + fileName);
+        }
+
         var f = new Fetch(mode, count, cookie, proxyHost, proxyPort);
+
         f.run();
 
         System.out.print("\033[?25l");
@@ -95,105 +117,133 @@ public class Discovery {
 
         System.out.println("\033[32mGot " + count + " artworks\033[0m");
         System.out.println();
-        System.out.println("\033[1mDownloading...\033[0m");
 
-        AtomicInteger completed = new AtomicInteger(0);
-        final ArrayList<PixivDownload> cur = new ArrayList<>(count);
-        for (int i1 = 0; i1 < threads; i1++) cur.add(null);
-        final ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
-
-        final LinkedList<PixivDownload> err = new LinkedList<>();
-
-        art.forEach(e -> tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed, cookie, proxyHost, proxyPort)));
-
-        boolean first = true;
-        while (true) {
-            if (!first)
-                System.out.print("\033[" + (1 + threads) + "F");
-            first = false;
-            System.out.println(
-                    "\033[32mCompleted:" + completed + "/" + art.size()
-                            + (err.isEmpty() ? "" : " \033[31mError:" + err.size()) + "\033[0m"
-            );
-            for (int k = 0; k < threads; k++) {
-                System.out.print("\033[K");
-                if (cur.get(k) == null) {
-                    System.out.println("IDLE");
-                } else {
-                    PixivDownload dl = cur.get(k);
-                    System.out.print("[");
-                    int v = (int) (Math.floor(((double) dl.getProgress() / dl.getTotal()) * 16.0));
-                    for (int j = 0; j < v; j++) {
-                        System.out.print("=");
-                    }
-                    for (int j = 0; j < 16 - v; j++) {
-                        System.out.print(" ");
-                    }
-                    System.out.print("] " + dl.getArtwork().getId());
-                    System.out.println();
-                }
-            }
-
-            if (completed.get() == art.size()) break;
-
+        if (file && fileName != null) {
             try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
+                Files.writeString(Path.of(fileName),
+                        JSONArray.toJSONString(
+                                art.stream().flatMap(
+                                        (Function<PixivArtwork, Stream<?>>) e -> Stream.of(e.getOrigJson())
+                                ).toList()
+                        )
+                );
+                logger.info("File written to " + fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.err("Error writing file: " + fileName);
             }
+        } else {
+            System.out.println("\033[1mDownloading...\033[0m");
+
+            Download.startDownload(cookie, proxyHost, proxyPort, art, threads, "downloads");
         }
+
         System.out.print("\n\nDONE fetching discovery.");
         System.out.print("\033[?25h");
-        tpe.shutdown();
+
     }
 
-    private record DownloadTask(int threads, PixivArtwork e, ArrayList<PixivDownload> cur,
-                                LinkedList<PixivDownload> err, ThreadPoolExecutor tpe,
-                                AtomicInteger completed, String cookie, String proxyHost,
-                                int proxyPort) implements Runnable {
-        @Override
-        public void run() {
-            int I = -1;
-            PixivDownload dl = null;
-            synchronized (cur) {
-                for (int i = 0; i < threads; i++) {
-                    if (cur.get(i) == null) {
-                        dl = new PixivDownload(e);
-                        cur.set(i, dl);
-                        I = i;
-                        break;
-                    }
-                }
-            }
+//    private void startDownload(String cookie, String proxyHost, int proxyPort, List<PixivArtwork> art) {
+//        AtomicInteger completed = new AtomicInteger(0);
+//        final ArrayList<PixivDownload> cur = new ArrayList<>(count);
+//        for (int i1 = 0; i1 < threads; i1++) cur.add(null);
+//        final ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
+//
+//        final LinkedList<PixivDownload> err = new LinkedList<>();
+//
+//        art.forEach(e -> tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed, cookie, proxyHost, proxyPort)));
+//
+//        boolean first = true;
+//        while (true) {
+//            if (!first)
+//                System.out.print("\033[" + (1 + threads) + "F");
+//            first = false;
+//            System.out.println(
+//                    "\033[32mCompleted:" + completed + "/" + art.size()
+//                            + (err.isEmpty() ? "" : " \033[31mError:" + err.size()) + "\033[0m"
+//            );
+//            for (int k = 0; k < threads; k++) {
+//                System.out.print("\033[K");
+//                if (cur.get(k) == null) {
+//                    System.out.println("IDLE");
+//                } else {
+//                    PixivDownload dl = cur.get(k);
+//                    System.out.print("[");
+//                    int v = (int) (Math.floor(((double) dl.getProgress() / dl.getTotal()) * 16.0));
+//                    for (int j = 0; j < v; j++) {
+//                        System.out.print("=");
+//                    }
+//                    for (int j = 0; j < 16 - v; j++) {
+//                        System.out.print(" ");
+//                    }
+//                    System.out.print("] " +
+//                            dl.getArtwork().getId() + " \t" +
+//                            dl.getProgress() + "/" + dl.getTotal() +
+//                            (dl.getArtwork().getIllustType() == 2 ? " GIF" : "")
+//                    );
+//                    System.out.println();
+//                }
+//            }
+//
+//            if (completed.get() == art.size()) break;
+//
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
 
-            if (dl == null) {
-                tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed, cookie, proxyHost, proxyPort));
-                return;
-            }
-
-            try {
-                new DownloadUtil(1).downloadPixiv(
-                        dl,
-                        Path.of("downloads").toFile(),
-                        cookie,
-                        new NamingRule("{$id}{_p$p}", 0, "{$id}"),
-                        false,
-                        proxyHost,
-                        proxyPort,
-                        ArtworkCondition.always()
-                );
-
-                synchronized (cur) {
-                    cur.set(I, null);
-                }
-
-                completed.incrementAndGet();
-            } catch (IOException ex) {
-                dl.setException(ex);
-                err.add(dl);
-            }
-        }
-    }
+    /// /                throw new RuntimeException(e);
+//            }
+//        }
+//        tpe.shutdown();
+//    }
+//
+//    private record DownloadTask(int threads, PixivArtwork e, ArrayList<PixivDownload> cur,
+//                                LinkedList<PixivDownload> err, ThreadPoolExecutor tpe,
+//                                AtomicInteger completed, String cookie, String proxyHost,
+//                                int proxyPort) implements Runnable {
+//        @Override
+//        public void run() {
+//            int I = -1;
+//            PixivDownload dl = null;
+//            synchronized (cur) {
+//                for (int i = 0; i < threads; i++) {
+//                    if (cur.get(i) == null) {
+//                        dl = new PixivDownload(e);
+//                        cur.set(i, dl);
+//                        I = i;
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            if (dl == null) {
+//                tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed, cookie, proxyHost, proxyPort));
+//                return;
+//            }
+//
+//            try {
+//                new DownloadUtil(1).downloadPixiv(
+//                        dl,
+//                        Path.of("downloads").toFile(),
+//                        cookie,
+//                        new NamingRule("{$id}{_p$p}", 0, "{$id}"),
+//                        false,
+//                        proxyHost,
+//                        proxyPort,
+//                        ArtworkCondition.always()
+//                );
+//
+//                synchronized (cur) {
+//                    cur.set(I, null);
+//                }
+//
+//                completed.incrementAndGet();
+//            } catch (IOException ex) {
+//                dl.setException(ex);
+//                err.add(dl);
+//            }
+//        }
+//    }
 
     private static class Fetch {
         private final String cookie;

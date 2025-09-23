@@ -56,6 +56,11 @@ public class Pixiv {
                     new Discovery().revoke(argList.subList(i + 1, argList.size()), cookie, proxyHost, proxyPort, logger);
                     return;
                 }
+
+                case "download", "dl": {
+                    new Download().revoke(argList.subList(i + 1, argList.size()), cookie, proxyHost, proxyPort, logger);
+                    return;
+                }
             }
         }
     }
