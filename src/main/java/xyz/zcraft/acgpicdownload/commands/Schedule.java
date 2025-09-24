@@ -10,11 +10,12 @@ import java.util.Scanner;
 
 import static xyz.zcraft.acgpicdownload.util.source.SourceManager.isEmpty;
 
+@Deprecated
 public class Schedule {
     private final ArrayList<Event> events = new ArrayList<>();
     Logger l;
 
-    public void main(ArrayList<String> args) {
+    public void invoke(ArrayList<String> args) {
         if (!parseEvent(args)) {
             return;
         }
@@ -91,7 +92,7 @@ public class Schedule {
                             public void run() {
                                 Fetch f = new Fetch();
                                 Logger t = new Logger(String.valueOf(this.hashCode()), logger, System.out);
-                                f.main(e.getCommands(), t);
+                                f.invoke(e.getCommands(), t);
                                 t.info("[Event End]");
                             }
                         });

@@ -51,3 +51,4 @@ build/
 /accounts.json
 /log/
 /.idea/
+/src/test/

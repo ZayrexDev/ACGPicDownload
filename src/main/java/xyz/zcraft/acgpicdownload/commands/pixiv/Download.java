@@ -23,7 +23,7 @@ public class Download {
     private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Download.class);
     public int threads = 5;
 
-    private String fileName;
+    private String fileName = null;
     private String target = "downloads";
 
     private List<PixivArtwork> art;
@@ -73,17 +73,19 @@ public class Download {
             if (completed.get() == art.size()) break;
 
             try {
+                //noinspection BusyWait
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
         tpe.shutdown();
     }
 
-    public void revoke(List<String> argList, String cookie,
-                       String proxyHost, int proxyPort, Logger logger) {
+    public void invoke(List<String> argList, String cookie,
+                       String proxyHost, int proxyPort, Logger logger, List<PixivArtwork> previous) {
         for (int i = 0; i < argList.size(); i++) {
+            if (!argList.get(i).startsWith("-")) break;
             switch (argList.get(i).toLowerCase()) {
                 case "-f", "-file": {
                     if (argList.size() > i + 1) {
@@ -111,22 +113,36 @@ public class Download {
             }
         }
 
-        if (fileName == null) {
-            logger.err("Please specify file name");
+        if (fileName == null && previous == null) {
+            logger.err("No artwork source to download!");
             return;
         }
 
-        try {
-            final String s = Files.readString(Path.of(fileName));
-            final List<JSONObject> parse = JSONArray.parse(s).toList(JSONObject.class);
-            art = new LinkedList<>();
-            parse.forEach(e -> {
-                final var t = e.to(PixivArtwork.class);
-                t.setOrigJson(e);
-                art.add(t);
-            });
-        } catch (IOException e) {
-            logger.err("Cannot read file " + fileName);
+        if (fileName != null && previous != null) {
+            logger.warn("Both file and previous result are provided, using file");
+        }
+
+        if (fileName != null) {
+            try {
+                final String s = Files.readString(Path.of(fileName));
+                final List<JSONObject> parse = JSONArray.parse(s).toList(JSONObject.class);
+                art = new LinkedList<>();
+                parse.forEach(e -> {
+                    final var t = e.to(PixivArtwork.class);
+                    t.setOrigJson(e);
+                    art.add(t);
+                });
+            } catch (IOException e) {
+                logger.err("Cannot read file " + fileName + ": " + e.getMessage());
+                log.error("Cannot read file " + fileName, e);
+                return;
+            }
+        } else {
+            art = previous;
+        }
+
+        if (art.isEmpty()) {
+            logger.warn("No artwork to download!");
             return;
         }
 

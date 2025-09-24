@@ -191,7 +191,7 @@ public class Fetch {
         return s;
     }
 
-    public void main(ArrayList<String> args, Logger logger) {
+    public void invoke(ArrayList<String> args, Logger logger) {
         this.logger = logger;
 
         if (!parseArguments(args)) {

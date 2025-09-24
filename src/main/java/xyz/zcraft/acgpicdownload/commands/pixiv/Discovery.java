@@ -9,13 +9,13 @@ import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class Discovery {
     private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Discovery.class);
-    private final int threads = 5;
 
     private int mode = 0;
     private int count = 1;
@@ -23,21 +23,22 @@ public class Discovery {
     private boolean file = false;
     private String fileName;
 
-    public void revoke(List<String> argList, String cookie, String proxyHost, int proxyPort, Logger logger) {
+    public List<PixivArtwork> invoke(List<String> argList, String cookie, String proxyHost, int proxyPort, Logger logger) {
         for (int i = 0; i < argList.size(); i++) {
+            if (!argList.get(i).startsWith("-")) break;
             switch (argList.get(i).toLowerCase()) {
                 case "-m", "-mode": {
                     if (argList.size() > i + 1) {
                         i++;
                         if (!List.of(PixivFetchUtil.DISCOVERY_MODES).contains(argList.get(i))) {
                             logger.err("Unknown mode " + argList.get(i));
-                            return;
+                            return null;
                         }
 
                         mode = argList.indexOf(argList.get(i));
                     } else {
                         logger.err("Please specify a mode");
-                        return;
+                        return null;
                     }
                     break;
                 }
@@ -48,13 +49,13 @@ public class Discovery {
                         final int c = Integer.parseInt(argList.get(i));
                         if (c < 0 || c > 50) {
                             logger.err("Count must be between 1 and 50.");
-                            return;
+                            return null;
                         }
 
                         count = c;
                     } else {
                         logger.err("Please specify a number.");
-                        return;
+                        return null;
                     }
                     break;
                 }
@@ -66,7 +67,7 @@ public class Discovery {
                         file = true;
                     } else {
                         logger.err("Please specify a mode");
-                        return;
+                        return null;
                     }
 
                     break;
@@ -95,6 +96,7 @@ public class Discovery {
             System.out.print("\033[" + (i) + "G=");
             System.out.print("\033[" + (i - d) + "G ");
             try {
+                //noinspection BusyWait
                 Thread.sleep(50);
             } catch (InterruptedException ignored) {
             }
@@ -107,12 +109,12 @@ public class Discovery {
 
         if (f.getException() != null) {
             logger.err("Error getting discovery: " + f.getException().getMessage());
-            return;
+            return null;
         }
 
         if (art == null || art.isEmpty()) {
             logger.err("No artworks found!");
-            return;
+            return new LinkedList<>();
         }
 
         System.out.println("\033[32mGot " + count + " artworks\033[0m");
@@ -129,121 +131,16 @@ public class Discovery {
                 );
                 logger.info("File written to " + fileName);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Error writing file", e);
                 logger.err("Error writing file: " + fileName);
             }
-        } else {
-            System.out.println("\033[1mDownloading...\033[0m");
-
-            Download.startDownload(cookie, proxyHost, proxyPort, art, threads, "downloads");
         }
 
         System.out.print("\n\nDONE fetching discovery.");
         System.out.print("\033[?25h");
 
+        return art;
     }
-
-//    private void startDownload(String cookie, String proxyHost, int proxyPort, List<PixivArtwork> art) {
-//        AtomicInteger completed = new AtomicInteger(0);
-//        final ArrayList<PixivDownload> cur = new ArrayList<>(count);
-//        for (int i1 = 0; i1 < threads; i1++) cur.add(null);
-//        final ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
-//
-//        final LinkedList<PixivDownload> err = new LinkedList<>();
-//
-//        art.forEach(e -> tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed, cookie, proxyHost, proxyPort)));
-//
-//        boolean first = true;
-//        while (true) {
-//            if (!first)
-//                System.out.print("\033[" + (1 + threads) + "F");
-//            first = false;
-//            System.out.println(
-//                    "\033[32mCompleted:" + completed + "/" + art.size()
-//                            + (err.isEmpty() ? "" : " \033[31mError:" + err.size()) + "\033[0m"
-//            );
-//            for (int k = 0; k < threads; k++) {
-//                System.out.print("\033[K");
-//                if (cur.get(k) == null) {
-//                    System.out.println("IDLE");
-//                } else {
-//                    PixivDownload dl = cur.get(k);
-//                    System.out.print("[");
-//                    int v = (int) (Math.floor(((double) dl.getProgress() / dl.getTotal()) * 16.0));
-//                    for (int j = 0; j < v; j++) {
-//                        System.out.print("=");
-//                    }
-//                    for (int j = 0; j < 16 - v; j++) {
-//                        System.out.print(" ");
-//                    }
-//                    System.out.print("] " +
-//                            dl.getArtwork().getId() + " \t" +
-//                            dl.getProgress() + "/" + dl.getTotal() +
-//                            (dl.getArtwork().getIllustType() == 2 ? " GIF" : "")
-//                    );
-//                    System.out.println();
-//                }
-//            }
-//
-//            if (completed.get() == art.size()) break;
-//
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-
-    /// /                throw new RuntimeException(e);
-//            }
-//        }
-//        tpe.shutdown();
-//    }
-//
-//    private record DownloadTask(int threads, PixivArtwork e, ArrayList<PixivDownload> cur,
-//                                LinkedList<PixivDownload> err, ThreadPoolExecutor tpe,
-//                                AtomicInteger completed, String cookie, String proxyHost,
-//                                int proxyPort) implements Runnable {
-//        @Override
-//        public void run() {
-//            int I = -1;
-//            PixivDownload dl = null;
-//            synchronized (cur) {
-//                for (int i = 0; i < threads; i++) {
-//                    if (cur.get(i) == null) {
-//                        dl = new PixivDownload(e);
-//                        cur.set(i, dl);
-//                        I = i;
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            if (dl == null) {
-//                tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed, cookie, proxyHost, proxyPort));
-//                return;
-//            }
-//
-//            try {
-//                new DownloadUtil(1).downloadPixiv(
-//                        dl,
-//                        Path.of("downloads").toFile(),
-//                        cookie,
-//                        new NamingRule("{$id}{_p$p}", 0, "{$id}"),
-//                        false,
-//                        proxyHost,
-//                        proxyPort,
-//                        ArtworkCondition.always()
-//                );
-//
-//                synchronized (cur) {
-//                    cur.set(I, null);
-//                }
-//
-//                completed.incrementAndGet();
-//            } catch (IOException ex) {
-//                dl.setException(ex);
-//                err.add(dl);
-//            }
-//        }
-//    }
 
     private static class Fetch {
         private final String cookie;

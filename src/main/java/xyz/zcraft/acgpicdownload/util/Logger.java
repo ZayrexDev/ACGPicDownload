@@ -1,11 +1,14 @@
 package xyz.zcraft.acgpicdownload.util;
 
+import lombok.Getter;
+
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
     private final String name;
+    @Getter
     private final Logger parentLogger;
 
     private final PrintStream[] out;
@@ -29,17 +32,13 @@ public class Logger {
         return name;
     }
 
-    public Logger getParentLogger() {
-        return parentLogger;
-    }
-
     public String getOutputName() {
-        return "[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "][" + getName() + "] ";
+        return "[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "][" + getName() + "]";
     }
 
     public void info(String message) {
         for (PrintStream t : out) {
-            t.println(getOutputName() + message);
+            t.println(getOutputName() + "[I] " + message);
             t.flush();
         }
     }
@@ -54,7 +53,11 @@ public class Logger {
     }
 
     public void err(String message) {
-        System.err.println(getOutputName() + message);
+        System.err.println(getOutputName() + "\033[0;31m[E]\033[0m " + message);
+    }
+
+    public void warn(String message) {
+        System.err.println(getOutputName() + "\033[0;33m[E]\033[0m " + message);
     }
 
     public void printf(String format, String... arg) {
