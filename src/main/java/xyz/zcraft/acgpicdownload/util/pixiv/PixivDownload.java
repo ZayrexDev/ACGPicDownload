@@ -10,7 +10,9 @@ public class PixivDownload {
     private DownloadStatus status = DownloadStatus.CREATED;
     private Exception exception;
     private int progress = 0;
+    private int progressBytes = 0;
     private int total = 0;
+    private int totalBytes = 0;
 
     public PixivDownload(PixivArtwork artwork) {
         this.artwork = artwork;
