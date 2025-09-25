@@ -52,3 +52,4 @@ build/
 /log/
 /.idea/
 /src/test/
+/debug.cookie

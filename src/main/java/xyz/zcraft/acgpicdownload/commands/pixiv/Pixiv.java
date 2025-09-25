@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Pixiv {
     private final List<String> subCommands = List.of(
-            "discovery", "download", "ranking", "user", "disc", "dl", "rk"
+            "discovery", "download", "ranking", "user", "disc", "dl", "rk", "save"
     );
     private final List<Integer> fragments = new LinkedList<>(List.of(1));
     private String cookie = null;
@@ -76,7 +76,7 @@ public class Pixiv {
             } else {
                 switch (argList.get(fragments.get(i)).toLowerCase()) {
                     case "discovery", "disc": {
-                        previous = new Discovery().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger);
+                        previous = new Fetcher().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger, Fetcher.Mode.Discovery);
                         break;
                     }
 
@@ -85,13 +85,18 @@ public class Pixiv {
                         break;
                     }
 
-                    case "ranking", "rk": {
+                    case "save": {
+                        new Saver().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), logger, previous);
+                        break;
+                    }
 
+                    case "ranking", "rk": {
+                        previous = new Fetcher().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger, Fetcher.Mode.Ranking);
                         break;
                     }
 
                     case "user", "u": {
-
+                        previous = new Fetcher().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger, Fetcher.Mode.User);
                         break;
                     }
                 }

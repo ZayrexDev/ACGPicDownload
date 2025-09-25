@@ -84,7 +84,7 @@ public class Download {
 
     public void invoke(List<String> argList, String cookie,
                        String proxyHost, int proxyPort, Logger logger, List<PixivArtwork> previous) {
-        for (int i = 0; i < argList.size(); i++) {
+        for (int i = 1; i < argList.size(); i++) {
             if (!argList.get(i).startsWith("-")) break;
             switch (argList.get(i).toLowerCase()) {
                 case "-f", "-file": {
@@ -105,6 +105,27 @@ public class Download {
                         this.target = argList.get(i);
                     } else {
                         logger.err("Please specify a output path");
+                        return;
+                    }
+
+                    break;
+                }
+
+                case "-t", "-threads": {
+                    if (argList.size() > i + 1) {
+                        i++;
+                        try {
+                            this.threads = Integer.parseInt(argList.get(i));
+                            if (this.threads < 1) {
+                                logger.err("Threads must be at least 1");
+                                return;
+                            }
+                        } catch (NumberFormatException e) {
+                            logger.err("Invalid number format: " + argList.get(i));
+                            return;
+                        }
+                    } else {
+                        logger.err("Please specify a number value");
                         return;
                     }
 
@@ -145,6 +166,8 @@ public class Download {
             logger.warn("No artwork to download!");
             return;
         }
+
+        logger.info(art.size() + " artworks to download!");
 
         startDownload(cookie, proxyHost, proxyPort, art, threads, target);
 
