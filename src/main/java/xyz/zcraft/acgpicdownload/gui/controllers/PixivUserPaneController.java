@@ -2,7 +2,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import org.apache.log4j.Logger;
@@ -30,7 +30,7 @@ public class PixivUserPaneController extends PixivFetchPane {
         super.initialize(url, resourceBundle);
 
         backBtn.setText("");
-        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        backBtn.setGraphic(new MFXFontIcon("fas-angle-down"));
     }
 
     public static final Logger logger = Logger.getLogger(PixivUserPaneController.class);
@@ -94,7 +94,7 @@ public class PixivUserPaneController extends PixivFetchPane {
                 ft.stop();
                 ft.setFromValue(1);
                 ft.setToValue(0);
-                ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                ft.setOnFinished((_) -> loadingPane.setVisible(false));
                 ft.play();
             }
         }).start();

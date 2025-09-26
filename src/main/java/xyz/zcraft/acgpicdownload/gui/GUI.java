@@ -6,6 +6,9 @@ import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
 import io.github.palexdev.materialfx.enums.ScrimPriority;
 import io.github.palexdev.materialfx.i18n.I18N;
 import io.github.palexdev.materialfx.i18n.Language;
+import io.github.palexdev.materialfx.theming.JavaFXThemes;
+import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
+import io.github.palexdev.materialfx.theming.UserAgentBuilder;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -136,6 +139,14 @@ public class GUI extends Application {
         logger.setLevel(Level.ALL);
         logger.info("Launching GUI");
 
+        UserAgentBuilder.builder()
+                .themes(JavaFXThemes.MODENA)
+                .themes(MaterialFXStylesheets.forAssemble(true))
+                .setDeploy(true)
+                .setResolveAssets(true)
+                .build()
+                .setGlobal();
+
         setLanguage();
         gui = this;
         mainStage = stage;
@@ -159,7 +170,7 @@ public class GUI extends Application {
 
         mainPaneController.init();
 
-        stage.setOnCloseRequest(windowEvent -> {
+        stage.setOnCloseRequest(_ -> {
             stage.hide();
             System.exit(0);
         });
@@ -312,7 +323,7 @@ public class GUI extends Application {
                         .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw)
                         .setShowClose(true)
                         .setHeaderText(ResourceBundleUtil.getString("gui.fetch.err")).get();
-                content.addActions(Map.entry(new MFXButton("OK"), event -> System.exit(1)));
+                content.addActions(Map.entry(new MFXButton("OK"), _ -> System.exit(1)));
                 MFXGenericDialogBuilder.build(content)
                         .toStageDialogBuilder()
                         .initOwner(stage)
@@ -333,6 +344,7 @@ public class GUI extends Application {
         }
     }
 
+    @SuppressWarnings("unused")
     public void reloadWindow() throws IOException {
         mainPaneController.reload();
         setLanguage();

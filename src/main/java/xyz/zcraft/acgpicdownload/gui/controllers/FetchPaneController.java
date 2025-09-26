@@ -6,8 +6,8 @@ import io.github.palexdev.materialfx.collections.TransformableList;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
 import io.github.palexdev.materialfx.utils.StringUtils;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -48,8 +48,8 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class FetchPaneController extends MyPane {
     private final LinkedList<ArgumentPane<?>> arguments = new LinkedList<>();
@@ -146,7 +146,7 @@ public class FetchPaneController extends MyPane {
         initTable();
 
         fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
-        data.addListener((ListChangeListener<DownloadResult>) c -> downloadBtn.setDisable(data.isEmpty()));
+        data.addListener((ListChangeListener<DownloadResult>) _ -> downloadBtn.setDisable(data.isEmpty()));
 
         try {
             ConfigManager.readConfig();
@@ -155,10 +155,10 @@ public class FetchPaneController extends MyPane {
             Main.logError(e);
         }
 
-        sourceUpdateBtn.setGraphic(new MFXFontIcon("mfx-sync"));
-        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
-        delCompletedBtn.setGraphic(new MFXFontIcon("mfx-delete"));
-        selectDirBtn.setGraphic(new MFXFontIcon("mfx-folder"));
+        sourceUpdateBtn.setGraphic(new MFXFontIcon("fas-arrows-rotate"));
+        backBtn.setGraphic(new MFXFontIcon("fas-angle-down"));
+        delCompletedBtn.setGraphic(new MFXFontIcon("fas-trash"));
+        selectDirBtn.setGraphic(new MFXFontIcon("fas-folder"));
     }
 
     private void initTable() {
@@ -171,9 +171,9 @@ public class FetchPaneController extends MyPane {
         MFXTableColumn<DownloadResult> statusColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.fetch.table.column.status"), true);
 
-        titleColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getFileName()));
-        linkColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
-        statusColumn.setRowCellFactory(arg0 -> new MFXTableRowCell<>(DownloadResult::getStatusString));
+        titleColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getFileName()));
+        linkColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
+        statusColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(DownloadResult::getStatusString));
 
         titleColumn.setAlignment(Pos.CENTER);
         linkColumn.setAlignment(Pos.CENTER);
@@ -198,21 +198,21 @@ public class FetchPaneController extends MyPane {
 
         dataTable.getSelectionModel().setAllowsMultipleSelection(false);
         dataTable.getSelectionModel().selectionProperty()
-                .addListener((observableValue, integerDownloadResultObservableMap, t1) -> {
+                .addListener((_, _, _) -> {
                     List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
                     if (!selectedValues.isEmpty()) {
-                        if (selectedValues.get(0).getStatus() == DownloadStatus.COMPLETED &&
+                        if (selectedValues.getFirst().getStatus() == DownloadStatus.COMPLETED &&
                                 ConfigManager.getConfig().getBooleanValue("fetchPLCOCopy")) {
                             try {
                                 Desktop.getDesktop().open(new File(outputDirField.getText(),
-                                        selectedValues.get(0).getResult().getFileName()));
+                                        selectedValues.getFirst().getResult().getFileName()));
                             } catch (IOException e) {
                                 Notice.showError(ResourceBundleUtil.getString("gui.fetch.table.cantOpen"),
                                         gui.mainPane);
                             }
                         } else {
                             Toolkit.getDefaultToolkit().getSystemClipboard()
-                                    .setContents(new StringSelection(selectedValues.get(0).getResult().getUrl()), null);
+                                    .setContents(new StringSelection(selectedValues.getFirst().getResult().getUrl()), null);
                             dataTable.getSelectionModel().clearSelection();
                             Notice.showSuccess(ResourceBundleUtil.getString("gui.fetch.table.copy"), gui.mainPane);
                         }
@@ -247,7 +247,7 @@ public class FetchPaneController extends MyPane {
             SourceManager.readConfig();
             sources.addAll(SourceManager.getSources());
         } catch (JSONException | IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -275,7 +275,7 @@ public class FetchPaneController extends MyPane {
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 ft.play();
-                ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                ft.setOnFinished((_) -> loadingPane.setVisible(false));
             }
         }).start();
     }
@@ -338,7 +338,7 @@ public class FetchPaneController extends MyPane {
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 data.addAll(r);
-                ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                ft.setOnFinished((_) -> loadingPane.setVisible(false));
                 ft.play();
             });
 
@@ -380,7 +380,7 @@ public class FetchPaneController extends MyPane {
                 Main.logError(e);
             }
             ft.play();
-            ft.setOnFinished((e) -> loadingPane.setVisible(false));
+            ft.setOnFinished((_) -> loadingPane.setVisible(false));
         }).start();
 
         ft.setFromValue(1);

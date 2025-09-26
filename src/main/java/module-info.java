@@ -10,6 +10,8 @@ module xyz.zcraft.acgpicdownload {
     requires org.jsoup;
     requires animated.gif.lib;
     requires fastjson;
+    requires javafx.web;
+    requires javafx.graphics;
 
     opens xyz.zcraft.acgpicdownload to javafx.controls, javafx.base, javafx.graphics, javafx.fxml, com.alibaba.fastjson2;
     opens xyz.zcraft.acgpicdownload.gui to javafx.base, javafx.controls, javafx.graphics, javafx.fxml;

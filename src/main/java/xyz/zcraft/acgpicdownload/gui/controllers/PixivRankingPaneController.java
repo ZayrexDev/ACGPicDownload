@@ -2,7 +2,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import org.apache.log4j.Logger;
@@ -42,7 +42,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
         super.initialize(url, resourceBundle);
 
         backBtn.setText("");
-        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        backBtn.setGraphic(new MFXFontIcon("fas-angle-down"));
 
         majorCombo.getItems().addAll(
                 ResourceBundleUtil.getString("gui.pixiv.ranking.daily"),
@@ -55,7 +55,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
                 ResourceBundleUtil.getString("gui.pixiv.ranking.female")
         );
 
-        majorCombo.selectedIndexProperty().addListener((observableValue, number, t1) -> {
+        majorCombo.selectedIndexProperty().addListener((_, _, t1) -> {
             int i = t1.intValue();
             if (i == 0 || i == 1 || i == 5 || i == 6 || i == 7) {
                 resToggle.setDisable(false);
@@ -127,43 +127,45 @@ public class PixivRankingPaneController extends PixivFetchPane {
                 logger.info("Fetched " + ids.size() + " artwork ids, getting info");
 
                 int[] i = {0, 0, 0};
-                ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
-                for (; i[0] < ids.size(); i[0]++) {
-                    final int finalI = i[0];
-                    tpe.execute(() -> {
-                        int tries = 0;
-                        while (tries <= 5) {
-                            try {
-                                PixivArtwork a = PixivFetchUtil.getArtwork(
-                                        ids.get(finalI),
-                                        getCookie(),
-                                        ConfigManager.getConfig().getString("proxyHost"),
-                                        ConfigManager.getConfig().getInteger("proxyPort")
-                                );
-                                a.setFrom(From.Ranking);
-                                String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected() ? "*" : "") + "-" + minorCombo.getSelectedItem() + "#" + (finalI + 1);
-                                a.setRanking(rankingInfo);
-                                pixivArtworks.add(a);
-                                i[1]++;
-                                return;
-                            } catch (Exception e) {
-                                tries++;
+                try (ThreadPoolExecutor tpe = (ThreadPoolExecutor) Executors.newFixedThreadPool(2)) {
+                    for (; i[0] < ids.size(); i[0]++) {
+                        final int finalI = i[0];
+                        tpe.execute(() -> {
+                            int tries = 0;
+                            while (tries <= 5) {
                                 try {
-                                    Thread.sleep(2000);
-                                } catch (InterruptedException ignored) {
+                                    PixivArtwork a = PixivFetchUtil.getArtwork(
+                                            ids.get(finalI),
+                                            getCookie(),
+                                            ConfigManager.getConfig().getString("proxyHost"),
+                                            ConfigManager.getConfig().getInteger("proxyPort")
+                                    );
+                                    a.setFrom(From.Ranking);
+                                    String rankingInfo = majorCombo.getSelectedItem() + (resToggle.isSelected() ? "*" : "") + "-" + minorCombo.getSelectedItem() + "#" + (finalI + 1);
+                                    a.setRanking(rankingInfo);
+                                    pixivArtworks.add(a);
+                                    i[1]++;
+                                    return;
+                                } catch (Exception e) {
+                                    tries++;
+                                    try {
+                                        Thread.sleep(2000);
+                                    } catch (InterruptedException ignored) {
+                                    }
                                 }
                             }
+                            i[1]++;
+                            i[2]++;
+                        });
+                    }
+                    while (tpe.getActiveCount() != 0) {
+                        Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + i[1] + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.failed") + " " + i[2]));
+                        try {
+                            //noinspection BusyWait
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
-                        i[1]++;
-                        i[2]++;
-                    });
-                }
-                while (tpe.getActiveCount() != 0) {
-                    Platform.runLater(() -> subOperationLabel.setText(ResourceBundleUtil.getString("gui.pixiv.ranking.notice.getting") + " " + i[1] + "/" + ids.size() + " | " + ResourceBundleUtil.getString("gui.pixiv.ranking.failed") + " " + i[2]));
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
                     }
                 }
                 Platform.runLater(() -> data.addAll(pixivArtworks));
@@ -181,7 +183,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
                 ft.stop();
                 ft.setFromValue(1);
                 ft.setToValue(0);
-                ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                ft.setOnFinished((_) -> loadingPane.setVisible(false));
                 ft.play();
             }
         }).start();

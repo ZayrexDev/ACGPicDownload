@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--suppress ALL -->
 <?import io.github.palexdev.materialfx.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.effect.BoxBlur?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" onMouseClicked="#hide" stylesheets="@../default.css"
-            xmlns="http://javafx.com/javafx/19"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="mainPane" onMouseClicked="#hide" prefHeight="467.0"
+            prefWidth="646.0"
+            stylesheets="@../default.css" xmlns="http://javafx.com/javafx/19"
             fx:controller="xyz.zcraft.acgpicdownload.gui.controllers.PixivAccountPaneController">
    <children>
       <ImageView fx:id="bg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"
@@ -18,39 +21,50 @@
             <BoxBlur/>
          </effect>
       </ImageView>
-      <VBox alignment="CENTER" prefHeight="197.0" prefWidth="600.0" spacing="10.0"
-            style="-fx-border-color: black transparent black transparent; -fx-background-color: white;"
-            AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-            AnchorPane.topAnchor="100.0">
+      <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+            AnchorPane.topAnchor="0.0">
          <children>
-            <Label maxWidth="1.7976931348623157E308" text="%gui.pixiv.account.title">
-               <font>
-                  <Font size="20.0"/>
-               </font>
-            </Label>
-            <HBox alignment="CENTER" spacing="10.0">
+            <VBox alignment="CENTER" spacing="10.0"
+                  style="-fx-border-color: black transparent black transparent; -fx-background-color: white;">
                <children>
-                  <MFXComboBox fx:id="accountCombo" floatMode="BORDER" maxHeight="30.0"
-                               maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                               HBox.hgrow="ALWAYS"/>
-                  <MFXButton onAction="#refreshAccount" text="%gui.pixiv.account.refresh"/>
-                  <MFXButton layoutX="129.0" layoutY="10.0" onAction="#delAccount" text="%gui.pixiv.account.del"/>
+                  <Label maxWidth="1.7976931348623157E308" text="%gui.pixiv.account.title">
+                     <font>
+                        <Font size="20.0"/>
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <MFXComboBox fx:id="accountCombo" floatMode="BORDER" maxHeight="30.0"
+                                     maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
+                                     HBox.hgrow="ALWAYS"/>
+                        <MFXButton buttonType="RAISED" depthLevel="LEVEL1" onAction="#refreshAccount"
+                                   text="%gui.pixiv.account.refresh"/>
+                        <MFXButton buttonType="RAISED" depthLevel="LEVEL1" layoutX="129.0" layoutY="10.0"
+                                   onAction="#delAccount" text="%gui.pixiv.account.del"/>
+                     </children>
+                  </HBox>
+                  <Separator prefWidth="200.0"/>
+                  <HBox alignment="CENTER" spacing="10.0"/>
+                  <HBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <MFXButton fx:id="browserLoginBtn" buttonType="RAISED" depthLevel="LEVEL1"
+                                   onAction="#browserLoginBtnOnAction" text="%gui.pixiv.account.add.browser"/>
+                        <Label text="%gui.pixiv.account.add.or"/>
+                        <MFXTextField fx:id="cookieField" floatMode="BORDER" floatingText="Cookie" maxHeight="30.0"
+                                      maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
+                                      HBox.hgrow="ALWAYS"/>
+                        <MFXButton fx:id="cookieHelpBtn" buttonType="RAISED" depthLevel="LEVEL1"
+                                   onAction="#cookieHelp"/>
+                        <MFXButton buttonType="RAISED" depthLevel="LEVEL1" layoutX="264.0" layoutY="12.0"
+                                   onAction="#addAccount" text="%gui.pixiv.account.add"/>
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
-            <HBox alignment="CENTER" spacing="10.0"/>
-            <HBox alignment="CENTER" spacing="10.0">
-               <children>
-                  <MFXTextField fx:id="cookieField" floatMode="BORDER" floatingText="Cookie" maxHeight="30.0"
-                                maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0"
-                                HBox.hgrow="ALWAYS"/>
-                  <MFXButton fx:id="cookieHelpBtn" onAction="#cookieHelp"/>
-                  <MFXButton layoutX="264.0" layoutY="12.0" onAction="#addAccount" text="%gui.pixiv.account.add"/>
-               </children>
-            </HBox>
+               <padding>
+                  <Insets bottom="30.0" left="100.0" right="100.0" top="30.0"/>
+               </padding>
+            </VBox>
          </children>
-         <padding>
-            <Insets bottom="20.0" left="100.0" right="100.0"/>
-         </padding>
       </VBox>
    </children>
 </AnchorPane>
