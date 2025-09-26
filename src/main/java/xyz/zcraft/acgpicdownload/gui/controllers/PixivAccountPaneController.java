@@ -3,17 +3,23 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXTextField;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import lombok.Getter;
@@ -22,22 +28,21 @@ import org.apache.log4j.Logger;
 import xyz.zcraft.acgpicdownload.gui.ConfigManager;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.gui.Notice;
+import xyz.zcraft.acgpicdownload.gui.ResourceLoader;
 import xyz.zcraft.acgpicdownload.util.ResourceBundleUtil;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivAccount;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.net.*;
+import java.util.*;
 
 public class PixivAccountPaneController implements Initializable {
+    public static final Logger logger = Logger.getLogger(PixivAccountPaneController.class);
     public MFXComboBox<PixivAccount> accountCombo;
     public MFXTextField cookieField;
     public MFXButton cookieHelpBtn;
+    public MFXButton browserLoginBtn;
     @Setter
     @Getter
     GUI gui;
@@ -61,13 +66,13 @@ public class PixivAccountPaneController implements Initializable {
 
             @Override
             public PixivAccount fromString(String string) {
-                return accountCombo.getItems().filtered((o) -> o.getName().equals(string)).get(0);
+                return accountCombo.getItems().filtered((o) -> o.getName().equals(string)).getFirst();
             }
         });
 
         accountCombo.getItems().clear();
         accountCombo.getItems().addAll(ConfigManager.getAccounts());
-        accountCombo.selectedIndexProperty().addListener(observable -> {
+        accountCombo.selectedIndexProperty().addListener(_ -> {
             ConfigManager.setSelectedAccount(accountCombo.getSelectedItem());
             if (gui != null) gui.pixivPaneController.reloadAccount();
         });
@@ -75,7 +80,8 @@ public class PixivAccountPaneController implements Initializable {
         accountCombo.selectFirst();
 
         cookieHelpBtn.setText("");
-        cookieHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
+        cookieHelpBtn.setGraphic(new MFXFontIcon("fas-circle-info"));
+        browserLoginBtn.setGraphic(new MFXFontIcon("fas-globe"));
     }
 
     public void hide() {
@@ -86,7 +92,7 @@ public class PixivAccountPaneController implements Initializable {
         ft.setAutoReverse(false);
         ft.setRate(0.05);
         ft.setDuration(Duration.millis(5));
-        ft.setOnFinished(actionEvent -> Platform.runLater(() -> mainPane.setVisible(false)));
+        ft.setOnFinished(_ -> Platform.runLater(() -> mainPane.setVisible(false)));
 
         ft.play();
     }
@@ -113,10 +119,8 @@ public class PixivAccountPaneController implements Initializable {
         ft.play();
     }
 
-    public static final Logger logger = Logger.getLogger(PixivAccountPaneController.class);
-
-    public void addAccount() throws IOException {
-        HashMap<String, String> stringStringHashMap = PixivFetchUtil.parseCookie(cookieField.getText());
+    public void addAccount(String cookieOrig) throws IOException {
+        HashMap<String, String> stringStringHashMap = PixivFetchUtil.parseCookie(cookieOrig);
         String cookie = "PHPSESSID" + "=" + stringStringHashMap.get("PHPSESSID");
         PixivAccount account = PixivFetchUtil.getAccount(
                 cookie,
@@ -138,6 +142,10 @@ public class PixivAccountPaneController implements Initializable {
             logger.error("Failed to add account");
             Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
         }
+    }
+
+    public void addAccount() throws IOException {
+        addAccount(cookieField.getText());
     }
 
     public void delAccount() throws IOException {
@@ -176,9 +184,58 @@ public class PixivAccountPaneController implements Initializable {
     public void cookieHelp() throws URISyntaxException, IOException {
         if (Locale.getDefault().equals(Locale.CHINA) || Locale.getDefault().equals(Locale.TAIWAN)) {
             java.awt.Desktop.getDesktop()
-                    .browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/%E8%8E%B7%E5%8F%96Cookie"));
+                    .browse(new URI("https://github.com/ZayrexDev/ACGPicDownload/wiki/%E8%8E%B7%E5%8F%96Cookie"));
         } else {
-            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/zxzxy/ACGPicDownload/wiki/Get-cookie"));
+            java.awt.Desktop.getDesktop().browse(new URI("https://github.com/ZayrexDev/ACGPicDownload/wiki/Get-cookie"));
+        }
+    }
+
+    public void browserLoginBtnOnAction() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(ResourceBundleUtil.getString("gui.pixiv.account.add.browser.alert.title"));
+        alert.setHeaderText(ResourceBundleUtil.getString("gui.pixiv.account.add.browser.alert.header"));
+        alert.setContentText(ResourceBundleUtil.getString("gui.pixiv.account.add.browser.alert.content"));
+        alert.showAndWait();
+
+        CookieManager manager = new CookieManager();
+        CookieHandler.setDefault(manager);
+
+        if (!alert.getResult().equals(ButtonType.OK)) {
+            return;
+        }
+
+        Stage browserStage = new Stage();
+        browserStage.setTitle("Pixiv Login - ACGPicDownload");
+        browserStage.setWidth(1000);
+        browserStage.setHeight(600);
+
+        final FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(ResourceLoader.loadURL("fxml/PixivLoginPane.fxml")));
+        final Parent load;
+        try {
+            load = fxmlLoader.load();
+            final PixivLoginPaneController controller = fxmlLoader.getController();
+            final Scene scene = new Scene(load);
+            browserStage.setScene(scene);
+
+            controller.reload();
+
+            browserStage.showAndWait();
+
+            CookieStore cs = manager.getCookieStore();
+            final List<HttpCookie> httpCookies = cs.get(new URI("https://pixiv.net"));
+
+            httpCookies.stream().filter(e -> e.getName().equalsIgnoreCase("PHPSESSID")).findFirst()
+                    .ifPresentOrElse(e -> {
+                        try {
+                            addAccount("PHPSESSID=" + e.getValue());
+                        } catch (IOException ex) {
+                            Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
+                        }
+                    }, () -> Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane));
+        } catch (IOException e) {
+            Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 }

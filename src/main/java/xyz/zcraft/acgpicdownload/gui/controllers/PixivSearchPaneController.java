@@ -3,7 +3,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 import io.github.palexdev.materialfx.controls.MFXComboBox;
 import io.github.palexdev.materialfx.controls.MFXSlider;
 import io.github.palexdev.materialfx.controls.MFXTextField;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import org.apache.log4j.Logger;
@@ -52,7 +52,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
         super.initialize(url, resourceBundle);
 
         backBtn.setText("");
-        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        backBtn.setGraphic(new MFXFontIcon("fas-angle-down"));
 
         typeCombo.getItems().addAll(
                 ResourceBundleUtil.getString("gui.pixiv.search.mode.top"),
@@ -66,7 +66,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
                 ResourceBundleUtil.getString("gui.pixiv.disc.mode.adult")
         );
 
-        typeCombo.selectedIndexProperty().addListener((observableValue, number, t1) -> {
+        typeCombo.selectedIndexProperty().addListener((_, _, t1) -> {
             int i = t1.intValue();
             modeCombo.setDisable(i == 0);
             pageSlider.setDisable(i == 0);
@@ -146,7 +146,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
                 ft.stop();
                 ft.setFromValue(1);
                 ft.setToValue(0);
-                ft.setOnFinished((e) -> loadingPane.setVisible(false));
+                ft.setOnFinished((_) -> loadingPane.setVisible(false));
                 ft.play();
             }
         }).start();

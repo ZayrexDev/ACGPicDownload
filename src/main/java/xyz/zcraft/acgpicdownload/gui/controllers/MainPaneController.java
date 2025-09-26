@@ -2,7 +2,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXProgressBar;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import lombok.Getter;
+import lombok.Setter;
 import xyz.zcraft.acgpicdownload.gui.GUI;
 
 import java.io.InputStream;
@@ -26,6 +28,8 @@ import java.util.ResourceBundle;
 
 public class MainPaneController implements Initializable {
     public MFXButton maximizeBtn;
+    @Setter
+    @Getter
     GUI gui;
     double w = 800;
     double h = 500 - 30;
@@ -33,8 +37,10 @@ public class MainPaneController implements Initializable {
     double origMouseY;
     double origStageW;
     double origStageH;
+    @Getter
     @javafx.fxml.FXML
     private AnchorPane mainPane;
+    @Getter
     @javafx.fxml.FXML
     private ImageView background;
     @javafx.fxml.FXML
@@ -51,20 +57,14 @@ public class MainPaneController implements Initializable {
     private MFXButton closeBtn;
     @javafx.fxml.FXML
     private MFXButton minimizeBtn;
+    @Getter
     @javafx.fxml.FXML
     private HBox titlePane;
+    @Getter
     private boolean transparent = false;
     private double origStageX;
     private double origStageY;
     private Image image;
-
-    public AnchorPane getMainPane() {
-        return mainPane;
-    }
-
-    public ImageView getBackground() {
-        return background;
-    }
 
     public void setBackground(InputStream stream) {
         image = new Image(stream);
@@ -95,26 +95,14 @@ public class MainPaneController implements Initializable {
         blurImg.setImage(snapshot);
     }
 
-    public boolean isTransparent() {
-        return transparent;
-    }
-
     public void setTransparent() {
         transparent = true;
         blurImg.setVisible(false);
         background.setVisible(false);
         titleLbl.setTextFill(Color.BLACK);
-        closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.BLACK));
-        minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.BLACK));
-        maximizeBtn.setGraphic(new MFXFontIcon("mfx-expand", Color.BLACK));
-    }
-
-    public GUI getGui() {
-        return gui;
-    }
-
-    public void setGui(GUI gui) {
-        this.gui = gui;
+        closeBtn.setGraphic(new MFXFontIcon("fas-xmark", Color.BLACK));
+        minimizeBtn.setGraphic(new MFXFontIcon("fas-minus", Color.BLACK));
+        maximizeBtn.setGraphic(new MFXFontIcon("fas-expand", Color.BLACK));
     }
 
     public void setProgress(double p) {
@@ -128,22 +116,22 @@ public class MainPaneController implements Initializable {
         ft.setFromValue(1);
         ft.setDuration(Duration.millis(10));
         ft.setRate(0.1);
-        ft.setOnFinished((e) -> initPane.setVisible(false));
+        ft.setOnFinished((_) -> initPane.setVisible(false));
         ft.play();
 
         ft.setNode(blurImg);
-        ft.setOnFinished((e) -> blurImg.setVisible(false));
+        ft.setOnFinished((_) -> blurImg.setVisible(false));
         ft.play();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         closeBtn.setText("");
-        closeBtn.setGraphic(new MFXFontIcon("mfx-x", Color.WHITE));
+        closeBtn.setGraphic(new MFXFontIcon("fas-xmark", Color.WHITE));
         minimizeBtn.setText("");
-        minimizeBtn.setGraphic(new MFXFontIcon("mfx-minus", Color.WHITE));
+        minimizeBtn.setGraphic(new MFXFontIcon("fas-minus", Color.WHITE));
         maximizeBtn.setText("");
-        maximizeBtn.setGraphic(new MFXFontIcon("mfx-expand", Color.WHITE));
+        maximizeBtn.setGraphic(new MFXFontIcon("fas-expand", Color.WHITE));
     }
 
     public void reload() {
@@ -153,11 +141,11 @@ public class MainPaneController implements Initializable {
         ft.setFromValue(0);
         ft.setDuration(Duration.millis(10));
         ft.setRate(0.1);
-        ft.setOnFinished((e) -> initPane.setVisible(false));
+        ft.setOnFinished((_) -> initPane.setVisible(false));
         ft.play();
 
         ft.setNode(blurImg);
-        ft.setOnFinished((e) -> blurImg.setVisible(false));
+        ft.setOnFinished((_) -> blurImg.setVisible(false));
         ft.play();
     }
 
@@ -185,10 +173,6 @@ public class MainPaneController implements Initializable {
     @FXML
     private void closeBtnOnAction() {
         System.exit(0);
-    }
-
-    public HBox getTitlePane() {
-        return titlePane;
     }
 
     @FXML

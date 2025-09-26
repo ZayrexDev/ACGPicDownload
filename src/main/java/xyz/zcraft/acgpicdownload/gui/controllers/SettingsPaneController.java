@@ -2,7 +2,7 @@ package xyz.zcraft.acgpicdownload.gui.controllers;
 
 import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.*;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleGroup;
@@ -107,15 +107,21 @@ public class SettingsPaneController extends MyPane {
         restoreConfig();
 
         backBtn.setText("");
-        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        backBtn.setGraphic(new MFXFontIcon("fas-angle-down"));
         bgChooseFolderBtn.setText("");
-        bgChooseFolderBtn.setGraphic(new MFXFontIcon("mfx-folder"));
+        bgChooseFolderBtn.setGraphic(new MFXFontIcon("fas-folder"));
     }
 
     private void verifyProxy(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         proxyHost = null;
         proxyPort = 0;
+
         System.getProperties().put("proxySet", "false");
+        System.clearProperty("http.proxyHost");
+        System.clearProperty("http.proxyPort");
+        System.clearProperty("https.proxyHost");
+        System.clearProperty("https.proxyPort");
+
         if (!newValue.isEmpty()) {
             String[] str = newValue.split(":");
             if (str.length == 2) {
@@ -131,6 +137,11 @@ public class SettingsPaneController extends MyPane {
                 System.getProperties().put("proxySet", "true");
                 System.getProperties().put("proxyHost", proxyHost);
                 System.getProperties().put("proxyPort", String.valueOf(proxyPort));
+
+                System.setProperty("http.proxyHost", proxyHost);
+                System.setProperty("http.proxyPort", String.valueOf(proxyPort));
+                System.setProperty("https.proxyHost", proxyHost);
+                System.setProperty("https.proxyPort", String.valueOf(proxyPort));
                 proxyField.setTextFill(MFXTextField.DEFAULT_TEXT_COLOR);
             } else {
                 proxyField.setTextFill(Color.RED);

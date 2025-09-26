@@ -15,6 +15,7 @@ import java.util.*;
 
 public class PixivFetchUtil {
     public static final String[] DISCOVERY_MODES = {"all", "safe", "r18"};
+    public static final String LOGIN = "https://accounts.pixiv.net/login";
     private static final String TOP = "https://www.pixiv.net/ajax/top/illust?mode=all";
     private static final String RELATED = "https://www.pixiv.net/ajax/illust/%s/recommend/init?limit=%d";
     private static final String ARTWORK = "https://www.pixiv.net/artworks/";
@@ -54,7 +55,7 @@ public class PixivFetchUtil {
                 return userData;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -222,7 +223,7 @@ public class PixivFetchUtil {
         Elements rankingItems = c.get().body().getElementsByClass("ranking-item");
         LinkedList<String> ids = new LinkedList<>();
         for (Element rankingItem : rankingItems) {
-            String href = rankingItem.getElementsByClass("ranking-image-item").get(0).getElementsByTag("a").get(0).attr("href");
+            String href = rankingItem.getElementsByClass("ranking-image-item").getFirst().getElementsByTag("a").getFirst().attr("href");
             String id = href.substring(href.lastIndexOf("/") + 1);
             ids.add(id);
         }
@@ -679,6 +680,7 @@ public class PixivFetchUtil {
      * @param id 作品id
      * @return 作品页面URL
      */
+    @SuppressWarnings("unused")
     public static String getArtworkPageUrl(@NotNull String id) {
         return ARTWORK + id;
     }

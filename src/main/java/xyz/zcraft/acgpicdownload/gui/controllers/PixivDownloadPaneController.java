@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.filter.StringFilter;
-import io.github.palexdev.materialfx.font.MFXFontIcon;
+import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -154,13 +154,13 @@ public class PixivDownloadPaneController extends MyPane {
         MFXTableColumn<PixivDownload> typeColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.type"), true);
 
-        titleColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
-        authorColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
-        fromColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getFromString()));
-        tagColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
-        idColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
-        statusColumn.setRowCellFactory(e -> new MFXTableRowCell<>(PixivDownload::getStatusString));
-        typeColumn.setRowCellFactory(e -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
+        titleColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
+        authorColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
+        fromColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getFromString()));
+        tagColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
+        idColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
+        statusColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(PixivDownload::getStatusString));
+        typeColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
 
         titleColumn.setAlignment(Pos.CENTER);
         authorColumn.setAlignment(Pos.CENTER);
@@ -206,16 +206,16 @@ public class PixivDownloadPaneController extends MyPane {
                 ResourceBundleUtil.getString("gui.pixiv.download.multiPageRule.gathered")
         );
 
-        multiPageCombo.selectedIndexProperty().addListener((observableValue, number, t1) -> folderNamingRuleField.setDisable(t1.intValue() != 0));
+        multiPageCombo.selectedIndexProperty().addListener((_, _, t1) -> folderNamingRuleField.setDisable(t1.intValue() != 0));
 
         multiPageCombo.selectFirst();
 
         backBtn.setText("");
-        backBtn.setGraphic(new MFXFontIcon("mfx-angle-down"));
+        backBtn.setGraphic(new MFXFontIcon("fas-angle-down"));
         selectDirBtn.setText("");
-        selectDirBtn.setGraphic(new MFXFontIcon("mfx-folder"));
+        selectDirBtn.setGraphic(new MFXFontIcon("fas-folder"));
         namingRuleHelpBtn.setText("");
-        namingRuleHelpBtn.setGraphic(new MFXFontIcon("mfx-info-circle"));
+        namingRuleHelpBtn.setGraphic(new MFXFontIcon("fas-circle-info"));
         saveConfigBtn.setText("");
         saveConfigBtn.setGraphic(new ImageView(new Image(ResourceLoader.loadStream("icon/save.png"), 18, 18, true, false)));
 
