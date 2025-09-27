@@ -12,10 +12,11 @@ import java.util.List;
 public class Fetcher {
     @SuppressWarnings("unused")
     private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Fetcher.class);
+    private static final Logger out = new Logger("Fetcher");
 
     private ArtProvider ap;
 
-    public List<PixivArtwork> invoke(List<String> argList, String cookie, String proxyHost, int proxyPort, Logger logger, Mode mode) {
+    public List<PixivArtwork> invoke(List<String> argList, String cookie, String proxyHost, int proxyPort, Mode mode) {
         switch (mode) {
             case Discovery -> {
                 int discMode = 0;
@@ -28,14 +29,14 @@ public class Fetcher {
                             if (argList.size() > i + 1) {
                                 i++;
                                 if (!List.of(PixivFetchUtil.DISCOVERY_MODES).contains(argList.get(i))) {
-                                    logger.err("Unknown mode " + argList.get(i));
-                                    return null;
+                                    out.err("Unknown mode " + argList.get(i));
+                                    throw new IllegalArgumentException("Unknown mode " + argList.get(i));
                                 }
 
                                 discMode = argList.indexOf(argList.get(i));
                             } else {
-                                logger.err("Please specify a mode");
-                                return null;
+                                out.err("Please specify a mode");
+                                throw new IllegalArgumentException("Please specify a mode");
                             }
                             break;
                         }
@@ -44,22 +45,22 @@ public class Fetcher {
                             if (argList.size() > i + 1) {
                                 i++;
                                 final int c = Integer.parseInt(argList.get(i));
-                                if (c < 0 || c > 50) {
-                                    logger.err("Count must be between 1 and 50.");
-                                    return null;
+                                if (c < 0 || c > 100) {
+                                    out.err("Count must be between 1 and 100.");
+                                    throw new IllegalArgumentException("Count must be between 1 and 100");
                                 }
 
                                 count = c;
                             } else {
-                                logger.err("Please specify a number.");
-                                return null;
+                                out.err("Please specify a number.");
+                                throw new IllegalArgumentException("Please specify a number.");
                             }
                             break;
                         }
                     }
                 }
 
-                logger.info("Ready to get discovery: mode=" + discMode + ",count=" + count +
+                out.info("Ready to get discovery: mode=" + discMode + ",count=" + count +
                         (proxyHost != null ? ",proxy=" + proxyHost + ":" + proxyPort : ""));
 
                 int finalCount = count;
@@ -104,12 +105,12 @@ public class Fetcher {
         List<PixivArtwork> art = f.getResult();
 
         if (f.getException() != null) {
-            logger.err("Error getting " + mode + ": " + f.getException().getMessage());
-            return null;
+            out.err("Error getting " + mode + ": " + f.getException().getMessage());
+            throw new RuntimeException(f.getException());
         }
 
         if (art == null || art.isEmpty()) {
-            logger.warn("No artworks found!");
+            out.warn("No artworks found!");
             return new LinkedList<>();
         }
 

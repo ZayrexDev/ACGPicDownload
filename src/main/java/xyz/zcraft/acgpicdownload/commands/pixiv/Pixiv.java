@@ -12,15 +12,19 @@ import java.util.List;
 
 public class Pixiv {
     private final List<String> subCommands = List.of(
-            "discovery", "download", "ranking", "user", "disc", "dl", "rk", "save"
+            "discovery", "download", "ranking", "user", "save", "load"
     );
     private final List<Integer> fragments = new LinkedList<>(List.of(1));
     private String cookie = null;
     private String proxyHost = null;
     private int proxyPort = -1;
     private List<PixivArtwork> previous;
+    private boolean ignoreError = false;
+    private Logger logger;
 
     public void invoke(ArrayList<String> argList, Logger logger) {
+        this.logger = logger;
+
         for (int i = 1; i < argList.size(); i++) {
             if (subCommands.contains(argList.get(i).toLowerCase())) {
                 fragments.add(i);
@@ -31,76 +35,78 @@ public class Pixiv {
 
         for (int i = 0; i < fragments.size() - 1; i++) {
             if (i == 0) {
-                for (int j = 1; j < fragments.get(i + 1); j++) {
-                    switch (argList.get(j).toLowerCase()) {
-                        case "-c", "-cookie": {
-                            if (argList.size() > j + 1) {
-                                j++;
-                                try {
-                                    var p = argList.get(j);
-                                    if (p.startsWith("\"") && p.endsWith("\"")) p = p.substring(1, p.length() - 1);
-                                    cookie = Files.readString(Path.of(p));
-                                } catch (IOException e) {
-                                    logger.err("Cannot read cookie file " + argList.get(j));
-                                    return;
-                                }
-                            } else {
-                                logger.err("Please specify a cookie file");
-                                return;
-                            }
-                            break;
-                        }
-
-                        case "-p", "-proxy": {
-                            if (argList.size() > j + 1) {
-                                j++;
-                                try {
-                                    final String[] split = argList.get(j).split(":");
-                                    proxyHost = split[0];
-                                    proxyPort = Integer.parseInt(split[1]);
-
-                                    System.getProperties().put("proxySet", "true");
-                                    System.getProperties().put("proxyHost", proxyHost);
-                                    System.getProperties().put("proxyPort", String.valueOf(proxyPort));
-                                } catch (Exception e) {
-                                    logger.err("Cannot parse proxy " + argList.get(j));
-                                }
-                            } else {
-                                logger.err("Please specify a proxy");
-                                return;
-                            }
-                            break;
-                        }
-                    }
-                }
+                if (parseArgs(argList, i)) return;
             } else {
-                switch (argList.get(fragments.get(i)).toLowerCase()) {
-                    case "discovery", "disc": {
-                        previous = new Fetcher().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger, Fetcher.Mode.Discovery);
-                        break;
-                    }
-
-                    case "download", "dl": {
-                        new Download().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger, previous);
-                        break;
-                    }
-
-                    case "save": {
-                        new Saver().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), logger, previous);
-                        break;
-                    }
-
-                    case "ranking", "rk": {
-                        previous = new Fetcher().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger, Fetcher.Mode.Ranking);
-                        break;
-                    }
-
-                    case "user", "u": {
-                        previous = new Fetcher().invoke(argList.subList(fragments.get(i), fragments.get(i + 1)), cookie, proxyHost, proxyPort, logger, Fetcher.Mode.User);
-                        break;
+                try {
+                    executeSubCommand(argList, i);
+                } catch (Exception e) {
+                    logger.err("Error executing sub-command " + argList.get(fragments.get(i)) + ": " + e.getMessage());
+                    if (ignoreError) {
+                        logger.info("Ignoring error and continuing...");
+                    } else {
+                        logger.info("Terminating due to error.");
+                        return;
                     }
                 }
             }
+        }
+    }
+
+    private boolean parseArgs(ArrayList<String> argList, int i) {
+        for (int j = 1; j < fragments.get(i + 1); j++) {
+            switch (argList.get(j).toLowerCase()) {
+                case "-c", "-cookie" -> {
+                    if (argList.size() > j + 1) {
+                        j++;
+                        try {
+                            var p = argList.get(j);
+                            if (p.startsWith("\"") && p.endsWith("\"")) p = p.substring(1, p.length() - 1);
+                            cookie = Files.readString(Path.of(p));
+                        } catch (IOException e) {
+                            logger.err("Cannot read cookie file " + argList.get(j));
+                            return true;
+                        }
+                    } else {
+                        logger.err("Please specify a cookie file");
+                        return true;
+                    }
+                }
+                case "-p", "-proxy" -> {
+                    if (argList.size() > j + 1) {
+                        j++;
+                        try {
+                            final String[] split = argList.get(j).split(":");
+                            proxyHost = split[0];
+                            proxyPort = Integer.parseInt(split[1]);
+
+                            System.getProperties().put("proxySet", "true");
+                            System.getProperties().put("proxyHost", proxyHost);
+                            System.getProperties().put("proxyPort", String.valueOf(proxyPort));
+                        } catch (Exception e) {
+                            logger.err("Cannot parse proxy " + argList.get(j));
+                        }
+                    } else {
+                        logger.err("Please specify a proxy");
+                        return true;
+                    }
+                }
+                case "-i", "-ignore" -> ignoreError = true;
+            }
+        }
+        return false;
+    }
+
+    private void executeSubCommand(ArrayList<String> argList, int i) throws Exception {
+        final List<String> subArgs = argList.subList(fragments.get(i), fragments.get(i + 1));
+        switch (argList.get(fragments.get(i)).toLowerCase()) {
+            case "discovery" ->
+                    previous = new Fetcher().invoke(subArgs, cookie, proxyHost, proxyPort, Fetcher.Mode.Discovery);
+            case "download" -> new Download().invoke(subArgs, cookie, proxyHost, proxyPort, previous);
+            case "save" -> new Saver().invoke(subArgs, previous);
+            case "ranking" ->
+                    previous = new Fetcher().invoke(subArgs, cookie, proxyHost, proxyPort, Fetcher.Mode.Ranking);
+            case "user" -> previous = new Fetcher().invoke(subArgs, cookie, proxyHost, proxyPort, Fetcher.Mode.User);
+            case "load" -> previous = new Loader().invoke(subArgs);
         }
     }
 }

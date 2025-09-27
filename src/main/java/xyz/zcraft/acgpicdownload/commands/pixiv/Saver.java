@@ -13,12 +13,13 @@ import java.util.stream.Stream;
 
 public class Saver {
     private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Saver.class);
+    private static final Logger out = new Logger("Saver");
     private String fileName;
     private boolean format = false;
 
-    public void invoke(List<String> argList, Logger logger, List<PixivArtwork> previous) {
+    public void invoke(List<String> argList, List<PixivArtwork> previous) throws Exception {
         if (previous == null || previous.isEmpty()) {
-            logger.warn("No artwork data to save.");
+            out.warn("No artwork data to save.");
             return;
         }
 
@@ -30,8 +31,8 @@ public class Saver {
                         i++;
                         this.fileName = argList.get(i);
                     } else {
-                        logger.err("Please specify file name");
-                        return;
+                        out.err("Please specify file name");
+                        throw new IllegalArgumentException("Please specify file name");
                     }
 
                     break;
@@ -45,11 +46,11 @@ public class Saver {
         }
 
         if (fileName == null) {
-            logger.err("Please specify a file name to save.");
-            return;
+            out.err("Please specify a file name to save.");
+            throw new IllegalArgumentException("Please specify a file name to save.");
         }
 
-        logger.info("Saving " + previous.size() + " artwork data to file: " + fileName);
+        out.info("Saving " + previous.size() + " artwork data to file: " + fileName);
 
         try {
             Files.writeString(Path.of(fileName),
@@ -59,10 +60,11 @@ public class Saver {
                             ).toList()
                             , (format ? new JSONWriter.Feature[]{JSONWriter.Feature.PrettyFormat} : new JSONWriter.Feature[]{}))
             );
-            logger.info("File written to " + fileName);
+            out.info("File written to " + fileName);
         } catch (Exception e) {
             log.error("Error writing file", e);
-            logger.err("Error writing file: " + fileName);
+            out.err("Error writing file: " + fileName);
+            throw new Exception("Error writing file: " + fileName, e);
         }
     }
 }
