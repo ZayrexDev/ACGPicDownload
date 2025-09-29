@@ -144,10 +144,6 @@ public class PixivAccountPaneController implements Initializable {
         }
     }
 
-    public void addAccount() throws IOException {
-        addAccount(cookieField.getText());
-    }
-
     public void delAccount() throws IOException {
         if (accountCombo.getSelectedIndex() != -1) {
             ConfigManager.getAccounts().remove(accountCombo.getSelectionModel().getSelectedItem());
@@ -233,6 +229,15 @@ public class PixivAccountPaneController implements Initializable {
                         }
                     }, () -> Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane));
         } catch (Exception e) {
+            Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
+            logger.error("Failed to add account", e);
+        }
+    }
+
+    public void addAccountOnAction() {
+        try {
+            addAccount(cookieField.getText());
+        } catch (IOException e) {
             Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
             logger.error("Failed to add account", e);
         }
