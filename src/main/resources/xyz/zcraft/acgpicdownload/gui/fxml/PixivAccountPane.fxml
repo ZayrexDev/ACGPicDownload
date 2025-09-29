@@ -56,7 +56,7 @@
                         <MFXButton fx:id="cookieHelpBtn" buttonType="RAISED" depthLevel="LEVEL1"
                                    onAction="#cookieHelp"/>
                         <MFXButton buttonType="RAISED" depthLevel="LEVEL1" layoutX="264.0" layoutY="12.0"
-                                   onAction="#addAccount" text="%gui.pixiv.account.add"/>
+                                   onAction="#addAccountOnAction" text="%gui.pixiv.account.add"/>
                      </children>
                   </HBox>
                </children>
