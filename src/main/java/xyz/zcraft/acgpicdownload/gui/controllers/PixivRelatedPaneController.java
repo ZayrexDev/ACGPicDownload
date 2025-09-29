@@ -85,7 +85,7 @@ public class PixivRelatedPaneController extends PixivFetchPane {
                 ft.stop();
                 ft.setFromValue(1);
                 ft.setToValue(0);
-                ft.setOnFinished((_) -> loadingPane.setVisible(false));
+                ft.setOnFinished((a) -> loadingPane.setVisible(false));
                 ft.play();
             }
         }).start();

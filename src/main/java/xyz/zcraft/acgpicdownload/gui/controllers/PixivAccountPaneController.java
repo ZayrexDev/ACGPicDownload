@@ -72,7 +72,7 @@ public class PixivAccountPaneController implements Initializable {
 
         accountCombo.getItems().clear();
         accountCombo.getItems().addAll(ConfigManager.getAccounts());
-        accountCombo.selectedIndexProperty().addListener(_ -> {
+        accountCombo.selectedIndexProperty().addListener(a -> {
             ConfigManager.setSelectedAccount(accountCombo.getSelectedItem());
             if (gui != null) gui.pixivPaneController.reloadAccount();
         });
@@ -92,7 +92,7 @@ public class PixivAccountPaneController implements Initializable {
         ft.setAutoReverse(false);
         ft.setRate(0.05);
         ft.setDuration(Duration.millis(5));
-        ft.setOnFinished(_ -> Platform.runLater(() -> mainPane.setVisible(false)));
+        ft.setOnFinished(a -> Platform.runLater(() -> mainPane.setVisible(false)));
 
         ft.play();
     }
@@ -232,10 +232,9 @@ public class PixivAccountPaneController implements Initializable {
                             Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
                         }
                     }, () -> Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane));
-        } catch (IOException e) {
+        } catch (Exception e) {
             Notice.showError(ResourceBundleUtil.getString("gui.pixiv.account.addFailed"), gui.mainPane);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            logger.error("Failed to add account", e);
         }
     }
 }

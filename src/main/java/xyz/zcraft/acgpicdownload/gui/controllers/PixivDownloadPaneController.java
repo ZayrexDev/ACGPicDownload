@@ -154,13 +154,13 @@ public class PixivDownloadPaneController extends MyPane {
         MFXTableColumn<PixivDownload> typeColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.pixiv.download.column.type"), true);
 
-        titleColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
-        authorColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
-        fromColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getFromString()));
-        tagColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
-        idColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
-        statusColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(PixivDownload::getStatusString));
-        typeColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
+        titleColumn.setRowCellFactory(a -> new MFXTableRowCell<>(o -> o.getArtwork().getTitle()));
+        authorColumn.setRowCellFactory(a -> new MFXTableRowCell<>(o -> o.getArtwork().getUserName()));
+        fromColumn.setRowCellFactory(a -> new MFXTableRowCell<>(o -> o.getArtwork().getFromString()));
+        tagColumn.setRowCellFactory(a -> new MFXTableRowCell<>(o -> o.getArtwork().getTagsString()));
+        idColumn.setRowCellFactory(a -> new MFXTableRowCell<>(o -> o.getArtwork().getId()));
+        statusColumn.setRowCellFactory(a -> new MFXTableRowCell<>(PixivDownload::getStatusString));
+        typeColumn.setRowCellFactory(a -> new MFXTableRowCell<>(o -> o.getArtwork().getTypeString()));
 
         titleColumn.setAlignment(Pos.CENTER);
         authorColumn.setAlignment(Pos.CENTER);
@@ -206,7 +206,7 @@ public class PixivDownloadPaneController extends MyPane {
                 ResourceBundleUtil.getString("gui.pixiv.download.multiPageRule.gathered")
         );
 
-        multiPageCombo.selectedIndexProperty().addListener((_, _, t1) -> folderNamingRuleField.setDisable(t1.intValue() != 0));
+        multiPageCombo.selectedIndexProperty().addListener((a, b, t1) -> folderNamingRuleField.setDisable(t1.intValue() != 0));
 
         multiPageCombo.selectFirst();
 

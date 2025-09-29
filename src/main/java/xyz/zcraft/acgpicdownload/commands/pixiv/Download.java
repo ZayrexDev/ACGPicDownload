@@ -24,7 +24,7 @@ public class Download {
 
     private String target = "downloads";
 
-    public static void startDownload(String cookie, String proxyHost, int proxyPort, List<PixivArtwork> art, int threads, String target) {
+    public static void startDownload(Profile profile, List<PixivArtwork> art, int threads, String target) {
         AtomicInteger completed = new AtomicInteger(0);
         final ArrayList<PixivDownload> cur = new ArrayList<>(art.size());
         for (int i1 = 0; i1 < threads; i1++) cur.add(null);
@@ -32,7 +32,8 @@ public class Download {
 
             final LinkedList<PixivDownload> err = new LinkedList<>();
 
-            art.forEach(e -> tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed, cookie, proxyHost, proxyPort, target)));
+            art.forEach(e -> tpe.submit(new DownloadTask(threads, e, cur, err, tpe, completed,
+                    profile.cookie(), profile.proxyHost(), profile.proxyPort(), target)));
 
             boolean first = true;
             while (true) {
@@ -78,8 +79,7 @@ public class Download {
         }
     }
 
-    public void invoke(List<String> argList, String cookie,
-                       String proxyHost, int proxyPort, List<PixivArtwork> previous) {
+    public void invoke(List<String> argList, Profile profile, List<PixivArtwork> previous) {
         for (int i = 1; i < argList.size(); i++) {
             if (!argList.get(i).startsWith("-")) break;
             switch (argList.get(i).toLowerCase()) {
@@ -125,7 +125,7 @@ public class Download {
 
         out.info(previous.size() + " artworks to download!");
 
-        startDownload(cookie, proxyHost, proxyPort, previous, threads, target);
+        startDownload(profile, previous, threads, target);
 
         out.info("DONE Downloading");
     }

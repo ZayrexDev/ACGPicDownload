@@ -55,7 +55,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
                 ResourceBundleUtil.getString("gui.pixiv.ranking.female")
         );
 
-        majorCombo.selectedIndexProperty().addListener((_, _, t1) -> {
+        majorCombo.selectedIndexProperty().addListener((a, b, t1) -> {
             int i = t1.intValue();
             if (i == 0 || i == 1 || i == 5 || i == 6 || i == 7) {
                 resToggle.setDisable(false);
@@ -183,7 +183,7 @@ public class PixivRankingPaneController extends PixivFetchPane {
                 ft.stop();
                 ft.setFromValue(1);
                 ft.setToValue(0);
-                ft.setOnFinished((_) -> loadingPane.setVisible(false));
+                ft.setOnFinished((a) -> loadingPane.setVisible(false));
                 ft.play();
             }
         }).start();

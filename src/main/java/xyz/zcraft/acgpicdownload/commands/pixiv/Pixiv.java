@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Pixiv {
     private final List<String> subCommands = List.of(
-            "discovery", "download", "ranking", "user", "save", "load"
+            "discovery", "download", "ranking", "user", "save", "load", "complete", "filter"
     );
     private final List<Integer> fragments = new LinkedList<>(List.of(1));
     private String cookie = null;
@@ -21,6 +21,7 @@ public class Pixiv {
     private List<PixivArtwork> previous;
     private boolean ignoreError = false;
     private Logger logger;
+    private Profile profile;
 
     public void invoke(ArrayList<String> argList, Logger logger) {
         this.logger = logger;
@@ -36,6 +37,7 @@ public class Pixiv {
         for (int i = 0; i < fragments.size() - 1; i++) {
             if (i == 0) {
                 if (parseArgs(argList, i)) return;
+                profile = new Profile(cookie, proxyHost, proxyPort);
             } else {
                 try {
                     executeSubCommand(argList, i);
@@ -99,14 +101,14 @@ public class Pixiv {
     private void executeSubCommand(ArrayList<String> argList, int i) throws Exception {
         final List<String> subArgs = argList.subList(fragments.get(i), fragments.get(i + 1));
         switch (argList.get(fragments.get(i)).toLowerCase()) {
-            case "discovery" ->
-                    previous = new Fetcher().invoke(subArgs, cookie, proxyHost, proxyPort, Fetcher.Mode.Discovery);
-            case "download" -> new Download().invoke(subArgs, cookie, proxyHost, proxyPort, previous);
+            case "discovery" -> previous = new Fetcher().invoke(subArgs, profile, Fetcher.Mode.Discovery);
+            case "download" -> new Download().invoke(subArgs, profile, previous);
             case "save" -> new Saver().invoke(subArgs, previous);
-            case "ranking" ->
-                    previous = new Fetcher().invoke(subArgs, cookie, proxyHost, proxyPort, Fetcher.Mode.Ranking);
-            case "user" -> previous = new Fetcher().invoke(subArgs, cookie, proxyHost, proxyPort, Fetcher.Mode.User);
+            case "ranking" -> previous = new Fetcher().invoke(subArgs, profile, Fetcher.Mode.Ranking);
+            case "user" -> previous = new Fetcher().invoke(subArgs, profile, Fetcher.Mode.User);
             case "load" -> previous = new Loader().invoke(subArgs);
+            case "complete" -> previous = new Complete().invoke(subArgs, profile, previous);
+            case "filter" -> previous = new Filter().invoke(subArgs, profile, previous);
         }
     }
 }

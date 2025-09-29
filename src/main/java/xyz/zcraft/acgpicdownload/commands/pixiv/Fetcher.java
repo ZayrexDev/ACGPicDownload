@@ -16,7 +16,7 @@ public class Fetcher {
 
     private ArtProvider ap;
 
-    public List<PixivArtwork> invoke(List<String> argList, String cookie, String proxyHost, int proxyPort, Mode mode) {
+    public List<PixivArtwork> invoke(List<String> argList, Profile profile, Mode mode) {
         switch (mode) {
             case Discovery -> {
                 int discMode = 0;
@@ -61,11 +61,11 @@ public class Fetcher {
                 }
 
                 out.info("Ready to get discovery: mode=" + discMode + ",count=" + count +
-                        (proxyHost != null ? ",proxy=" + proxyHost + ":" + proxyPort : ""));
+                        (profile.proxyHost() != null ? ",proxy=" + profile.proxyHost() + ":" + profile.proxyPort() : ""));
 
                 int finalCount = count;
                 int finalDiscMode = discMode;
-                ap = () -> PixivFetchUtil.getDiscovery(finalDiscMode, finalCount, cookie, proxyHost, proxyPort);
+                ap = () -> PixivFetchUtil.getDiscovery(finalDiscMode, finalCount, profile.cookie(), profile.proxyHost(), profile.proxyPort());
             }
             case User -> {
                 // TODO

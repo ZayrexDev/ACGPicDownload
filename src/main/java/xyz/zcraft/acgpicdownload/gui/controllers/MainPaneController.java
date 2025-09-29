@@ -116,11 +116,11 @@ public class MainPaneController implements Initializable {
         ft.setFromValue(1);
         ft.setDuration(Duration.millis(10));
         ft.setRate(0.1);
-        ft.setOnFinished((_) -> initPane.setVisible(false));
+        ft.setOnFinished((a) -> initPane.setVisible(false));
         ft.play();
 
         ft.setNode(blurImg);
-        ft.setOnFinished((_) -> blurImg.setVisible(false));
+        ft.setOnFinished((a) -> blurImg.setVisible(false));
         ft.play();
     }
 
@@ -141,11 +141,11 @@ public class MainPaneController implements Initializable {
         ft.setFromValue(0);
         ft.setDuration(Duration.millis(10));
         ft.setRate(0.1);
-        ft.setOnFinished((_) -> initPane.setVisible(false));
+        ft.setOnFinished((a) -> initPane.setVisible(false));
         ft.play();
 
         ft.setNode(blurImg);
-        ft.setOnFinished((_) -> blurImg.setVisible(false));
+        ft.setOnFinished((a) -> blurImg.setVisible(false));
         ft.play();
     }
 

@@ -170,7 +170,7 @@ public class GUI extends Application {
 
         mainPaneController.init();
 
-        stage.setOnCloseRequest(_ -> {
+        stage.setOnCloseRequest(a -> {
             stage.hide();
             System.exit(0);
         });
@@ -323,7 +323,7 @@ public class GUI extends Application {
                         .setContentText(ResourceBundleUtil.getString("gui.seriousERR") + "\n" + sw)
                         .setShowClose(true)
                         .setHeaderText(ResourceBundleUtil.getString("gui.fetch.err")).get();
-                content.addActions(Map.entry(new MFXButton("OK"), _ -> System.exit(1)));
+                content.addActions(Map.entry(new MFXButton("OK"), a -> System.exit(1)));
                 MFXGenericDialogBuilder.build(content)
                         .toStageDialogBuilder()
                         .initOwner(stage)

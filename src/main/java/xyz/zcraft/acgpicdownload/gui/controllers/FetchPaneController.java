@@ -146,7 +146,7 @@ public class FetchPaneController extends MyPane {
         initTable();
 
         fetchBtn.disableProperty().bind(sourcesComboBox.selectedIndexProperty().isEqualTo(-1));
-        data.addListener((ListChangeListener<DownloadResult>) _ -> downloadBtn.setDisable(data.isEmpty()));
+        data.addListener((ListChangeListener<DownloadResult>) a -> downloadBtn.setDisable(data.isEmpty()));
 
         try {
             ConfigManager.readConfig();
@@ -171,9 +171,9 @@ public class FetchPaneController extends MyPane {
         MFXTableColumn<DownloadResult> statusColumn = new MFXTableColumn<>(
                 ResourceBundleUtil.getString("gui.fetch.table.column.status"), true);
 
-        titleColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getFileName()));
-        linkColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
-        statusColumn.setRowCellFactory(_ -> new MFXTableRowCell<>(DownloadResult::getStatusString));
+        titleColumn.setRowCellFactory(a -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getFileName()));
+        linkColumn.setRowCellFactory(a -> new MFXTableRowCell<>(arg01 -> arg01.getResult().getUrl()));
+        statusColumn.setRowCellFactory(a -> new MFXTableRowCell<>(DownloadResult::getStatusString));
 
         titleColumn.setAlignment(Pos.CENTER);
         linkColumn.setAlignment(Pos.CENTER);
@@ -198,7 +198,7 @@ public class FetchPaneController extends MyPane {
 
         dataTable.getSelectionModel().setAllowsMultipleSelection(false);
         dataTable.getSelectionModel().selectionProperty()
-                .addListener((_, _, _) -> {
+                .addListener((a, b, c) -> {
                     List<DownloadResult> selectedValues = dataTable.getSelectionModel().getSelectedValues();
                     if (!selectedValues.isEmpty()) {
                         if (selectedValues.getFirst().getStatus() == DownloadStatus.COMPLETED &&
@@ -275,7 +275,7 @@ public class FetchPaneController extends MyPane {
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 ft.play();
-                ft.setOnFinished((_) -> loadingPane.setVisible(false));
+                ft.setOnFinished((a) -> loadingPane.setVisible(false));
             }
         }).start();
     }
@@ -338,7 +338,7 @@ public class FetchPaneController extends MyPane {
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 data.addAll(r);
-                ft.setOnFinished((_) -> loadingPane.setVisible(false));
+                ft.setOnFinished((a) -> loadingPane.setVisible(false));
                 ft.play();
             });
 
@@ -380,7 +380,7 @@ public class FetchPaneController extends MyPane {
                 Main.logError(e);
             }
             ft.play();
-            ft.setOnFinished((_) -> loadingPane.setVisible(false));
+            ft.setOnFinished((a) -> loadingPane.setVisible(false));
         }).start();
 
         ft.setFromValue(1);

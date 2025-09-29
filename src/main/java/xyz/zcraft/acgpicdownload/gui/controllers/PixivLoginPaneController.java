@@ -13,7 +13,7 @@ public class PixivLoginPaneController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         webView.setZoom(0.8);
-        webView.getEngine().locationProperty().addListener((_, _, newValue) -> {
+        webView.getEngine().locationProperty().addListener((a, b, newValue) -> {
             if (newValue.startsWith("https://www.pixiv.net/")) {
                 webView.getScene().getWindow().hide();
             }
