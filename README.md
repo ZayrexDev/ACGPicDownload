@@ -21,6 +21,7 @@ GUI:
 ![image](https://user-images.githubusercontent.com/73475219/206438395-89e1eec5-f734-484f-94d9-2b82a6c63f69.png)
 
 命令行:
+![demo](https://github.com/user-attachments/assets/26091bfd-c9ec-47a0-9e62-21d39f9fc667)
 ![2022-11-18 19-42-43_2](https://user-images.githubusercontent.com/73475219/202701179-2b8439ac-0f0a-4f12-9fbc-9574a1620411.gif)
 
 # 如何使用

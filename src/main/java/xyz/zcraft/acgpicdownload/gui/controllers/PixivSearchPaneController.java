@@ -66,7 +66,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
                 ResourceBundleUtil.getString("gui.pixiv.disc.mode.adult")
         );
 
-        typeCombo.selectedIndexProperty().addListener((_, _, t1) -> {
+        typeCombo.selectedIndexProperty().addListener((a, b, t1) -> {
             int i = t1.intValue();
             modeCombo.setDisable(i == 0);
             pageSlider.setDisable(i == 0);
@@ -146,7 +146,7 @@ public class PixivSearchPaneController extends PixivFetchPane {
                 ft.stop();
                 ft.setFromValue(1);
                 ft.setToValue(0);
-                ft.setOnFinished((_) -> loadingPane.setVisible(false));
+                ft.setOnFinished((a) -> loadingPane.setVisible(false));
                 ft.play();
             }
         }).start();

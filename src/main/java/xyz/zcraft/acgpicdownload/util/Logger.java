@@ -25,6 +25,12 @@ public class Logger {
         parentLogger = null;
     }
 
+    public Logger(String name) {
+        this.name = name;
+        this.out = new PrintStream[]{System.out};
+        parentLogger = null;
+    }
+
     public String getName() {
         if (parentLogger != null) {
             return parentLogger.getName() + "|" + name;

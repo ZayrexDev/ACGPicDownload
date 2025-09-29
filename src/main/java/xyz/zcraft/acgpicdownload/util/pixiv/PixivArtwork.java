@@ -69,6 +69,8 @@ public class PixivArtwork {
     private int bookmarkCount;
     @JSONField(name = "likeCount")
     private int likeCount;
+    @JSONField(name = "viewCount")
+    private int viewCount;
 
     private LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
     private String imageUrl;
