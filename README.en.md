@@ -23,14 +23,4 @@ A convenient tool to download pictures from various pixiv and APIs.
 
 # Usage
 
-- Download the latest Release in [Releases](https://github.com/zxzxy/ACGPicDownload/releases)
-
-> If you already have Java17+ installed, then you can download `ACGPicDownload.version.jar` and run it through command
-> line. Or
-> download `ACGPicDownload.version.win.exe` on Windows and run.
-
-> If you don't, then you can download JDK17+ [here](https://adoptium.net/en-US/temurin/archive), or
-> download `ACGPicDownload.version.win.7z`, which has JDK17 included
-
-
 Please go to [wiki](https://github.com/zxzxy/ACGPicDownload/wiki) for usage...
