@@ -69,12 +69,12 @@ public class Main {
         }
         if (argList.isEmpty()) {
             GUI.start(args);
-        } else if (argList.get(0).equalsIgnoreCase("fetch")) {
-            argList.remove(0);
+        } else if (argList.getFirst().equalsIgnoreCase("fetch")) {
+            argList.removeFirst();
             Fetch f = new Fetch();
             f.enableConsoleProgressBar = true;
             f.invoke(argList, new Logger("Fetch", System.out));
-        } else if (argList.get(0).equalsIgnoreCase("pixiv")) {
+        } else if (argList.getFirst().equalsIgnoreCase("pixiv")) {
             Pixiv p = new Pixiv();
             p.invoke(argList, new Logger("Pixiv", System.out));
         }
