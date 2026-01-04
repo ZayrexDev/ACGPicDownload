@@ -11,7 +11,10 @@ public class Add extends SubCommand {
     public List<PixivArtwork> invoke(List<String> argList, Profile profile, List<PixivArtwork> previous) throws Exception {
         List<String> idStrings = new LinkedList<>();
 
-        argList.forEach(e -> idStrings.addAll(List.of(e.split(","))));
+        for (int i = 1; i < argList.size(); i++) {
+            String e = argList.get(i);
+            idStrings.addAll(List.of(e.split(",")));
+        }
 
         List<PixivArtwork> result = new LinkedList<>();
 
