@@ -6,7 +6,7 @@
 
     <groupId>xyz.zcraft</groupId>
     <artifactId>ACGPicDownload</artifactId>
-    <version>3.5.0</version>
+    <version>3.5.1</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
