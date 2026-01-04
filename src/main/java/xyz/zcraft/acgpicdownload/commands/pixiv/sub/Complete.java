@@ -1,6 +1,7 @@
-package xyz.zcraft.acgpicdownload.commands.pixiv;
+package xyz.zcraft.acgpicdownload.commands.pixiv.sub;
 
-import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.commands.pixiv.Profile;
+import xyz.zcraft.acgpicdownload.commands.pixiv.SubCommand;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 
@@ -13,10 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class Complete {
-    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Complete.class);
-    private static final Logger out = new Logger("Complete");
-
+public class Complete extends SubCommand {
     private int threads = 2;
     private int retries = 5;
 
@@ -83,6 +81,7 @@ public class Complete {
                 for (int j = 0; j < v; j++) System.out.print("=");
                 for (int k = 0; k < (16 - v); k++) System.out.print(" ");
                 System.out.print("]\n");
+                //noinspection BusyWait
                 Thread.sleep(1000);
                 System.out.print("\033[2F");
             }

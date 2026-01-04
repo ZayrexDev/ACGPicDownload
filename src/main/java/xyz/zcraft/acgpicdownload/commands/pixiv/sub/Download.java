@@ -1,6 +1,7 @@
-package xyz.zcraft.acgpicdownload.commands.pixiv;
+package xyz.zcraft.acgpicdownload.commands.pixiv.sub;
 
-import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.commands.pixiv.Profile;
+import xyz.zcraft.acgpicdownload.commands.pixiv.SubCommand;
 import xyz.zcraft.acgpicdownload.util.dl.DownloadUtil;
 import xyz.zcraft.acgpicdownload.util.pixiv.ArtworkCondition;
 import xyz.zcraft.acgpicdownload.util.pixiv.NamingRule;
@@ -16,12 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Download {
-    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Download.class);
-    private static final Logger out = new Logger("Download");
-
+public class Download extends SubCommand {
     public int threads = 5;
-
     private String target = "downloads";
 
     public static void startDownload(Profile profile, List<PixivArtwork> art, int threads, String target) {
@@ -79,7 +76,7 @@ public class Download {
         }
     }
 
-    public void invoke(List<String> argList, Profile profile, List<PixivArtwork> previous) {
+    public List<PixivArtwork> invoke(List<String> argList, Profile profile, List<PixivArtwork> previous) {
         for (int i = 1; i < argList.size(); i++) {
             if (!argList.get(i).startsWith("-")) break;
             switch (argList.get(i).toLowerCase()) {
@@ -120,7 +117,7 @@ public class Download {
 
         if (previous.isEmpty()) {
             out.warn("No artwork to download!");
-            return;
+            return previous;
         }
 
         out.info(previous.size() + " artworks to download!");
@@ -128,6 +125,8 @@ public class Download {
         startDownload(profile, previous, threads, target);
 
         out.info("DONE Downloading");
+
+        return previous;
     }
 
     private record DownloadTask(int threads, PixivArtwork e, ArrayList<PixivDownload> cur,

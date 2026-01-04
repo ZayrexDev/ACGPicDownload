@@ -1,8 +1,9 @@
-package xyz.zcraft.acgpicdownload.commands.pixiv;
+package xyz.zcraft.acgpicdownload.commands.pixiv.sub;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONWriter;
-import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.commands.pixiv.Profile;
+import xyz.zcraft.acgpicdownload.commands.pixiv.SubCommand;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
 
 import java.nio.file.Files;
@@ -11,16 +12,14 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class Saver {
-    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Saver.class);
-    private static final Logger out = new Logger("Saver");
+public class Save extends SubCommand {
     private String fileName;
     private boolean format = false;
 
-    public void invoke(List<String> argList, List<PixivArtwork> previous) throws Exception {
+    public List<PixivArtwork> invoke(List<String> argList, Profile profile, List<PixivArtwork> previous) throws Exception {
         if (previous == null || previous.isEmpty()) {
             out.warn("No artwork data to save.");
-            return;
+            return previous;
         }
 
         for (int i = 1; i < argList.size(); i++) {
@@ -66,5 +65,6 @@ public class Saver {
             out.err("Error writing file: " + fileName);
             throw new Exception("Error writing file: " + fileName, e);
         }
+        return previous;
     }
 }

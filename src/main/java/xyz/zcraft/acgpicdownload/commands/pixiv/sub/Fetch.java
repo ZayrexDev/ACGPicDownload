@@ -1,7 +1,9 @@
-package xyz.zcraft.acgpicdownload.commands.pixiv;
+package xyz.zcraft.acgpicdownload.commands.pixiv.sub;
+
 
 import lombok.Getter;
-import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.commands.pixiv.Profile;
+import xyz.zcraft.acgpicdownload.commands.pixiv.SubCommand;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivFetchUtil;
 
@@ -9,23 +11,34 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Fetcher {
-    @SuppressWarnings("unused")
-    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Fetcher.class);
-    private static final Logger out = new Logger("Fetcher");
-
+public class Fetch extends SubCommand {
     private ArtProvider ap;
+    private boolean append = false;
 
-    public List<PixivArtwork> invoke(List<String> argList, Profile profile, Mode mode) {
+    public List<PixivArtwork> invoke(List<String> argList, Profile profile, List<PixivArtwork> previous) {
+        if (argList.isEmpty()) {
+            out.err("Please specify a fetch mode: -discovery, -user, -ranking, -search");
+            throw new IllegalArgumentException("Please specify a fetch mode: -discovery, -user, -ranking, -search");
+        }
+        Mode mode = switch (argList.get(1).toLowerCase()) {
+            case "-discovery" -> Mode.Discovery;
+            case "-user" -> Mode.User;
+            case "-ranking" -> Mode.Ranking;
+            case "-search" -> Mode.Search;
+            default -> {
+                out.err("Unknown fetch mode: " + argList.getFirst());
+                throw new IllegalArgumentException("Unknown fetch mode: " + argList.getFirst());
+            }
+        };
         switch (mode) {
             case Discovery -> {
                 int discMode = 0;
                 int count = 1;
 
-                for (int i = 1; i < argList.size(); i++) {
+                for (int i = 2; i < argList.size(); i++) {
                     if (!argList.get(i).startsWith("-")) break;
                     switch (argList.get(i).toLowerCase()) {
-                        case "-m", "-mode": {
+                        case "-m", "-mode" -> {
                             if (argList.size() > i + 1) {
                                 i++;
                                 if (!List.of(PixivFetchUtil.DISCOVERY_MODES).contains(argList.get(i))) {
@@ -38,10 +51,8 @@ public class Fetcher {
                                 out.err("Please specify a mode");
                                 throw new IllegalArgumentException("Please specify a mode");
                             }
-                            break;
                         }
-
-                        case "-c", "-count": {
+                        case "-c", "-count" -> {
                             if (argList.size() > i + 1) {
                                 i++;
                                 final int c = Integer.parseInt(argList.get(i));
@@ -55,8 +66,8 @@ public class Fetcher {
                                 out.err("Please specify a number.");
                                 throw new IllegalArgumentException("Please specify a number.");
                             }
-                            break;
                         }
+                        case "-a", "-append" -> append = true;
                     }
                 }
 
@@ -78,7 +89,7 @@ public class Fetcher {
             }
         }
 
-        var f = new Fetch(ap);
+        var f = new Fetcher(ap);
 
         f.run();
 
@@ -120,7 +131,14 @@ public class Fetcher {
         System.out.print("\nDONE fetching " + mode + ". " + art.size() + " artworks found.\n");
         System.out.print("\033[?25h");
 
-        return art;
+        if (append && previous != null) {
+            out.info("Appending to previous " + previous.size() + " artworks, total " + (previous.size() + art.size()) + " artworks.");
+            LinkedList<PixivArtwork> combined = new LinkedList<>(previous);
+            combined.addAll(art);
+            return combined;
+        } else {
+            return art;
+        }
     }
 
     public enum Mode {
@@ -141,7 +159,7 @@ public class Fetcher {
         List<PixivArtwork> fetch() throws IOException;
     }
 
-    private static class Fetch {
+    private static class Fetcher {
         private final ArtProvider ap;
         @Getter
         private Exception exception;
@@ -152,7 +170,7 @@ public class Fetcher {
         @Getter
         private List<PixivArtwork> result = null;
 
-        public Fetch(ArtProvider ap) {
+        public Fetcher(ArtProvider ap) {
             this.ap = ap;
         }
 
