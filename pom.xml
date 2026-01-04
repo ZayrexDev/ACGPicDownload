@@ -6,7 +6,7 @@
 
     <groupId>xyz.zcraft</groupId>
     <artifactId>ACGPicDownload</artifactId>
-    <version>3.5.1</version>
+    <version>3.5.1-cli</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -92,26 +92,6 @@
             <version>2.0.59</version>
         </dependency>
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-            <version>21</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>21</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>21</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.palexdev</groupId>
-            <artifactId>materialfx</artifactId>
-            <version>11.17.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.madgag</groupId>
             <artifactId>animated-gif-lib</artifactId>
             <version>1.4</version>
@@ -132,11 +112,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-            <version>21</version>
         </dependency>
     </dependencies>
 </project>

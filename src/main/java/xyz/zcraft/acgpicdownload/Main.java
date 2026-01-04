@@ -3,7 +3,6 @@ package xyz.zcraft.acgpicdownload;
 import lombok.Getter;
 import xyz.zcraft.acgpicdownload.commands.Fetch;
 import xyz.zcraft.acgpicdownload.commands.pixiv.Pixiv;
-import xyz.zcraft.acgpicdownload.gui.GUI;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.SSLUtil;
 
@@ -67,16 +66,16 @@ public class Main {
             log = new PrintStream("out.log");
         } catch (FileNotFoundException ignored) {
         }
-        if (argList.isEmpty()) {
-            GUI.start(args);
-        } else if (argList.get(0).equalsIgnoreCase("fetch")) {
-            argList.remove(0);
-            Fetch f = new Fetch();
-            f.enableConsoleProgressBar = true;
-            f.invoke(argList, new Logger("Fetch", System.out));
-        } else if (argList.get(0).equalsIgnoreCase("pixiv")) {
-            Pixiv p = new Pixiv();
-            p.invoke(argList, new Logger("Pixiv", System.out));
+        if (!argList.isEmpty()) {
+            if (argList.get(0).equalsIgnoreCase("fetch")) {
+                argList.remove(0);
+                Fetch f = new Fetch();
+                f.enableConsoleProgressBar = true;
+                f.invoke(argList, new Logger("Fetch", System.out));
+            } else if (argList.get(0).equalsIgnoreCase("pixiv")) {
+                Pixiv p = new Pixiv();
+                p.invoke(argList, new Logger("Pixiv", System.out));
+            }
         }
     }
 }
