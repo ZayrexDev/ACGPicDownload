@@ -1,5 +1,6 @@
 package xyz.zcraft.acgpicdownload.commands.pixiv;
 
+import xyz.zcraft.acgpicdownload.commands.pixiv.sub.*;
 import xyz.zcraft.acgpicdownload.util.Logger;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class Pixiv {
     private final List<String> subCommands = List.of(
-            "discovery", "download", "ranking", "user", "save", "load", "complete", "filter"
+            "download", "fetch", "save", "load", "complete", "filter", "add"
     );
     private final List<Integer> fragments = new LinkedList<>(List.of(1));
     private String cookie = null;
@@ -100,15 +101,21 @@ public class Pixiv {
 
     private void executeSubCommand(ArrayList<String> argList, int i) throws Exception {
         final List<String> subArgs = argList.subList(fragments.get(i), fragments.get(i + 1));
-        switch (argList.get(fragments.get(i)).toLowerCase()) {
-            case "discovery" -> previous = new Fetcher().invoke(subArgs, profile, Fetcher.Mode.Discovery);
-            case "download" -> new Download().invoke(subArgs, profile, previous);
-            case "save" -> new Saver().invoke(subArgs, previous);
-            case "ranking" -> previous = new Fetcher().invoke(subArgs, profile, Fetcher.Mode.Ranking);
-            case "user" -> previous = new Fetcher().invoke(subArgs, profile, Fetcher.Mode.User);
-            case "load" -> previous = new Loader().invoke(subArgs);
-            case "complete" -> previous = new Complete().invoke(subArgs, profile, previous);
-            case "filter" -> previous = new Filter().invoke(subArgs, profile, previous);
-        }
+
+        SubCommand subCommand = switch (argList.get(fragments.get(i)).toLowerCase()) {
+            case "fetch" -> new Fetch();
+            case "download" -> new Download();
+            case "save" -> new Save();
+            case "load" -> new Load();
+            case "complete" -> new Complete();
+            case "filter" -> new Filter();
+            case "add" -> new Add();
+            default -> {
+                logger.err("Unknown sub-command: " + argList.get(fragments.get(i)));
+                throw new IllegalArgumentException("Unknown sub-command: " + argList.get(fragments.get(i)));
+            }
+        };
+
+        previous = subCommand.invoke(subArgs, profile, previous);
     }
 }

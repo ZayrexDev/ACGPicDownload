@@ -1,15 +1,13 @@
-package xyz.zcraft.acgpicdownload.commands.pixiv;
+package xyz.zcraft.acgpicdownload.commands.pixiv.sub;
 
-import xyz.zcraft.acgpicdownload.util.Logger;
+import xyz.zcraft.acgpicdownload.commands.pixiv.Profile;
+import xyz.zcraft.acgpicdownload.commands.pixiv.SubCommand;
 import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class Filter {
-    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Filter.class);
-    private static final Logger out = new Logger("Filter");
-
+public class Filter extends SubCommand {
     private int bookmark = -1;
     private int view = -1;
     private int like = -1;
