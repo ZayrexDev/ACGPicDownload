@@ -46,7 +46,7 @@ public class Load extends SubCommand {
             if (append && previous != null && !previous.isEmpty()) {
                 out.info("Appending to previous " + previous.size() + " artwork data, now total: " + (previous.size() + list.size()));
                 previous.addAll(list);
-                return previous;
+                return List.copyOf(previous);
             } else {
                 return list;
             }
