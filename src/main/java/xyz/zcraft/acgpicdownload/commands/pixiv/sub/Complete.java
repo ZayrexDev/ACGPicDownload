@@ -48,7 +48,7 @@ public class Complete extends SubCommand {
         final List<PixivArtwork> result = new LinkedList<>();
 
         previous.stream().filter(p -> p.getLikeCount() != 0 || p.getBookmarkData() != null).forEach(result::add);
-        final List<PixivArtwork> list = previous.stream().filter(p -> p.getLikeCount() == 0 && p.getBookmarkData() == null).toList();
+        final List<PixivArtwork> list = previous.stream().filter(a -> !a.isComplete()).toList();
         final List<PixivArtwork> failedList = new LinkedList<>();
 
         out.info("Got " + list.size() + " artworks to complete data.");

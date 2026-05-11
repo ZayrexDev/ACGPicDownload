@@ -1,5 +1,6 @@
 package xyz.zcraft.acgpicdownload.util.dl;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter.Feature;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import xyz.zcraft.acgpicdownload.util.pixiv.*;
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +31,7 @@ public class DownloadUtil {
         InputStream is = null;
         FileOutputStream fos = null;
         try {
-            URL url = new URL(link);
+            URL url = URI.create(link).toURL();
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
 
             if (referer != null) {
@@ -77,7 +79,7 @@ public class DownloadUtil {
                 }
             }
 
-            URL url = new URL(r.getUrl());
+            URL url = URI.create(r.getUrl()).toURL();
             URLConnection c = url.openConnection();
 
             if (referer != null) {
@@ -174,7 +176,7 @@ public class DownloadUtil {
                     return;
                 }
             }
-            URL url = new URL(gifData.getSrc());
+            URL url = URI.create(gifData.getSrc()).toURL();
             URLConnection c = url.openConnection();
             c.setRequestProperty("Referer", PixivDownloadUtil.REFERER);
             final InputStream inputStream = c.getInputStream();
@@ -198,11 +200,11 @@ public class DownloadUtil {
 
             age.finish();
 
-            if (fullResult && a.getArtwork().getOrigJson() != null) {
+            if (fullResult) {
                 File jsonf = new File(toDic, namingRule.name(a.getArtwork()).concat(".json"));
                 BufferedOutputStream jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
 
-                String str = a.getArtwork().getOrigJson().toJSONString(Feature.PrettyFormat);
+                String str = JSONObject.from(a.getArtwork()).toJSONString(Feature.PrettyFormat);
                 jsonos.write(str.getBytes(StandardCharsets.UTF_8));
                 jsonos.flush();
                 jsonos.close();
@@ -252,7 +254,7 @@ public class DownloadUtil {
             for (int i = 0, pagesSize = pages.size(); i < pagesSize; i++) {
                 a.setProgress(i);
                 String s = pages.get(i);
-                URL url = new URL(s);
+                URL url = URI.create(s).toURL();
                 URLConnection c = url.openConnection();
 
                 c.setRequestProperty("Referer", PixivDownloadUtil.REFERER);
@@ -277,11 +279,11 @@ public class DownloadUtil {
                 fos.close();
             }
 
-            if (fullResult && a.getArtwork().getOrigJson() != null) {
+            if (fullResult) {
                 File jsonf = new File(toDic, namingRule.name(a.getArtwork()).concat(".json"));
                 BufferedOutputStream jsonos = new BufferedOutputStream(new FileOutputStream(jsonf));
 
-                String str = a.getArtwork().getOrigJson().toJSONString(Feature.PrettyFormat);
+                String str = JSONObject.from(a.getArtwork()).toJSONString(Feature.PrettyFormat);
                 jsonos.write(str.getBytes(StandardCharsets.UTF_8));
                 jsonos.flush();
                 jsonos.close();

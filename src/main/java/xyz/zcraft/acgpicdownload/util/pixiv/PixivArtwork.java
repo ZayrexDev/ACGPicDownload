@@ -72,15 +72,15 @@ public class PixivArtwork {
     @JSONField(name = "viewCount")
     private int viewCount;
 
-    private LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
-    private String imageUrl;
-    private GifData gifData;
-    private From from;
+    private transient LinkedHashSet<String> translatedTags = new LinkedHashSet<>();
+    private transient String imageUrl;
+    private transient GifData gifData;
+    private transient From from;
 
-    private JSONObject origJson;
-    private String ranking;
-    private String search;
+    private transient String ranking;
+    private transient String search;
 
+    @JSONField(serialize = false)
     public String getTypeString() {
         if (illustType == 2) return ResourceBundleUtil.getString("fetch.pixiv.type.gif");
         else if (illustType == 1 || illustType == 0)
@@ -88,6 +88,7 @@ public class PixivArtwork {
         else return "?";
     }
 
+    @JSONField(serialize = false)
     public String getFromString() {
         if(from == null) return null;
         if (from.equals(From.Ranking)) {
@@ -99,6 +100,7 @@ public class PixivArtwork {
         }
     }
 
+    @JSONField(serialize = false)
     public String getTagsString() {
         if (translatedTags == null || translatedTags.isEmpty()) {
             if (originalTags == null) return null;
@@ -116,5 +118,10 @@ public class PixivArtwork {
             }
             return sb.toString();
         }
+    }
+
+    @JSONField(serialize = false)
+    public boolean isComplete() {
+        return urls != null && urls.containsKey("original") && urls.getString("original") != null;
     }
 }
