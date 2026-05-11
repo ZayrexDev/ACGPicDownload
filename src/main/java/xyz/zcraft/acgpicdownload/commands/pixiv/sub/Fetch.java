@@ -439,7 +439,12 @@ public class Fetch extends SubCommand {
 
         if (art == null || art.isEmpty()) {
             out.warn("No artworks found!");
-            return new LinkedList<>();
+            if (append && previous != null) {
+                out.info("Appending to previous " + previous.size() + " artworks, total " + (previous.size() + art.size()) + " artworks.");
+                return previous;
+            } else {
+                return new LinkedList<>();
+            }
         }
 
         System.out.println("\033[32mGot " + art.size() + " artworks\033[0m");
