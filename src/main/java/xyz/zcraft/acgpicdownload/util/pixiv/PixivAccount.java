@@ -16,5 +16,5 @@ public class PixivAccount {
     @JSONField(name = "cookie")
     private String cookie;
 
-    private String token;
+    private transient String token;
 }

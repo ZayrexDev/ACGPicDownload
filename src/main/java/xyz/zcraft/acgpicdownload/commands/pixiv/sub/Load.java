@@ -8,6 +8,7 @@ import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.LinkedList; 
 
 public class Load extends SubCommand {
     private String fileName;
@@ -40,13 +41,18 @@ public class Load extends SubCommand {
 
         try {
             final String s = Files.readString(Path.of(fileName));
-            final List<PixivArtwork> list = JSONArray.parseArray(s, PixivArtwork.class);
+            final List<PixivArtwork> list = JSONArray.parseArray(s, PixivArtwork.class)
+                                                    .stream()
+                                                    .filter(e -> e != null)
+                                                    .toList();
 
             out.info("Read " + list.size() + " artwork data from file: " + fileName);
             if (append && previous != null && !previous.isEmpty()) {
                 out.info("Appending to previous " + previous.size() + " artwork data, now total: " + (previous.size() + list.size()));
-                previous.addAll(list);
-                return previous;
+                var result = new LinkedList<PixivArtwork>();
+                result.addAll(previous);
+                result.addAll(list);
+                return List.copyOf(result);
             } else {
                 return list;
             }

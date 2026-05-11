@@ -309,7 +309,6 @@ public class PixivFetchUtil {
         }
         JSONObject jsonObject = JSONObject.parseObject(c.get().body().ownText()).getJSONObject("body");
         PixivArtwork pixivArtwork = jsonObject.to(PixivArtwork.class);
-        pixivArtwork.setOrigJson(jsonObject);
         JSONArray jsonArray = jsonObject.getJSONObject("tags").getJSONArray("tags");
         LinkedHashSet<String> tags = new LinkedHashSet<>();
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -461,7 +460,6 @@ public class PixivFetchUtil {
             }
             a.setTranslatedTags(translatedTags);
             a.setFrom(From.User);
-            a.setOrigJson(jsonObject);
             artworks.add(a);
         }
 
@@ -558,7 +556,6 @@ public class PixivFetchUtil {
             for (Object t : a.getOriginalTags()) {
                 a.getTranslatedTags().add(translateTag(t.toString(), tran));
             }
-            a.setOrigJson(jsonObject);
             artworks.add(a);
         }
 
@@ -582,7 +579,6 @@ public class PixivFetchUtil {
         for (int i = 0; i < illust.size(); i++) {
             JSONObject jsonObject = illust.getJSONObject(i);
             PixivArtwork a = jsonObject.to(PixivArtwork.class);
-            a.setOrigJson(jsonObject);
             a.setFrom(From.Discovery);
             for (Object t : a.getOriginalTags()) {
                 a.getTranslatedTags().add(translateTag(t.toString(), tran));
@@ -656,7 +652,6 @@ public class PixivFetchUtil {
             JSONObject jsonObject = illusts.getJSONObject(i);
             PixivArtwork object = jsonObject.to(PixivArtwork.class);
             if (object.getTitle() == null) continue;
-            object.setOrigJson(jsonObject);
             object.setFrom(From.Related);
             artworks.add(object);
         }
