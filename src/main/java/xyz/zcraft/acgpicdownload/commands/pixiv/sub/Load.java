@@ -41,7 +41,10 @@ public class Load extends SubCommand {
 
         try {
             final String s = Files.readString(Path.of(fileName));
-            final List<PixivArtwork> list = JSONArray.parseArray(s, PixivArtwork.class);
+            final List<PixivArtwork> list = JSONArray.parseArray(s, PixivArtwork.class)
+                                                    .stream()
+                                                    .filter(e -> e != null)
+                                                    .toList();
 
             out.info("Read " + list.size() + " artwork data from file: " + fileName);
             if (append && previous != null && !previous.isEmpty()) {
