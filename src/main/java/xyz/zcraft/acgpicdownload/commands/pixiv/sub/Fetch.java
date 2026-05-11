@@ -17,6 +17,9 @@ import java.util.Set;
 public class Fetch extends SubCommand {
     private ArtProvider ap;
     private boolean append = false;
+    private static final int RANKING_MAX_RETRY_ATTEMPTS = 5;
+    private static final int RANKING_RETRY_DELAY_MS = 2000;
+    private static final int RELATED_ARTWORKS_LIMIT = 18;
     private static final String[][] RANKING_MAJORS = {
             {"daily", "daily_r18"}, {"weekly", "weekly_r18"},
             {"monthly"}, {"rookie"}, {"original"},
@@ -142,6 +145,10 @@ public class Fetch extends SubCommand {
                 if (uid.startsWith("https://www.pixiv.net/users/")) {
                     uid = uid.substring(uid.lastIndexOf("/") + 1);
                 }
+                int splitIdx = uid.indexOf('?');
+                if (splitIdx >= 0) uid = uid.substring(0, splitIdx);
+                splitIdx = uid.indexOf('#');
+                if (splitIdx >= 0) uid = uid.substring(0, splitIdx);
                 final String finalUid = uid;
                 final int finalRelatedDepth = relatedDepth;
 
@@ -206,8 +213,8 @@ public class Fetch extends SubCommand {
                     throw new IllegalArgumentException("Unknown ranking major: " + major);
                 }
                 if (r18 && RANKING_MAJORS[majorIdx].length == 1) {
-                    out.err("Ranking major does not support r18: " + major);
-                    throw new IllegalArgumentException("Ranking major does not support r18: " + major);
+                    out.err("Ranking major does not support r18: " + major + " (supported: daily, weekly, daily_ai, male, female)");
+                    throw new IllegalArgumentException("Ranking major does not support r18: " + major + " (supported: daily, weekly, daily_ai, male, female)");
                 }
 
                 Set<String> allowedMinor = new HashSet<>(List.of(""));
@@ -234,26 +241,29 @@ public class Fetch extends SubCommand {
                     LinkedList<PixivArtwork> pixivArtworks = new LinkedList<>();
                     int failed = 0;
                     for (int idx = 0; idx < ids.size(); idx++) {
-                        int tries = 0;
-                        while (tries <= 5) {
+                        boolean success = false;
+                        for (int attempt = 1; attempt <= RANKING_MAX_RETRY_ATTEMPTS; attempt++) {
                             try {
                                 PixivArtwork a = PixivFetchUtil.getArtwork(ids.get(idx), profile.cookie(), profile.proxyHost(), profile.proxyPort());
                                 a.setFrom(From.Ranking);
                                 a.setRanking(rankingInfoPrefix + "#" + (idx + 1));
                                 pixivArtworks.add(a);
+                                success = true;
                                 break;
                             } catch (Exception e) {
-                                tries++;
-                                if (tries > 5) {
-                                    failed++;
-                                    out.warn("Failed to fetch ranking artwork id=" + ids.get(idx));
+                                if (attempt == RANKING_MAX_RETRY_ATTEMPTS) break;
+                                try {
+                                    Thread.sleep(RANKING_RETRY_DELAY_MS);
+                                } catch (InterruptedException interruptedException) {
+                                    out.warn("Ranking fetch interrupted during retry delay for artwork id=" + ids.get(idx));
+                                    Thread.currentThread().interrupt();
                                     break;
                                 }
-                                try {
-                                    Thread.sleep(2000);
-                                } catch (InterruptedException ignored) {
-                                }
                             }
+                        }
+                        if (!success) {
+                            failed++;
+                            out.warn("Failed to fetch ranking artwork id=" + ids.get(idx));
                         }
                     }
                     if (failed > 0) {
@@ -339,6 +349,7 @@ public class Fetch extends SubCommand {
                                     suffix = SEARCH_SUFFIX[suffixIdx];
                                 } catch (NumberFormatException ignored) {
                                     suffix = suffixArg;
+                                    out.info("Using custom search suffix: " + suffix);
                                 }
                             } else {
                                 out.err("Please specify suffix or suffix index");
@@ -454,9 +465,9 @@ public class Fetch extends SubCommand {
             List<PixivArtwork> nextLayer = new LinkedList<>();
             for (PixivArtwork artwork : currentLayer) {
                 try {
-                    nextLayer.addAll(PixivFetchUtil.getRelated(artwork, 18, profile.cookie(), profile.proxyHost(), profile.proxyPort()));
+                    nextLayer.addAll(PixivFetchUtil.getRelated(artwork, RELATED_ARTWORKS_LIMIT, profile.cookie(), profile.proxyHost(), profile.proxyPort()));
                 } catch (IOException e) {
-                    // ignore a single artwork and continue to fetch other related artworks
+                    out.warn(String.format("Failed to fetch related artworks for id=%s: %s", artwork.getId(), e.getMessage()));
                 }
             }
             artworks.addAll(nextLayer);
