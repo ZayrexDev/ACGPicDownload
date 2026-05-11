@@ -8,6 +8,7 @@ import xyz.zcraft.acgpicdownload.util.pixiv.PixivArtwork;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.LinkedList; 
 
 public class Load extends SubCommand {
     private String fileName;
