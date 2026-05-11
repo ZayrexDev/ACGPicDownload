@@ -458,7 +458,7 @@ public class Fetch extends SubCommand {
         }
     }
 
-    private static void fetchRelatedArtworks(List<PixivArtwork> artworks, int depth, Profile profile) throws IOException {
+    private void fetchRelatedArtworks(List<PixivArtwork> artworks, int depth, Profile profile) throws IOException {
         if (depth <= 0) return;
         List<PixivArtwork> currentLayer = new LinkedList<>(artworks);
         for (int i = 0; i < depth; i++) {
