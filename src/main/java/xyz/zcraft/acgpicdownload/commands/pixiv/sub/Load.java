@@ -45,8 +45,10 @@ public class Load extends SubCommand {
             out.info("Read " + list.size() + " artwork data from file: " + fileName);
             if (append && previous != null && !previous.isEmpty()) {
                 out.info("Appending to previous " + previous.size() + " artwork data, now total: " + (previous.size() + list.size()));
-                previous.addAll(list);
-                return List.copyOf(previous);
+                var result = new LinkedList<PixivArtwork>();
+                result.addAll(previous);
+                result.addAll(list);
+                return List.copyOf(result);
             } else {
                 return list;
             }
