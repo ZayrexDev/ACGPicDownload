@@ -52,11 +52,10 @@ public class Save extends SubCommand {
         out.info("Saving " + previous.size() + " artwork data to file: " + fileName);
 
         try {
+            
             Files.writeString(Path.of(fileName),
                     JSONArray.toJSONString(
-                            previous.stream().flatMap(
-                                    (Function<PixivArtwork, Stream<?>>) e -> Stream.of(e.getOrigJson())
-                            ).toList()
+                            previous
                             , (format ? new JSONWriter.Feature[]{JSONWriter.Feature.PrettyFormat} : new JSONWriter.Feature[]{}))
             );
             out.info("File written to " + fileName);
